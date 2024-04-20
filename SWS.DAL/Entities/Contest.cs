@@ -20,7 +20,7 @@ public class Contest : Entity
 
 	public Committee? ProgramCommittee { get; set; }
 
-	public User? InvitedTeacher { get; set; }
+	public Teacher? InvitedTeacher { get; set; }
 
 	public List<Report> Reports { get; set; } = [];
 }

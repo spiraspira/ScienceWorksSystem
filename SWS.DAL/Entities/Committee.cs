@@ -2,9 +2,9 @@
 
 public class Committee : Entity
 {
-	public Guid? LeaderId { get; set; }
+	public Guid? TeacherId { get; set; }
 
-	public User? Leader { get; set; }
+	public Teacher? Teacher { get; set; }
 
 	public List<CommitteeMember> Members { get; set; } = [];
 

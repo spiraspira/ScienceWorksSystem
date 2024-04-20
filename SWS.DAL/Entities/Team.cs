@@ -8,7 +8,7 @@ public class Team : Entity
 
 	public User? Student { get; set; }
 
-	public User? Teacher { get; set; }
+	public Teacher? Teacher { get; set; }
 
 	public List<Report> Reports { get; set; } = [];
 }
