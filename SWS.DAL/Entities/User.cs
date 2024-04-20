@@ -12,12 +12,13 @@ public class User : Entity
 
 	public Guid? UniversityId { get; set; }
 
-	public University? University { get; set; }
-
 	public Guid? TeacherId { get; set; }
+
+	public Guid? StudentId { get; set; }
+
+	public University? University { get; set; }
 
 	public Teacher? Teacher { get; set; }
 
-	public List<Team> TeamsOfStudent { get; set; } = [];
-
+	public Student? Student { get; set; }
 }
