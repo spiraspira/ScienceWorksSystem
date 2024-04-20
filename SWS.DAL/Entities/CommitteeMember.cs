@@ -9,4 +9,6 @@ public class CommitteeMember : Entity
 	public Committee? Committee { get; set; }
 
 	public User? Member { get; set; }
+
+	public List<Review> Reviews { get; set; } = [];
 }

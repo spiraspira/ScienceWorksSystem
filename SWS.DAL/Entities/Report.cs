@@ -25,4 +25,6 @@ public class Report : Entity
 	public Team? Team { get; set; }
 
 	public Contest? Contest { get; set; }
+
+	public List<Review> Review { get; set; } = [];
 }
