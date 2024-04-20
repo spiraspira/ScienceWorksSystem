@@ -6,7 +6,7 @@ public class Teacher : Entity
 
 	public User? User { get; set; }
 
-	public List<Team> TeamsOfTeacher { get; set; } = [];
+	public List<Team> Teams { get; set; } = [];
 
 	public List<Committee> SubordinateCommittees { get; set; } = [];
 
