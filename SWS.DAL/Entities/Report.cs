@@ -26,5 +26,7 @@ public class Report : Entity
 
 	public Contest? Contest { get; set; }
 
-	public List<Review> Review { get; set; } = [];
+	public List<Review> Reviews { get; set; } = [];
+
+	public List<Grade> Grades { get; set; } = [];
 }

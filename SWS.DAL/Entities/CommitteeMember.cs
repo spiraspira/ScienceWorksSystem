@@ -11,4 +11,6 @@ public class CommitteeMember : Entity
 	public User? Member { get; set; }
 
 	public List<Review> Reviews { get; set; } = [];
+
+	public List<Grade> Grades { get; set; } = [];
 }
