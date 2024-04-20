@@ -20,5 +20,7 @@ public class User : Entity
 
 	public List<Committee> SubordinateCommittees { get; set; } = [];
 
+	public List<CommitteeMember> Committees { get; set; } = [];
+
 	public List<Contest> InvitedContests { get; set; } = [];
 }
