@@ -13,4 +13,6 @@ public class User : Entity
 	public Guid? UniversityId { get; set; }
 
 	public University? University { get; set; }
+
+	public List<Team> Teams { get; set; } = [];
 }
