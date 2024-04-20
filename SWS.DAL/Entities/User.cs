@@ -8,6 +8,8 @@ public class User : Entity
 
 	public string? Name { get; set; }
 
+	public bool? IsStudent { get; set; }
+
 	public Guid? UniversityId { get; set; }
 
 	public University? University { get; set; }
