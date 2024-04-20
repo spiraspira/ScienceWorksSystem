@@ -14,7 +14,11 @@ public class User : Entity
 
 	public University? University { get; set; }
 
-	public List<Team> Teams { get; set; } = [];
+	public List<Team> TeamsOfTeacher { get; set; } = [];
+
+	public List<Team> TeamsOfStudent { get; set; } = [];
 
 	public List<Committee> SubordinateCommittees { get; set; } = [];
+
+	public List<Contest> InvitedContests { get; set; } = [];
 }

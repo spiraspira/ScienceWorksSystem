@@ -7,4 +7,8 @@ public class Committee : Entity
 	public User? Leader { get; set; }
 
 	public List<CommitteeMember> Members { get; set; } = [];
+
+	public List<Contest> OrganizationContests { get; set; } = [];
+
+	public List<Contest> ProgramContests { get; set; } = [];
 }
