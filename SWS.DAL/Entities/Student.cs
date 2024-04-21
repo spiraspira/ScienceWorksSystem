@@ -1,6 +1,6 @@
 ﻿namespace SWS.DAL.Entities;
 
-public class Student
+public class Student : Entity
 {
 	public Guid? UserId { get; set; }
 
