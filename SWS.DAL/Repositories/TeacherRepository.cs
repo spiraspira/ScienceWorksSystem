@@ -1,6 +1,6 @@
 ﻿namespace SWS.DAL.Repositories;
 
-public class TeacherRepository(ApplicationDbContext context) : GenericRepository<Teacher>(context)
+public class TeacherRepository(ApplicationDbContext context) : GenericRepository<Teacher>(context), ITeacherRepository
 {
 	public override Task<Teacher?> Get(Guid id)
 	{

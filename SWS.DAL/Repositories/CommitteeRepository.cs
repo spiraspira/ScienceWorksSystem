@@ -1,6 +1,6 @@
 ﻿namespace SWS.DAL.Repositories;
 
-public class CommitteeRepository(ApplicationDbContext context) : GenericRepository<Committee>(context)
+public class CommitteeRepository(ApplicationDbContext context) : GenericRepository<Committee>(context), ICommitteeRepository
 {
 	public override Task<Committee?> Get(Guid id)
 	{
