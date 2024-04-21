@@ -4,26 +4,48 @@ public class MappingProfile : Profile
 {
 	public MappingProfile()
 	{
-		CreateMap<CommitteeMember, CommitteeMemberModel>().ReverseMap();
+		CreateMap<CommitteeMember, CommitteeMemberModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 
-		CreateMap<Committee, CommitteeModel>().ReverseMap();
+		CreateMap<Committee, CommitteeModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 
-		CreateMap<Contest, ContestModel>().ReverseMap();
+		CreateMap<Contest, ContestModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 
-		CreateMap<Grade, GradeModel>().ReverseMap();
+		CreateMap<Grade, GradeModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 
-		CreateMap<Report, ReportModel>().ReverseMap();
+		CreateMap<Report, ReportModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 
-		CreateMap<Review, ReviewModel>().ReverseMap();
+		CreateMap<Review, ReviewModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 
-		CreateMap<Student, StudentModel>().ReverseMap();
+		CreateMap<Student, StudentModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 
-		CreateMap<Teacher, TeacherModel>().ReverseMap();
+		CreateMap<Teacher, TeacherModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 
-		CreateMap<Team, TeamModel>().ReverseMap();
+		CreateMap<Team, TeamModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 
-		CreateMap<University, UniversityModel>().ReverseMap();
+		CreateMap<University, UniversityModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 
-		CreateMap<User, UserModel>().ReverseMap();
+		CreateMap<User, UserModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
 	}
 }
