@@ -6,9 +6,9 @@ public interface IGenericRepository<TEntity> where TEntity : IEntity
 
 	Task<IEnumerable<TEntity>> GetAll();
 
-	Task<TEntity> Create(TEntity entity);
+	Task<TEntity?> Create(TEntity user);
 
-	Task<TEntity> Update(TEntity entity);
+	Task<TEntity?> Update(TEntity entity);
 
 	Task<TEntity?> Delete(Guid id);
 }

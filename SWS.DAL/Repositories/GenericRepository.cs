@@ -1,6 +1,4 @@
-﻿using SWS.DAL.Entities;
-
-namespace SWS.DAL.Repositories;
+﻿namespace SWS.DAL.Repositories;
 
 public class GenericRepository<TEntity>(ApplicationDbContext context) : IGenericRepository<TEntity> where TEntity : Entity
 {
@@ -18,18 +16,18 @@ public class GenericRepository<TEntity>(ApplicationDbContext context) : IGeneric
 		return await Set.ToListAsync();
 	}
 
-	public virtual async Task<TEntity> Create(TEntity entity)
+	public virtual async Task<TEntity?> Create(TEntity user)
 	{
-		entity.Id = Guid.NewGuid();
+		user.Id = Guid.NewGuid();
 
-		Set.Add(entity);
+		Set.Add(user);
 
 		await Context.SaveChangesAsync();
 
-		return entity;
+		return user;
 	}
 
-	public virtual async Task<TEntity> Update(TEntity entity)
+	public virtual async Task<TEntity?> Update(TEntity entity)
 	{
 		Context.Entry(entity).State = EntityState.Modified;
 
