@@ -2,37 +2,37 @@
 
 public class UserRepository(ApplicationDbContext context) : GenericRepository<User>(context), IUserRepository
 {
-	public override async Task<User?> Create(User team)
+	public override async Task<User?> Create(User entity)
 	{
-		if (!await IsLoginUnique(team.Login))
+		if (!await IsLoginUnique(entity.Login))
 		{
 			return null;
 		}
 
-		team.Id = Guid.NewGuid();
+		entity.Id = Guid.NewGuid();
 
-		Set.Add(team);
+		Set.Add(entity);
 
 		await Context.SaveChangesAsync();
 
-		return team;
+		return entity;
 	}
 
-	public override async Task<User?> Update(User team)
+	public override async Task<User?> Update(User entity)
 	{
 		var currentLogin = (await Set
-			.FirstOrDefaultAsync(p => p.Id == team.Id))!.Login;
+			.FirstOrDefaultAsync(p => p.Id == entity.Id))!.Login;
 
-		if (!await IsLoginUnique(team.Login, currentLogin))
+		if (!await IsLoginUnique(entity.Login, currentLogin))
 		{
 			return null;
 		}
 
-		Context.Entry(team).State = EntityState.Modified;
+		Context.Entry(entity).State = EntityState.Modified;
 
 		await Context.SaveChangesAsync();
 
-		return team;
+		return entity;
 	}
 
 	public Task<User?> Login(string login, string password)

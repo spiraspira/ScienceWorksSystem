@@ -16,24 +16,24 @@ public class GenericRepository<TEntity>(ApplicationDbContext context) : IGeneric
 		return await Set.ToListAsync();
 	}
 
-	public virtual async Task<TEntity?> Create(TEntity team)
+	public virtual async Task<TEntity?> Create(TEntity entity)
 	{
-		team.Id = Guid.NewGuid();
+		entity.Id = Guid.NewGuid();
 
-		Set.Add(team);
+		Set.Add(entity);
 
 		await Context.SaveChangesAsync();
 
-		return team;
+		return entity;
 	}
 
-	public virtual async Task<TEntity?> Update(TEntity team)
+	public virtual async Task<TEntity?> Update(TEntity entity)
 	{
-		Context.Entry(team).State = EntityState.Modified;
+		Context.Entry(entity).State = EntityState.Modified;
 
 		await Context.SaveChangesAsync();
 
-		return team;
+		return entity;
 	}
 
 	public virtual async Task<TEntity?> Delete(Guid id)

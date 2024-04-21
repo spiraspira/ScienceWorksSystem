@@ -18,36 +18,36 @@ public class TeamRepository(ApplicationDbContext context) : GenericRepository<Te
 			.ToListAsync();
 	}
 
-	public override async Task<Team?> Create(Team team)
+	public override async Task<Team?> Create(Team entity)
 	{
-		if (!await IsTeamUnique(team))
+		if (!await IsTeamUnique(entity))
 		{
 			return null;
 		}
 
-		team.Id = Guid.NewGuid();
+		entity.Id = Guid.NewGuid();
 
-		Set.Add(team);
+		Set.Add(entity);
 
 		await Context.SaveChangesAsync();
 
-		return team;
+		return entity;
 	}
 
-	public override async Task<Team?> Update(Team team)
+	public override async Task<Team?> Update(Team entity)
 	{
-		var currentTeam = await Set.FirstOrDefaultAsync(p => p.Id == team.Id);
+		var currentTeam = await Set.FirstOrDefaultAsync(p => p.Id == entity.Id);
 
-		if (!await IsTeamUnique(team, currentTeam))
+		if (!await IsTeamUnique(entity, currentTeam))
 		{
 			return null;
 		}
 
-		Context.Entry(team).State = EntityState.Modified;
+		Context.Entry(entity).State = EntityState.Modified;
 
 		await Context.SaveChangesAsync();
 
-		return team;
+		return entity;
 	}
 
 	public async Task<IEnumerable<Team>> GetTeamsOfTeacher(Guid teacherId)
