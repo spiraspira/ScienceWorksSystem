@@ -36,6 +36,15 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 			.ToListAsync();
 	}
 
+	public async Task<IEnumerable<Contest>> GetFutureContests()
+	{
+		return await Set
+			.Include(contest => contest.InvitedTeacher)
+			.ThenInclude(teacher => teacher!.User)
+			.Where(contest => contest.DateStart > DateTime.Now)
+			.ToListAsync();
+	}
+
 	public async Task<IEnumerable<Contest>> GetActiveContestsOfTeacherAsInvited(Guid teacherId)
 	{
 		return await Set
