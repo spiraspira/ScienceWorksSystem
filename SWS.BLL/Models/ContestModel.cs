@@ -31,4 +31,6 @@ public class ContestModel : Model
 	public TeacherModel? InvitedTeacher { get; set; }
 
 	public List<ReportModel> Reports { get; set; } = [];
+
+	public List<NominationModel> Nominations { get; set; } = [];
 }
