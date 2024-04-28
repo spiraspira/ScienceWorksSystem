@@ -20,6 +20,8 @@ public static class DataAccessRegister
 
 		services.AddScoped<IGradeRepository, GradeRepository>();
 
+		services.AddScoped<INominationRepository, NominationRepository>();
+
 		services.AddScoped<IReportRepository, ReportRepository>();
 
 		services.AddScoped<IReviewRepository, ReviewRepository>();

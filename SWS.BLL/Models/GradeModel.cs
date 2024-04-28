@@ -12,7 +12,11 @@ public class GradeModel : Model
 
 	public Guid? ProgramCommitteeMemberId { get; set; }
 
+	public Guid? NominationId { get; set; }
+
 	public ReportModel? Report { get; set; }
 
 	public CommitteeMemberModel? ProgramCommitteeMember { get; set; }
+
+	public NominationModel? Nomination { get; set; }
 }

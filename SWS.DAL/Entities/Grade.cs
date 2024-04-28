@@ -12,7 +12,11 @@ public class Grade : Entity
 
 	public Guid? ProgramCommitteeMemberId { get; set; }
 
+	public Guid? NominationId { get; set; }
+
 	public Report? Report { get; set; }
 
 	public CommitteeMember? ProgramCommitteeMember { get; set; }
+
+	public Nomination? Nomination { get; set; }
 }

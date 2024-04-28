@@ -10,6 +10,14 @@ public class ContestModel : Model
 
 	public DateTime? DateEnd { get; set; }
 
+	public DateTime? DateStartFirstTour { get; set; }
+
+	public DateTime? DateEndFirstTour { get; set; }
+
+	public DateTime? DateStartSecondTour { get; set; }
+
+	public DateTime? DateEndSecondTour { get; set; }
+
 	public Guid? OrganizationCommitteeId { get; set; }
 
 	public Guid? ProgramCommitteeId { get; set; }
@@ -23,4 +31,6 @@ public class ContestModel : Model
 	public TeacherModel? InvitedTeacher { get; set; }
 
 	public List<ReportModel> Reports { get; set; } = [];
+
+	public List<NominationModel> Nominations { get; set; } = [];
 }
