@@ -20,6 +20,10 @@ public class MappingProfile : Profile
 			.ReverseMap()
 			.ForAllMembers(opt => opt.NullSubstitute(null));
 
+		CreateMap<Nomination, NominationModel>()
+			.ReverseMap()
+			.ForAllMembers(opt => opt.NullSubstitute(null));
+
 		CreateMap<Report, ReportModel>()
 			.ReverseMap()
 			.ForAllMembers(opt => opt.NullSubstitute(null));
