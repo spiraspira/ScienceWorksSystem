@@ -1,5 +1,4 @@
-﻿#pragma warning disable S125
-namespace SWS.DAL.DI;
+﻿namespace SWS.DAL.DI;
 
 public static class DataAccessRegister
 {
@@ -9,8 +8,6 @@ public static class DataAccessRegister
 		{
 			options.UseNpgsql(config.GetConnectionString("DefaultConnection"));
 		});
-
-		//services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 		services.AddScoped<ICommitteeMemberRepository, CommitteeMemberRepository>();
 
@@ -35,5 +32,7 @@ public static class DataAccessRegister
 		services.AddScoped<IUniversityRepository, UniversityRepository>();
 
 		services.AddScoped<IUserRepository, UserRepository>();
+
+		services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 	}
 }
