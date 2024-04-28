@@ -7,4 +7,6 @@ public class Nomination : Entity
 	public Guid? ContestId { get; set; }
 
 	public Contest? Contest { get; set; }
+
+	public List<Grade> Grades { get; set; } = [];
 }
