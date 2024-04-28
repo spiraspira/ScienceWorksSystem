@@ -2,5 +2,5 @@
 
 public interface INominationRepository : IGenericRepository<Nomination>
 {
-
+	Task<IEnumerable<Nomination>> GetNominationsOfContest(Guid contestId);
 }
