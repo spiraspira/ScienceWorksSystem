@@ -31,4 +31,6 @@ public class Contest : Entity
 	public Teacher? InvitedTeacher { get; set; }
 
 	public List<Report> Reports { get; set; } = [];
+
+	public List<Nomination> Nominations { get; set; } = [];
 }
