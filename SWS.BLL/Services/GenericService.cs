@@ -1,6 +1,6 @@
 ﻿namespace SWS.BLL.Services;
 
-public class GenericService<TModel, TEntity>(IGenericRepository<TEntity> repository, IMapperBase mapper)
+public class GenericService<TModel, TEntity>(IGenericRepository<TEntity> repository, IMapper mapper)
 	: IGenericService<TModel>
 	where TModel : IModel
 	where TEntity : IEntity
