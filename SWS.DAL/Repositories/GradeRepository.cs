@@ -9,4 +9,12 @@ public class GradeRepository(ApplicationDbContext context) : GenericRepository<G
 			.Where(grade => grade.ReportId == reportId)
 			.ToListAsync();
 	}
+
+	public async Task<IEnumerable<Grade>> GetGradesOfNomination(Guid nominationId)
+	{
+		return await Set
+			.Include(grade => grade.ProgramCommitteeMember)
+			.Where(grade => grade.NominationId == nominationId)
+			.ToListAsync();
+	}
 }

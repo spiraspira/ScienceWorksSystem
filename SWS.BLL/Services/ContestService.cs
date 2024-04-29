@@ -29,7 +29,7 @@ public class ContestService(
 
 	public async Task<IEnumerable<ContestModel>> GetFinishedContestsOfStudent(Guid studentId)
 	{
-		var contestIds = (await reportRepository.GetRatedReportsOfStudent(studentId)).Select(r => r.ContestId).ToList();
+		var contestIds = (await reportRepository.GetReportsOfStudent(studentId)).Select(r => r.ContestId).ToList();
 
 		var contests = (await repository.GetFinishedContests()).Where(c => contestIds.Contains(c.Id));
 
@@ -38,7 +38,7 @@ public class ContestService(
 
 	public async Task<IEnumerable<ContestModel>> GetActiveContestsOfStudent(Guid studentId)
 	{
-		var contestIds = (await reportRepository.GetRatedReportsOfStudent(studentId)).Select(r => r.ContestId).ToList();
+		var contestIds = (await reportRepository.GetReportsOfStudent(studentId)).Select(r => r.ContestId).ToList();
 
 		var contests = (await repository.GetActiveContests()).Where(c => contestIds.Contains(c.Id));
 
