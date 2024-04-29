@@ -11,4 +11,6 @@ public interface IContestService : IGenericService<ContestModel>
 	Task<IEnumerable<ContestModel>> GetFinishedContestsOfStudent(Guid studentId);
 
 	Task<IEnumerable<ContestModel>> GetActiveContestsOfStudent(Guid studentId);
+
+	Task<IEnumerable<ContestModel>> GetActiveContestsOfInvitedTeacher(Guid teacherId);
 }

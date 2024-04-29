@@ -44,4 +44,11 @@ public class ContestService(
 
 		return mapper.Map<IEnumerable<ContestModel>>(contests);
 	}
+
+	public async Task<IEnumerable<ContestModel>> GetActiveContestsOfInvitedTeacher(Guid teacherId)
+	{
+		var contests = await repository.GetActiveContestsOfTeacherAsInvited(teacherId);
+
+		return mapper.Map<IEnumerable<ContestModel>>(contests);
+	}
 }
