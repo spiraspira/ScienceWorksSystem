@@ -21,7 +21,7 @@ public class ReportController(
 	}
 
 	[HttpGet("student/{studentId}/contest/{contestId}")]
-	public async Task<ReportViewModel> GetWinnerOfNomination(Guid studentId, Guid contestId)
+	public async Task<ReportViewModel> GetReportOfStudent(Guid studentId, Guid contestId)
 	{
 		return mapper.Map<ReportViewModel>(await reportService.GetReportOfStudent(contestId, studentId));
 	}
