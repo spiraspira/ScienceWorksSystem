@@ -5,7 +5,7 @@ public class ContestService(
 	IContestRepository repository,
 	IReportRepository reportRepository,
 	ICommitteeMemberRepository committeeMemberRepository,
-	IMapperBase mapper) : GenericService<ContestModel, Contest>(repository, mapper), IContestService
+	IMapper mapper) : GenericService<ContestModel, Contest>(repository, mapper), IContestService
 {
 	public async Task<IEnumerable<ContestModel>> GetFinishedContests()
 	{

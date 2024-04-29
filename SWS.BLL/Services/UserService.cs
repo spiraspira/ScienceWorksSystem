@@ -5,7 +5,7 @@ public class UserService(
 	IUserRepository repository,
 	ITeacherRepository teacherRepository,
 	IStudentRepository studentRepository,
-	IMapperBase mapper) : GenericService<UserModel, User>(repository, mapper), IUserService
+	IMapper mapper) : GenericService<UserModel, User>(repository, mapper), IUserService
 {
 	public async Task<UserModel> Login(string login, string password)
 	{

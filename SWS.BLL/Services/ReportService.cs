@@ -4,7 +4,7 @@ namespace SWS.BLL.Services;
 public class ReportService(
 	IReportRepository repository,
 	IGradeRepository gradeRepository,
-	IMapperBase mapper) : GenericService<ReportModel, Report>(repository, mapper), IReportService
+	IMapper mapper) : GenericService<ReportModel, Report>(repository, mapper), IReportService
 {
 	public async Task<ReportModel> GetWinnerOfNomination(Guid nominationId)
 	{
