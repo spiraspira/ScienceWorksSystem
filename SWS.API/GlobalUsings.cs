@@ -6,3 +6,6 @@ global using Serilog;
 global using Serilog.Events;
 global using SWS.BLL.DI;
 global using System.Reflection;
+global using AutoMapper;
+global using SWS.API.ViewModels;
+global using SWS.BLL.Models;
