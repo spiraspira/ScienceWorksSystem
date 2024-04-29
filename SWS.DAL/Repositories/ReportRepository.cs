@@ -89,4 +89,12 @@ public class ReportRepository(ApplicationDbContext context) : GenericRepository<
 			.Where(report => report.Grade != 0 && report.Grade != null && report.ContestId == contestId)
 			.ToListAsync();
 	}
+
+	public Task<Report?> GetReportOfContestOfStudent(Guid contestId, Guid studentId)
+	{
+		return Set
+			.Include(report => report.Team)
+			.Where(report => report.ContestId == contestId && report.Team!.StudentId == studentId)
+			.FirstOrDefaultAsync();
+	}
 }

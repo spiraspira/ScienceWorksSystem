@@ -13,4 +13,6 @@ public interface IReportRepository : IGenericRepository<Report>
 	Task<IEnumerable<Report>> GetRatedReportsOfStudent(Guid studentId);
 
 	Task<IEnumerable<Report>> GetRatedReportsOfContest(Guid contestId);
+
+	Task<Report?> GetReportOfContestOfStudent(Guid contestId, Guid studentId);
 }

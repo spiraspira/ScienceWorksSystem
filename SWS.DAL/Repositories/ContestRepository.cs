@@ -36,6 +36,15 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 			.ToListAsync();
 	}
 
+	public async Task<IEnumerable<Contest>> GetFutureContests()
+	{
+		return await Set
+			.Include(contest => contest.InvitedTeacher)
+			.ThenInclude(teacher => teacher!.User)
+			.Where(contest => contest.DateStart > DateTime.Now)
+			.ToListAsync();
+	}
+
 	public async Task<IEnumerable<Contest>> GetActiveContestsOfTeacherAsInvited(Guid teacherId)
 	{
 		return await Set
@@ -51,6 +60,22 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 			.Include(contest => contest.InvitedTeacher)
 			.ThenInclude(teacher => teacher!.User)
 			.Where(contest => contest.DateEnd < DateTime.Now && contest.InvitedTeacherId == teacherId)
+			.ToListAsync();
+	}
+
+	public async Task<IEnumerable<Contest>> GetActiveContestsOfOrganizationCommitteeHead(Guid teacherId)
+	{
+		return await Set
+			.Include(contest => contest.OrganizationCommittee)
+			.Where(contest => contest.DateEnd >= DateTime.Now && contest.OrganizationCommittee!.TeacherId == teacherId)
+			.ToListAsync();
+	}
+
+	public async Task<IEnumerable<Contest>> GetActiveContestsOfProgramCommitteeHead(Guid teacherId)
+	{
+		return await Set
+			.Include(contest => contest.ProgramCommittee)
+			.Where(contest => contest.DateEnd >= DateTime.Now && contest.ProgramCommittee!.TeacherId == teacherId)
 			.ToListAsync();
 	}
 }
