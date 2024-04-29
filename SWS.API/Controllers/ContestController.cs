@@ -25,43 +25,43 @@ public class ContestController(
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetFutureContests());
 	}
 
-	[HttpGet("{studentId}")]
+	[HttpGet("finished/student/{studentId}")]
 	public async Task<IEnumerable<ContestViewModel>> GetFinishedContestsOfStudent(Guid studentId)
 	{
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetFinishedContestsOfStudent(studentId));
 	}
 
-	[HttpGet("{studentId}")]
+	[HttpGet("active/student/{studentId}")]
 	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfStudent(Guid studentId)
 	{
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfStudent(studentId));
 	}
 
-	[HttpGet("{teacherId}")]
+	[HttpGet("active/teacher/invited/{teacherId}")]
 	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfInvitedTeacher(Guid teacherId)
 	{
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfInvitedTeacher(teacherId));
 	}
 
-	[HttpGet("{teacherId}")]
+	[HttpGet("active/teacher/organization/member/{teacherId}")]
 	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfOrganizationCommitteeMember(Guid teacherId)
 	{
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfOrganizationCommitteeMember(teacherId));
 	}
 
-	[HttpGet("{teacherId}")]
+	[HttpGet("active/teacher/program/member/{teacherId}")]
 	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfProgramCommitteeMember(Guid teacherId)
 	{
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfProgramCommitteeMember(teacherId));
 	}
 
-	[HttpGet("{teacherId}")]
+	[HttpGet("active/teacher/organization/head/{teacherId}")]
 	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfOrganizationCommitteeHead(Guid teacherId)
 	{
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfOrganizationCommitteeHead(teacherId));
 	}
 
-	[HttpGet("{teacherId}")]
+	[HttpGet("active/teacher/program/head/{teacherId}")]
 	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfProgramCommitteeHead(Guid teacherId)
 	{
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfProgramCommitteeHead(teacherId));
