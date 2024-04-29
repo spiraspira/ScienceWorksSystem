@@ -5,7 +5,7 @@ public class GenericService<TModel, TEntity>(IGenericRepository<TEntity> reposit
 	where TModel : IModel
 	where TEntity : IEntity
 {
-	public async Task<TModel> Create(TModel model)
+	public virtual async Task<TModel> Create(TModel model)
 	{
 		var entity = await repository.Create(mapper.Map<TEntity>(model));
 
