@@ -4,6 +4,7 @@ namespace SWS.BLL.Services;
 public class ContestService(
 	IContestRepository repository,
 	IReportRepository reportRepository,
+	ICommitteeMemberRepository committeeMemberRepository,
 	IMapperBase mapper) : GenericService<ContestModel, Contest>(repository, mapper), IContestService
 {
 	public async Task<IEnumerable<ContestModel>> GetFinishedContests()
@@ -48,6 +49,44 @@ public class ContestService(
 	public async Task<IEnumerable<ContestModel>> GetActiveContestsOfInvitedTeacher(Guid teacherId)
 	{
 		var contests = await repository.GetActiveContestsOfTeacherAsInvited(teacherId);
+
+		return mapper.Map<IEnumerable<ContestModel>>(contests);
+	}
+
+	public async Task<IEnumerable<ContestModel>> GetActiveContestsOfOrganizationCommitteeMember(Guid teacherId)
+	{
+		var committeeIds = (await committeeMemberRepository.GetAll())
+			.Where(cm => cm.TeacherId == teacherId)
+			.Select(cm => cm.CommitteeId);
+
+		var contests = (await repository.GetActiveContests())
+			.Where(c => committeeIds.Contains(c.OrganizationCommitteeId));
+
+		return mapper.Map<IEnumerable<ContestModel>>(contests);
+	}
+
+	public async Task<IEnumerable<ContestModel>> GetActiveContestsOfProgramCommitteeMember(Guid teacherId)
+	{
+		var committeeIds = (await committeeMemberRepository.GetAll())
+			.Where(cm => cm.TeacherId == teacherId)
+			.Select(cm => cm.CommitteeId);
+
+		var contests = (await repository.GetActiveContests())
+			.Where(c => committeeIds.Contains(c.ProgramCommitteeId));
+
+		return mapper.Map<IEnumerable<ContestModel>>(contests);
+	}
+
+	public async Task<IEnumerable<ContestModel>> GetActiveContestsOfOrganizationCommitteeHead(Guid teacherId)
+	{
+		var contests = await repository.GetActiveContestsOfOrganizationCommitteeHead(teacherId);
+
+		return mapper.Map<IEnumerable<ContestModel>>(contests);
+	}
+
+	public async Task<IEnumerable<ContestModel>> GetActiveContestsOfProgramCommitteeHead(Guid teacherId)
+	{
+		var contests = await repository.GetActiveContestsOfProgramCommitteeHead(teacherId);
 
 		return mapper.Map<IEnumerable<ContestModel>>(contests);
 	}

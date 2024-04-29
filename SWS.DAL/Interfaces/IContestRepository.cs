@@ -11,4 +11,8 @@ public interface IContestRepository : IGenericRepository<Contest>
 	Task<IEnumerable<Contest>> GetActiveContestsOfTeacherAsInvited(Guid teacherId);
 
 	Task<IEnumerable<Contest>> GetFinishedContestsOfTeacherAsInvited(Guid teacherId);
+
+	Task<IEnumerable<Contest>> GetActiveContestsOfOrganizationCommitteeHead(Guid teacherId);
+
+	Task<IEnumerable<Contest>> GetActiveContestsOfProgramCommitteeHead(Guid teacherId);
 }

@@ -90,7 +90,7 @@ public class ReportRepository(ApplicationDbContext context) : GenericRepository<
 			.ToListAsync();
 	}
 
-	public Task<Report?> GetReportOfStudentOfContest(Guid contestId, Guid studentId)
+	public Task<Report?> GetReportOfContestOfStudent(Guid contestId, Guid studentId)
 	{
 		return Set
 			.Include(report => report.Team)

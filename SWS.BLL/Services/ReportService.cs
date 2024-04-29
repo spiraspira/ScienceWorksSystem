@@ -37,7 +37,7 @@ public class ReportService(
 
 	public async Task<ReportModel> GetReportOfStudent(Guid contestId, Guid studentId)
 	{
-		var report = await repository.GetReportOfStudentOfContest(contestId, studentId);
+		var report = await repository.GetReportOfContestOfStudent(contestId, studentId);
 
 		return mapper.Map<ReportModel>(report);
 	}

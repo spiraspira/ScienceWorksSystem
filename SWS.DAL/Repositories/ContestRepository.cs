@@ -62,4 +62,20 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 			.Where(contest => contest.DateEnd < DateTime.Now && contest.InvitedTeacherId == teacherId)
 			.ToListAsync();
 	}
+
+	public async Task<IEnumerable<Contest>> GetActiveContestsOfOrganizationCommitteeHead(Guid teacherId)
+	{
+		return await Set
+			.Include(contest => contest.OrganizationCommittee)
+			.Where(contest => contest.DateEnd >= DateTime.Now && contest.OrganizationCommittee!.TeacherId == teacherId)
+			.ToListAsync();
+	}
+
+	public async Task<IEnumerable<Contest>> GetActiveContestsOfProgramCommitteeHead(Guid teacherId)
+	{
+		return await Set
+			.Include(contest => contest.ProgramCommittee)
+			.Where(contest => contest.DateEnd >= DateTime.Now && contest.ProgramCommittee!.TeacherId == teacherId)
+			.ToListAsync();
+	}
 }
