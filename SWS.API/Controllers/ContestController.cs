@@ -8,18 +8,19 @@ public class ContestController(
 	IValidator<ContestViewModel> validator)
 	: ControllerBase
 {
-	[HttpGet]
+	[HttpGet("finished")]
 	public async Task<IEnumerable<ContestViewModel>> GetFinishedContests()
 	{
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetFinishedContests());
 	}
 
-	[HttpGet]
+	[HttpGet("active")]
 	public async Task<IEnumerable<ContestViewModel>> GetActiveContests()
 	{
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContests());
 	}
 
+	[HttpGet("future")]
 	public async Task<IEnumerable<ContestViewModel>> GetFutureContests()
 	{
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetFutureContests());
