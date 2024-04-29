@@ -6,7 +6,7 @@ public class Team : Entity
 
 	public Guid? TeacherId { get; set; }
 
-	public User? Student { get; set; }
+	public Student? Student { get; set; }
 
 	public Teacher? Teacher { get; set; }
 

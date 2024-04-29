@@ -26,6 +26,42 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
+		modelBuilder.Entity<Committee>(entity =>
+		{
+			entity.HasMany(c => c.OrganizationContests)
+				.WithOne(c => c.OrganizationCommittee)
+				.HasForeignKey(c => c.OrganizationCommitteeId);
+
+			entity.HasMany(c => c.ProgramContests)
+				.WithOne(c => c.ProgramCommittee)
+				.HasForeignKey(c => c.ProgramCommitteeId);
+		});
+
+		modelBuilder.Entity<User>(entity =>
+		{
+			entity.HasOne(u => u.Student)
+				.WithOne(s => s.User)
+				.HasForeignKey<Student>(s => s.UserId);
+
+			entity.HasOne(u => u.Teacher)
+				.WithOne(s => s.User)
+				.HasForeignKey<Teacher>(s => s.UserId);
+		});
+
+		modelBuilder.Entity<Student>(entity =>
+		{
+			entity.HasOne(s => s.User)
+				.WithOne(u => u.Student)
+				.HasForeignKey<Student>(s => s.UserId);
+		});
+
+		modelBuilder.Entity<Teacher>(entity =>
+		{
+			entity.HasOne(s => s.User)
+				.WithOne(u => u.Teacher)
+				.HasForeignKey<Teacher>(s => s.UserId);
+		});
+
 		foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
 		{
 			relationship.DeleteBehavior = DeleteBehavior.SetNull;
