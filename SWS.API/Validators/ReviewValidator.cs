@@ -4,13 +4,13 @@ public class ReviewValidator : AbstractValidator<ReviewViewModel>
 {
 	public ReviewValidator()
 	{
-		RuleFor(nomination => nomination.Text)
+		RuleFor(review => review.Text)
 			.NotEmpty();
 
-		RuleFor(nomination => nomination.ReportId)
+		RuleFor(review => review.ReportId)
 			.NotNull();
 
-		RuleFor(nomination => nomination.OrganizationCommitteeMemberId)
+		RuleFor(review => review.OrganizationCommitteeMemberId)
 			.NotNull();
 	}
 }
