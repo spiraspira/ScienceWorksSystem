@@ -13,7 +13,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options => options.Serialize
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSerilog();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddValidatorsFromAssembly(Assembly.Load("TourAgency.API"));
+builder.Services.AddValidatorsFromAssembly(Assembly.Load("SWS.API"));
 builder.Services.AddCors();
 
 var app = builder.Build();
