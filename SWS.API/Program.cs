@@ -28,7 +28,7 @@ app.UseCors(corsPolicyBuilder => corsPolicyBuilder
 	.AllowAnyMethod()
 	.AllowAnyHeader());
 
-//app.UseMiddleware<SWS.API.Middleware.ExceptionHandlerMiddleware>();
+app.UseMiddleware<SWS.API.Middleware.ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 
 app.MapControllers();

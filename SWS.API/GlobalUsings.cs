@@ -1,5 +1,6 @@
 ﻿// Global using directives
 
+global using System.Net;
 global using FluentValidation;
 global using Newtonsoft.Json;
 global using Serilog;
