@@ -1,0 +1,56 @@
+﻿namespace SWS.DAL.InitialData;
+
+public static class UserInitial
+{
+	public static readonly List<User> Users =
+	[
+		new User
+		{
+			Id = new Guid("5e4d84fa-2bd7-4c0a-b6fc-ea3d3148b14b"),
+			Login = "student1",
+			Password = "student1",
+			Name = "StudentName1",
+			IsStudent = true,
+			UniversityId = null,
+			TeacherId = null,
+			StudentId = null
+		},
+
+		new User
+		{
+			Id = new Guid("2d2d3627-b91c-4347-a49d-1ad87f07d50b"),
+			Login = "student2",
+			Password = "student2",
+			Name = "StudentName2",
+			IsStudent = true,
+			UniversityId = null,
+			TeacherId = null,
+			StudentId = null
+		},
+
+		new User
+		{
+			Id = new Guid("ceef3329-fe7d-4b76-938f-1058f6aee7c2"),
+			Login = "teacher1",
+			Password = "teacher1",
+			Name = "TeacherName1",
+			IsStudent = false,
+			UniversityId = null,
+			TeacherId = null,
+			StudentId = null
+		},
+
+		new User
+		{
+			Id = new Guid("d68f5653-4fba-4943-b0ac-ca354280d60f"),
+			Login = "teacher2",
+			Password = "teacher2",
+			Name = "TeacherName2",
+			IsStudent = false,
+			UniversityId = null,
+			TeacherId = null,
+			StudentId = null
+		}
+
+	];
+}
