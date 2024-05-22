@@ -36,7 +36,7 @@ public static class UserInitial
 			Name = "TeacherName1",
 			IsStudent = false,
 			UniversityId = new Guid("ac26aeae-22f8-4318-8b1f-e03f35eab0a7"),
-			TeacherId = null,
+			TeacherId = new Guid("e27773c6-d514-4d4d-9c62-268a288a2c50"),
 			StudentId = null
 		},
 
@@ -48,7 +48,7 @@ public static class UserInitial
 			Name = "TeacherName2",
 			IsStudent = false,
 			UniversityId = new Guid("b6310a8f-ad4e-4faf-981c-e852d856081b"),
-			TeacherId = null,
+			TeacherId = new Guid("f6d5847c-0901-4e84-86de-4fc20222e4be"),
 			StudentId = null
 		}
 
