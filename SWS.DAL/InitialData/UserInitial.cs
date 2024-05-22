@@ -11,7 +11,7 @@ public static class UserInitial
 			Password = "student1",
 			Name = "StudentName1",
 			IsStudent = true,
-			UniversityId = null,
+			UniversityId = new Guid("ac26aeae-22f8-4318-8b1f-e03f35eab0a7"),
 			TeacherId = null,
 			StudentId = null
 		},
@@ -23,7 +23,7 @@ public static class UserInitial
 			Password = "student2",
 			Name = "StudentName2",
 			IsStudent = true,
-			UniversityId = null,
+			UniversityId = new Guid("b6310a8f-ad4e-4faf-981c-e852d856081b"),
 			TeacherId = null,
 			StudentId = null
 		},
@@ -35,7 +35,7 @@ public static class UserInitial
 			Password = "teacher1",
 			Name = "TeacherName1",
 			IsStudent = false,
-			UniversityId = null,
+			UniversityId = new Guid("ac26aeae-22f8-4318-8b1f-e03f35eab0a7"),
 			TeacherId = null,
 			StudentId = null
 		},
@@ -47,7 +47,7 @@ public static class UserInitial
 			Password = "teacher2",
 			Name = "TeacherName2",
 			IsStudent = false,
-			UniversityId = null,
+			UniversityId = new Guid("b6310a8f-ad4e-4faf-981c-e852d856081b"),
 			TeacherId = null,
 			StudentId = null
 		}
