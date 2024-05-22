@@ -13,7 +13,7 @@ public static class UserInitial
 			IsStudent = true,
 			UniversityId = new Guid("ac26aeae-22f8-4318-8b1f-e03f35eab0a7"),
 			TeacherId = null,
-			StudentId = null
+			StudentId = new Guid("1748e436-514b-4acc-b7f0-a646dd9fdec3")
 		},
 
 		new User
@@ -25,7 +25,7 @@ public static class UserInitial
 			IsStudent = true,
 			UniversityId = new Guid("b6310a8f-ad4e-4faf-981c-e852d856081b"),
 			TeacherId = null,
-			StudentId = null
+			StudentId = new Guid("3cd57f1f-aaff-4252-b632-896ab67713b8")
 		},
 
 		new User
