@@ -43,7 +43,7 @@ public static class TeacherInitial
 		new Teacher
 		{
 			Id = new Guid("cc64136a-4bc3-46e5-a194-23968924746b"),
-			UserId = new Guid("d2ffea570-b26a-43a6-bb24-a13d004290a0"),
+			UserId = new Guid("2ffea570-b26a-43a6-bb24-a13d004290a0"),
 		},
 
 		new Teacher
