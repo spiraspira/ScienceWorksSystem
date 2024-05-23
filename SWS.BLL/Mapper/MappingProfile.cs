@@ -9,6 +9,7 @@ public class MappingProfile : Profile
 			.ForAllMembers(opt => opt.NullSubstitute(null));
 
 		CreateMap<Committee, CommitteeModel>()
+			.ForMember(dest => dest.Name, opt => opt.Ignore())
 			.ReverseMap()
 			.ForAllMembers(opt => opt.NullSubstitute(null));
 
