@@ -18,22 +18,10 @@ public class ContestValidator : AbstractValidator<ContestViewModel>
 			.NotNull()
 			.GreaterThan(contest => contest.DateStart);
 
-		RuleFor(contest => contest.DateStartFirstTour)
-			.NotNull()
-			.Equal(contest => contest.DateStart);
-
-		RuleFor(contest => contest.DateEndFirstTour)
-			.NotNull()
-			.GreaterThan(contest => contest.DateStartFirstTour)
-			.LessThan(contest => contest.DateEnd);
-
 		RuleFor(contest => contest.DateStartSecondTour)
 			.NotNull()
-			.Equal(contest => contest.DateEndFirstTour);
-
-		RuleFor(contest => contest.DateEndSecondTour)
-			.NotNull()
-			.Equal(contest => contest.DateEnd);
+			.GreaterThan(contest => contest.DateStart)
+			.LessThan(contest => contest.DateEnd);
 
 		RuleFor(contest => contest.InvitedTeacherId)
 			.NotNull();
