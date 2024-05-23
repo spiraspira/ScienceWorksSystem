@@ -19,14 +19,14 @@ public class GenericService<TModel, TEntity>(IGenericRepository<TEntity> reposit
 		return mapper.Map<TModel>(entity);
 	}
 
-	public async Task<TModel> Get(Guid id)
+	public virtual async Task<TModel> Get(Guid id)
 	{
 		var entity = await repository.Get(id);
 
 		return mapper.Map<TModel>(entity);
 	}
 
-	public async Task<IEnumerable<TModel>> GetAll()
+	public virtual async Task<IEnumerable<TModel>> GetAll()
 	{
 		var entities = await repository.GetAll();
 

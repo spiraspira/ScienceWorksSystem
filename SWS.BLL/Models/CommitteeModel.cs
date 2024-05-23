@@ -2,6 +2,8 @@
 
 public class CommitteeModel : Model
 {
+	public string? Name { get; set; }
+
 	public Guid? TeacherId { get; set; }
 
 	public TeacherModel? Teacher { get; set; }

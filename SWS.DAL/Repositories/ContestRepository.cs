@@ -23,7 +23,7 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 		return await Set
 			.Include(contest => contest.InvitedTeacher)
 			.ThenInclude(teacher => teacher!.User)
-			.Where(contest => contest.DateEnd >= DateTime.Now)
+			.Where(contest => contest.DateEnd >= DateTime.UtcNow.ToUniversalTime() && contest.DateStart <= DateTime.UtcNow.ToUniversalTime())
 			.ToListAsync();
 	}
 
@@ -32,7 +32,7 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 		return await Set
 			.Include(contest => contest.InvitedTeacher)
 			.ThenInclude(teacher => teacher!.User)
-			.Where(contest => contest.DateEnd < DateTime.Now)
+			.Where(contest => contest.DateEnd < DateTime.UtcNow.ToUniversalTime())
 			.ToListAsync();
 	}
 
@@ -41,7 +41,7 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 		return await Set
 			.Include(contest => contest.InvitedTeacher)
 			.ThenInclude(teacher => teacher!.User)
-			.Where(contest => contest.DateStart > DateTime.Now)
+			.Where(contest => contest.DateStart > DateTime.UtcNow.ToUniversalTime())
 			.ToListAsync();
 	}
 
@@ -50,7 +50,7 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 		return await Set
 			.Include(contest => contest.InvitedTeacher)
 			.ThenInclude(teacher => teacher!.User)
-			.Where(contest => contest.DateEnd >= DateTime.Now && contest.InvitedTeacherId == teacherId)
+			.Where(contest => contest.DateEnd >= DateTime.UtcNow.ToUniversalTime() && contest.DateStart <= DateTime.UtcNow.ToUniversalTime() && contest.InvitedTeacherId == teacherId)
 			.ToListAsync();
 	}
 
@@ -59,7 +59,7 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 		return await Set
 			.Include(contest => contest.InvitedTeacher)
 			.ThenInclude(teacher => teacher!.User)
-			.Where(contest => contest.DateEnd < DateTime.Now && contest.InvitedTeacherId == teacherId)
+			.Where(contest => contest.DateEnd < DateTime.UtcNow.ToUniversalTime() && contest.InvitedTeacherId == teacherId)
 			.ToListAsync();
 	}
 
@@ -67,7 +67,7 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 	{
 		return await Set
 			.Include(contest => contest.OrganizationCommittee)
-			.Where(contest => contest.DateEnd >= DateTime.Now && contest.OrganizationCommittee!.TeacherId == teacherId)
+			.Where(contest => contest.DateEnd >= DateTime.UtcNow.ToUniversalTime() && contest.DateStart <= DateTime.UtcNow.ToUniversalTime() && contest.OrganizationCommittee!.TeacherId == teacherId)
 			.ToListAsync();
 	}
 
@@ -75,7 +75,7 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 	{
 		return await Set
 			.Include(contest => contest.ProgramCommittee)
-			.Where(contest => contest.DateEnd >= DateTime.Now && contest.ProgramCommittee!.TeacherId == teacherId)
+			.Where(contest => contest.DateEnd >= DateTime.UtcNow.ToUniversalTime() && contest.DateStart <= DateTime.UtcNow.ToUniversalTime() && contest.ProgramCommittee!.TeacherId == teacherId)
 			.ToListAsync();
 	}
 }

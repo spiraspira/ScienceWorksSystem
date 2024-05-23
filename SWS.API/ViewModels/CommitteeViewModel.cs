@@ -4,6 +4,8 @@ public class CommitteeViewModel
 {
 	public Guid Id { get; set; }
 
+	public string? Name { get; set; }
+
 	public Guid? TeacherId { get; set; }
 
 	public TeacherViewModel? Teacher { get; set; }

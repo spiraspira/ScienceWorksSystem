@@ -66,5 +66,29 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 		{
 			relationship.DeleteBehavior = DeleteBehavior.SetNull;
 		}
+
+		modelBuilder.Entity<Committee>().HasData(CommitteeInitial.Committees);
+
+		modelBuilder.Entity<CommitteeMember>().HasData(CommitteeMemberInitial.CommitteeMembers);
+
+		modelBuilder.Entity<Contest>().HasData(ContestInitial.Contests);
+
+		modelBuilder.Entity<Grade>().HasData(GradeInitial.Grades);
+
+		modelBuilder.Entity<Nomination>().HasData(NominationInitial.Nominations);
+
+		modelBuilder.Entity<Report>().HasData(ReportInitial.Reports);
+
+		modelBuilder.Entity<Review>().HasData(ReviewInitial.Reviews);
+
+		modelBuilder.Entity<Student>().HasData(StudentInitial.Students);
+
+		modelBuilder.Entity<Teacher>().HasData(TeacherInitial.Teachers);
+
+		modelBuilder.Entity<Team>().HasData(TeamInitial.Teams);
+
+		modelBuilder.Entity<University>().HasData(UniversityInitial.Universities);
+
+		modelBuilder.Entity<User>().HasData(UserInitial.Users);
 	}
 }
