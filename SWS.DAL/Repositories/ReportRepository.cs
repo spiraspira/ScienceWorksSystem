@@ -17,9 +17,9 @@ public class ReportRepository(ApplicationDbContext context) : GenericRepository<
 	{
 		entity.Id = Guid.NewGuid();
 
-		entity.DateUpdated = DateTime.Now;
+		entity.DateUpdated = DateTime.UtcNow.ToUniversalTime();
 
-		entity.DateUploaded = DateTime.Now;
+		entity.DateUploaded = DateTime.UtcNow.ToUniversalTime();
 
 		Set.Add(entity);
 
@@ -30,7 +30,7 @@ public class ReportRepository(ApplicationDbContext context) : GenericRepository<
 
 	public override async Task<Report?> Update(Report entity)
 	{
-		entity.DateUpdated = DateTime.Now;
+		entity.DateUpdated = DateTime.UtcNow.ToUniversalTime();
 
 		Context.Entry(entity).State = EntityState.Modified;
 
