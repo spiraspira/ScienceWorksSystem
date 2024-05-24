@@ -8,7 +8,7 @@ public class UserController(
 	IValidator<UserViewModel> validator)
 	: ControllerBase
 {
-	[HttpGet("login")]
+	[HttpPost("login")]
 	public async Task<UserViewModel> Login(string login, string password)
 	{
 		return mapper.Map<UserViewModel>(await userService.Login(login, password));
