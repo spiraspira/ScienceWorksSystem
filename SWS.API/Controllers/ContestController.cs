@@ -31,7 +31,20 @@ public class ContestController(
 	[HttpGet("finished/student/{studentId}")]
 	public async Task<IActionResult> GetFinishedContestsOfStudent(Guid studentId)
 	{
-		return Ok(mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetFinishedContestsOfStudent(studentId)));
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var studentIdClaim = claims.FirstOrDefault(c => c.Type == "StudentId");
+
+		return Ok(mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetFinishedContestsOfStudent(new Guid(studentIdClaim!.Value))));
 	}
 
 	[HttpGet("active/student/{studentId}")]
