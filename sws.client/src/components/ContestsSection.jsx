@@ -4,33 +4,32 @@ import { Typography, Grid, Card, CardContent, CardActionArea } from '@mui/materi
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../App.css';
-import ContestActions from '../actions/ContestActions';
 
-const StudentActiveContestsSection = () => {
-  const [activeContests, setActiveContests] = useState([]);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchActiveContests = async () => {
-      try {
-        const contests = await ContestActions.getActiveContestsOfStudent();
-        setActiveContests(contests);
-      } catch (error) {
-        toast.error(error.message);
-      }
-    };
-
-    fetchActiveContests();
-  }, []);
+const ContestsSection = ({ getContestsMethod, title }) => {
+    const [contests, setContests] = useState([]);
+    const navigate = useNavigate();
+  
+    useEffect(() => {
+      const fetchContests = async () => {
+        try {
+          const contests = await getContestsMethod();
+          setContests(contests);
+        } catch (error) {
+          toast.error(error.message);
+        }
+      };
+  
+      fetchContests();
+    }, [getContestsMethod]);
 
   return (
     <div className="active-contests-container">
       <ToastContainer />
       <Typography variant="h4" gutterBottom className="active-contests-title">
-        Active Contests
+        {title}
       </Typography>
       <Grid container spacing={2} justifyContent="center">
-        {activeContests.map((contest) => (
+        {contests.map((contest) => (
           <Grid item xs={12} sm={10} key={contest.id}>
             <Card
               onClick={() => navigate(`/contest/${contest.id}`)}
@@ -57,4 +56,4 @@ const StudentActiveContestsSection = () => {
   );
 };
 
-export default StudentActiveContestsSection;
+export default ContestsSection;
