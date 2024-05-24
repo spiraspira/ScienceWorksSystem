@@ -6,7 +6,8 @@ public class UserController(
 	IMapper mapper,
 	IUserService userService,
 	IValidator<UserViewModel> validator,
-	IConfiguration configuration)
+	IConfiguration configuration,
+	IHttpContextAccessor httpContextAccessor)
 	: ControllerBase
 {
 	[HttpPost("login")]
@@ -29,9 +30,31 @@ public class UserController(
 	}
 
 	[HttpGet("{id}")]
-	public async Task<UserViewModel> Get(Guid id)
+	public async Task<IActionResult> Get(Guid id)
 	{
-		return mapper.Map<UserViewModel>(await userService.Get(id));
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await ValidateToken(token);
+
+		var nameIdentifierClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+		if (nameIdentifierClaim == null || Guid.Parse(nameIdentifierClaim.Value) != id)
+		{
+			return Forbid();
+		}
+
+		var user = await userService.Get(id);
+
+		var userViewModel = mapper.Map<UserViewModel>(user);
+
+		return Ok(userViewModel);
 	}
 
 	[HttpGet]
@@ -84,5 +107,25 @@ public class UserController(
 		);
 
 		return new JwtSecurityTokenHandler().WriteToken(token);
+	}
+
+	private Task<IEnumerable<Claim>> ValidateToken(string token)
+	{
+		var tokenHandler = new JwtSecurityTokenHandler();
+
+		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("jwtSecretKey")!));
+
+		var validationParameters = new TokenValidationParameters
+		{
+			ValidateIssuerSigningKey = true,
+			IssuerSigningKey = key,
+			ValidateIssuer = false,
+			ValidateAudience = false,
+			ClockSkew = TimeSpan.Zero
+		};
+
+		var claimsPrincipal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+
+		return Task.FromResult(claimsPrincipal.Claims);
 	}
 }

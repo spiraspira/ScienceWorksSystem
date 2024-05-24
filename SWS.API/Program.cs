@@ -26,6 +26,7 @@ builder.Services.AddSerilog();
 builder.Services.AddSwaggerGen();
 builder.Services.AddValidatorsFromAssembly(Assembly.Load("SWS.API"));
 builder.Services.AddCors();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
