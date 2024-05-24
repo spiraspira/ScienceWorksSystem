@@ -41,7 +41,7 @@ public class UserController(
 
 		var token = authorizationHeader.ToString().Split(" ")[0];
 
-		var claims = await ValidateToken(token);
+		var claims = await JwtUtil.ValidateToken(configuration, token);
 
 		var nameIdentifierClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
@@ -107,25 +107,5 @@ public class UserController(
 		);
 
 		return new JwtSecurityTokenHandler().WriteToken(token);
-	}
-
-	private Task<IEnumerable<Claim>> ValidateToken(string token)
-	{
-		var tokenHandler = new JwtSecurityTokenHandler();
-
-		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("jwtSecretKey")!));
-
-		var validationParameters = new TokenValidationParameters
-		{
-			ValidateIssuerSigningKey = true,
-			IssuerSigningKey = key,
-			ValidateIssuer = false,
-			ValidateAudience = false,
-			ClockSkew = TimeSpan.Zero
-		};
-
-		var claimsPrincipal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
-
-		return Task.FromResult(claimsPrincipal.Claims);
 	}
 }
