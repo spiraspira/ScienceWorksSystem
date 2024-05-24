@@ -23,7 +23,9 @@ public class UserController(
 
 		var role = (bool)user.IsStudent! ? "student" : "teacher";
 
-		return Ok(new { token, role });
+		var userId = user.Id;
+
+		return Ok(new { token, role, userId });
 	}
 
 	[HttpGet("{id}")]
