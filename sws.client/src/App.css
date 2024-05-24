@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+  }
+  
+  .login-title {
+    margin-bottom: 24px;
+  }
+  
+  .login-input {
+    margin-bottom: 16px;
+    width: 300px;
+  }
+  
+  .login-button {
+    margin-top: 16px;
+  }
