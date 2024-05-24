@@ -67,33 +67,98 @@ public class ContestController(
 	}
 
 	[HttpGet("active/teacher/invited/{teacherId}")]
-	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfInvitedTeacher(Guid teacherId)
+	public async Task<IActionResult> GetActiveContestsOfInvitedTeacher(Guid teacherId)
 	{
-		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfInvitedTeacher(teacherId));
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var teacherIdClaim = claims.FirstOrDefault(c => c.Type == "TeacherId");
+
+		return Ok(mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfInvitedTeacher(new Guid(teacherIdClaim!.Value))));
 	}
 
 	[HttpGet("active/teacher/organization/member/{teacherId}")]
-	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfOrganizationCommitteeMember(Guid teacherId)
+	public async Task<IActionResult> GetActiveContestsOfOrganizationCommitteeMember(Guid teacherId)
 	{
-		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfOrganizationCommitteeMember(teacherId));
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var teacherIdClaim = claims.FirstOrDefault(c => c.Type == "TeacherId");
+
+		return Ok(mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfOrganizationCommitteeMember(new Guid(teacherIdClaim!.Value))));
 	}
 
 	[HttpGet("active/teacher/program/member/{teacherId}")]
-	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfProgramCommitteeMember(Guid teacherId)
+	public async Task<IActionResult> GetActiveContestsOfProgramCommitteeMember(Guid teacherId)
 	{
-		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfProgramCommitteeMember(teacherId));
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var teacherIdClaim = claims.FirstOrDefault(c => c.Type == "TeacherId");
+
+		return Ok(mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfProgramCommitteeMember(new Guid(teacherIdClaim!.Value))));
 	}
 
 	[HttpGet("active/teacher/organization/head/{teacherId}")]
-	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfOrganizationCommitteeHead(Guid teacherId)
+	public async Task<IActionResult> GetActiveContestsOfOrganizationCommitteeHead(Guid teacherId)
 	{
-		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfOrganizationCommitteeHead(teacherId));
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var teacherIdClaim = claims.FirstOrDefault(c => c.Type == "TeacherId");
+
+		return Ok(mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfOrganizationCommitteeHead(new Guid(teacherIdClaim!.Value))));
 	}
 
 	[HttpGet("active/teacher/program/head/{teacherId}")]
-	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfProgramCommitteeHead(Guid teacherId)
+	public async Task<IActionResult> GetActiveContestsOfProgramCommitteeHead(Guid teacherId)
 	{
-		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfProgramCommitteeHead(teacherId));
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var teacherIdClaim = claims.FirstOrDefault(c => c.Type == "TeacherId");
+
+		return Ok(mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfProgramCommitteeHead(new Guid(teacherIdClaim!.Value))));
 	}
 
 	[HttpGet("{id}")]

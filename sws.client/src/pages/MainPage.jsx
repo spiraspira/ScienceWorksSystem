@@ -16,10 +16,13 @@ const MainPage = () => {
                     <ContestsSection getContestsMethod={() => ContestActions.getFinishedContestsOfStudent()} title="Завершенные конкурсы" />
                 </>
             ) : (
-                <div>
-                    <h1>Welcome, Non-Student!</h1>
-                    <p>This is the non-student view of the Main Page.</p>
-                </div>
+                <>
+                    <ContestsSection getContestsMethod={() => ContestActions.getContestsOfInvitedTeacher()} title="Активные конкурсы - Приглашенный преподаватель" />
+                    <ContestsSection getContestsMethod={() => ContestActions.getContestsOfOrganizationCommitteeHead()} title="Активные конкурсы - Глава организационного комитета" />
+                    <ContestsSection getContestsMethod={() => ContestActions.getContestsOfOrganizationCommitteeMember()} title="Активные конкурсы - Член организационного комитета" />
+                    <ContestsSection getContestsMethod={() => ContestActions.getContestsOfProgramCommitteeHead()} title="Активные конкурсы - Глава программного комитета" />
+                    <ContestsSection getContestsMethod={() => ContestActions.getContestsOfProgramCommitteeMember()} title="Активные конкурсы - Член программного комитета" />
+                </>
             )}
             <Footer />
         </div>
