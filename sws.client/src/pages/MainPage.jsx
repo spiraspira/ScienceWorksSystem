@@ -1,15 +1,25 @@
 import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import StudentActiveContestsSection from '../components/StudentActiveContestsSection';
 
 const MainPage = () => {
-    return (
+  const isStudent = localStorage.getItem('role');
+
+  return (
+    <div>
+      <Header />
+      {isStudent === 'student' ? (
+        <StudentActiveContestsSection />
+      ) : (
         <div>
-            <Header />
-            <h1>MainPage</h1>
-            <Footer />
+          <h1>Welcome, Non-Student!</h1>
+          <p>This is the non-student view of the Main Page.</p>
         </div>
-    );
+      )}
+      <Footer />
+    </div>
+  );
 };
 
 export default MainPage;

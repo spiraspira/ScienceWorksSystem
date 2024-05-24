@@ -81,3 +81,33 @@
     margin-left: 16px;
     width: 25%;
   }
+
+  .active-contests-container {
+    padding: 2rem;
+  }
+  
+  .active-contests-title {
+    margin-bottom: 1.5rem !important;
+  }
+  
+  .active-contest-card {
+    width: 90%;
+    cursor: pointer;
+    transition: box-shadow 0.3s;
+  }
+  
+  .active-contest-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+  
+  .active-contest-name {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .active-contest-description {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .active-contest-date-range {
+    margin-top: 0.5rem !important;
+  }
