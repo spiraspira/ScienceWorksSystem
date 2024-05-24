@@ -21,7 +21,9 @@ public class UserController(
 
 		var token = GenerateJwtToken(mapper.Map<UserViewModel>(user));
 
-		return Ok(new { token });
+		var role = (bool)user.IsStudent! ? "student" : "teacher";
+
+		return Ok(new { token, role });
 	}
 
 	[HttpGet("{id}")]

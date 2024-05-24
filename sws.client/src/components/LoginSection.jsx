@@ -15,8 +15,7 @@ const LoginPage = () => {
     }
 
     try {
-      const user = await LoginActions.login(login, password);
-      toast.success('Авторизация прошла успешно!');
+      await LoginActions.login(login, password);
     } catch (error) {
       toast.error(error.message);
     }

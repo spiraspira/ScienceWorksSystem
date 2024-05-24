@@ -8,6 +8,8 @@ const LoginActions = {
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
                 sessionStorage.setItem('token', response.data.token);
+                localStorage.setItem('role', response.data.role);
+                sessionStorage.setItem('role', response.data.role);
                 window.location.href = '/';
             }
         } catch (error) {
