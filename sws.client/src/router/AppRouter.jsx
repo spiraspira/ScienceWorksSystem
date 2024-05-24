@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { AdminRoutes } from "./AdminRoutes";
 import { UserRoutes } from "./UserRoutes";
-import NotFoundPage from "../pages/NotFoundPage";
 import LoginPage from "../pages/LoginPage";
 import AdminLoginPage from "../pages/AdminLoginPage";
 
@@ -35,7 +34,7 @@ const AppRouter = () => {
                             <Route key={path} path={path} element={<Component />} exact />
                         ))
                 }
-                <Route path="*" element={<NotFoundPage />} />
+                <Route path="*" element={<Navigate to={"/"} />} />
             </Routes>
         );
     }

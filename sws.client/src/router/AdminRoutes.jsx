@@ -2,7 +2,7 @@ import AdminMainPage from "../pages/AdminMainPage";
 
 export const AdminRoutes = [
     {
-        path: "/admin",
+        path: "/",
         Component: AdminMainPage,
     },
 ];
