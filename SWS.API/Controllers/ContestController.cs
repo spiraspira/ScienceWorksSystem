@@ -5,7 +5,9 @@
 public class ContestController(
 	IMapper mapper,
 	IContestService contestService,
-	IValidator<ContestViewModel> validator)
+	IValidator<ContestViewModel> validator,
+	IConfiguration configuration,
+	IHttpContextAccessor httpContextAccessor)
 	: ControllerBase
 {
 	[HttpGet("finished")]
@@ -27,15 +29,28 @@ public class ContestController(
 	}
 
 	[HttpGet("finished/student/{studentId}")]
-	public async Task<IEnumerable<ContestViewModel>> GetFinishedContestsOfStudent(Guid studentId)
+	public async Task<IActionResult> GetFinishedContestsOfStudent(Guid studentId)
 	{
-		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetFinishedContestsOfStudent(studentId));
+		return Ok(mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetFinishedContestsOfStudent(studentId)));
 	}
 
 	[HttpGet("active/student/{studentId}")]
-	public async Task<IEnumerable<ContestViewModel>> GetActiveContestsOfStudent(Guid studentId)
+	public async Task<IActionResult> GetActiveContestsOfStudent(Guid studentId)
 	{
-		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfStudent(studentId));
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var studentIdClaim = claims.FirstOrDefault(c => c.Type == "StudentId");
+
+		return Ok(mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetActiveContestsOfStudent(new Guid(studentIdClaim!.Value))));
 	}
 
 	[HttpGet("active/teacher/invited/{teacherId}")]
