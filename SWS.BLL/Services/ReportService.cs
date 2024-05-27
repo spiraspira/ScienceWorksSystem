@@ -6,6 +6,26 @@ public class ReportService(
 	IGradeRepository gradeRepository,
 	IMapper mapper) : GenericService<ReportModel, Report>(repository, mapper), IReportService
 {
+	public override async Task<ReportModel> Create(ReportModel model)
+	{
+		model.DateUpdated = DateTime.UtcNow;
+
+		model.DateUploaded = model.DateUpdated;
+
+		var entity = await repository.Create(mapper.Map<Report>(model));
+
+		return mapper.Map<ReportModel>(entity);
+	}
+
+	public override async Task<ReportModel> Update(ReportModel model)
+	{
+		model.DateUpdated = DateTime.UtcNow;
+
+		var entity = await repository.Update(mapper.Map<Report>(model));
+
+		return mapper.Map<ReportModel>(entity);
+	}
+
 	public async Task<ReportModel> GetWinnerOfNomination(Guid nominationId)
 	{
 		var grades = await gradeRepository.GetGradesOfNomination(nominationId);
