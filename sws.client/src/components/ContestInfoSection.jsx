@@ -14,6 +14,7 @@ const ContestInfoSection = () => {
     const [programCommitteeData, setProgramCommitteeData] = useState({});
     const [organizationCommitteeMembers, setOrganizationCommitteeMembers] = useState([]);
     const [programCommitteeMembers, setProgramCommitteeMembers] = useState([]);
+    const [nominations, setNominations] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -35,6 +36,9 @@ const ContestInfoSection = () => {
 
                 const programCommitteeMembersData = await CommitteeActions.getCommitteeMembers(programCommitteeId);
                 setProgramCommitteeMembers(programCommitteeMembersData);
+
+                const nominationsData = await ContestActions.getContestNominations(contestId);
+                setNominations(nominationsData);
             } catch (error) {
                 toast.error(error.message);
             }
@@ -104,6 +108,25 @@ const ContestInfoSection = () => {
                                 {programCommitteeMembers.map((member, index) => (
                                     <Typography key={index}>
                                         {member.teacher?.user?.name || 'Loading...'}
+                                    </Typography>
+                                ))}
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+
+                    <Accordion>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="program-committee-content"
+                            id="program-committee-header"
+                        >
+                            <Typography variant="h5">Номинации</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography>
+                                {nominations.map((nomination, index) => (
+                                    <Typography key={index}>
+                                        {nomination.name || 'Loading...'}
                                     </Typography>
                                 ))}
                             </Typography>

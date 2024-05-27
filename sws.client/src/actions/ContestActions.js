@@ -94,6 +94,16 @@ const ContestActions = {
             throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
         }
     },
+
+    getContestNominations: async (contestId) => {
+        try {
+            const response = await host.get('api/Nomination/contest/' + contestId);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
 };
 
 export default ContestActions;
