@@ -35,6 +35,13 @@ public class ReportService(
 		return mapper.Map<ReportModel>(winningReport);
 	}
 
+	public async Task<IEnumerable<ReportModel>> GetReportsOfContest(Guid contestId)
+	{
+		var reports = await repository.GetReportsOfContest(contestId);
+
+		return mapper.Map<IEnumerable<ReportModel>>(reports);
+	}
+
 	public async Task<ReportModel> GetReportOfStudent(Guid contestId, Guid studentId)
 	{
 		var report = await repository.GetReportOfContestOfStudent(contestId, studentId);

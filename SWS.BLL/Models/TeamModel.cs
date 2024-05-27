@@ -6,7 +6,7 @@ public class TeamModel : Model
 
 	public Guid? TeacherId { get; set; }
 
-	public UserModel? Student { get; set; }
+	public StudentModel? Student { get; set; }
 
 	public TeacherModel? Teacher { get; set; }
 

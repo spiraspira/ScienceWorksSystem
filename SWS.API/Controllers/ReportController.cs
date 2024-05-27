@@ -26,6 +26,12 @@ public class ReportController(
 		return mapper.Map<ReportViewModel>(await reportService.GetReportOfStudent(contestId, studentId));
 	}
 
+	[HttpGet("contest/{contestId}")]
+	public async Task<IEnumerable<ReportViewModel>> GetReportsOfContest(Guid contestId)
+	{
+		return mapper.Map<IEnumerable<ReportViewModel>>(await reportService.GetReportsOfContest(contestId));
+	}
+
 	[HttpGet("{id}")]
 	public async Task<ReportViewModel> Get(Guid id)
 	{
