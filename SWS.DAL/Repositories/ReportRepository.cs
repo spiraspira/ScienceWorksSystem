@@ -44,7 +44,7 @@ public class ReportRepository(ApplicationDbContext context) : GenericRepository<
 		return await Set
 			.Include(report => report.Contest)
 			.Include(report => report.Team)
-			.Where(report => report.IsAccepted != true && report.Team!.StudentId == studentId)
+			.Where(report => report.Team!.StudentId == studentId)
 			.ToListAsync();
 	}
 
@@ -52,7 +52,13 @@ public class ReportRepository(ApplicationDbContext context) : GenericRepository<
 	{
 		return await Set
 			.Include(report => report.Team)
-			.Where(report => report.IsAccepted != true && report.ContestId == contestId)
+			.ThenInclude(team => team!.Student)
+			.ThenInclude(student => student!.User)
+			.Where(report => report.ContestId == contestId)
+			.Include(report => report.Team)
+			.ThenInclude(team => team!.Teacher)
+			.ThenInclude(teacher => teacher!.User)
+			.Where(report => report.ContestId == contestId)
 			.ToListAsync();
 	}
 

@@ -6,5 +6,7 @@ public interface IReportService : IGenericService<ReportModel>
 
 	Task<ReportModel> GetWinnerOfContest(Guid contestId);
 
+	Task<IEnumerable<ReportModel>> GetReportsOfContest(Guid contestId);
+
 	Task<ReportModel> GetReportOfStudent(Guid contestId, Guid studentId);
 }

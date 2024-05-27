@@ -6,6 +6,7 @@ public class CommitteeRepository(ApplicationDbContext context) : GenericReposito
 	{
 		return Set
 			.Include(committee => committee.Teacher)
+			.ThenInclude(teacher => teacher!.User)
 			.FirstOrDefaultAsync(p => p.Id == id);
 	}
 
@@ -13,6 +14,7 @@ public class CommitteeRepository(ApplicationDbContext context) : GenericReposito
 	{
 		return await Set
 			.Include(committee => committee.Teacher)
+			.ThenInclude(teacher => teacher!.User)
 			.ToListAsync();
 	}
 }

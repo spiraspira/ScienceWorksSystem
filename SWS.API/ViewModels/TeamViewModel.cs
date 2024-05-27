@@ -8,7 +8,7 @@ public class TeamViewModel
 
 	public Guid? TeacherId { get; set; }
 
-	public UserViewModel? Student { get; set; }
+	public StudentViewModel? Student { get; set; }
 
 	public TeacherViewModel? Teacher { get; set; }
 
