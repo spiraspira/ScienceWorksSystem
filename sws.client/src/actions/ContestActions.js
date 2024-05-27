@@ -84,6 +84,16 @@ const ContestActions = {
             throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
         }
     },
+
+    getContestInfo: async (contestId) => {
+        try {
+            const response = await host.get('api/Contest/' + contestId);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
 };
 
 export default ContestActions;
