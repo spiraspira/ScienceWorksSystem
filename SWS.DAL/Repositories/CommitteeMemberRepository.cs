@@ -6,6 +6,7 @@ public class CommitteeMemberRepository(ApplicationDbContext context) : GenericRe
 	{
 		return await Set
 			.Include(committeeMember => committeeMember.Teacher)
+			.ThenInclude(teacher => teacher!.User)
 			.Include(committeeMember => committeeMember.Committee)
 			.Where(committeeMember => committeeMember.CommitteeId == committeeId)
 			.ToListAsync();
