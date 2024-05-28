@@ -115,3 +115,60 @@
   .active-contest-date-range {
     margin-top: 0.5rem !important;
   }
+
+  .contest-page-container {
+    padding: 2rem;
+  }
+  
+  .page-title {
+    margin-bottom: 2rem !important;
+  }
+  
+  .user-report-container {
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+  }
+  
+  .report-name {
+    margin-bottom: 1rem !important;
+  }
+  
+  .report-details {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .report-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+  }
+  
+  .update-button,
+  .save-button {
+    margin-left: 1rem !important;
+  }
+  
+  .new-report-container {
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+  }
+  
+  .report-name-input {
+    margin-bottom: 1rem !important;
+  }
+  
+  .team-select {
+    margin-bottom: 1rem !important;
+  }
+  
+  .file-upload-button {
+    margin-bottom: 1rem !important;
+  }
+  
+  .add-report-button {
+    margin-top: 1rem !important;
+  }

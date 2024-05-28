@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Box, Button, TextField, Typography, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import '../App.css';
 
 import ReportActions from '../actions/ReportActions';
 import TeamActions from '../actions/TeamActions';
@@ -87,37 +88,37 @@ const UploadReportSection = () => {
     };
 
     return (
-        <Box>
+        <Box className="contest-page-container">
             <ToastContainer />
-            <Typography variant="h3">
+            <Typography variant="h3" className="page-title">
                 Ваш доклад
             </Typography>
             {userReport ? (
-                <Box>
-                    <Typography variant="h4">
+                <Box className="user-report-container">
+                    <Typography variant="h4" className="report-name">
                         {userReport.name}
                     </Typography>
-                    <Typography variant="body1">
+                    <Typography variant="body1" className="report-details">
                         Загружен: {userReport.dateUploaded?.substring(0, 10)}
                     </Typography>
-                    <Typography variant="body1">
+                    <Typography variant="body1" className="report-details">
                         Обновлен: {userReport.dateUpdated?.substring(0, 10)}
                     </Typography>
-                    <Box display="flex" justifyContent="space-between" mt={2}>
+                    <Box className="report-actions">
                         <Button variant="contained" onClick={() => downloadReport(userReport.file)}>
                             Скачать
                         </Button>
-                        <Button variant="contained" component="label">
+                        <Button variant="contained" component="label" className="update-button">
                             Обновить
                             <input type="file" hidden onChange={handleFileUpload} />
                         </Button>
-                        <Button variant="contained" onClick={handleUpdate}>
+                        <Button variant="contained" onClick={handleUpdate} className="save-button">
                             Сохранить
                         </Button>
                     </Box>
                 </Box>
             ) : (
-                <Box>
+                <Box className="new-report-container">
                     <TextField
                         label="Заголовок"
                         value={newReport.name}
@@ -125,8 +126,9 @@ const UploadReportSection = () => {
                         variant="outlined"
                         fullWidth
                         margin="normal"
+                        className="report-name-input"
                     />
-                    <FormControl fullWidth margin="normal">
+                    <FormControl fullWidth margin="normal" className="team-select">
                         <InputLabel>Команда</InputLabel>
                         <Select
                             value={teams.find((team) => team.id === newReport.teamId)?.id || ''}
@@ -145,12 +147,12 @@ const UploadReportSection = () => {
                             ))}
                         </Select>
                     </FormControl>
-                    <Button variant="contained" component="label">
+                    <Button variant="contained" component="label" className="file-upload-button">
                         Загрузить файл
                         <input type="file" hidden onChange={handleFileUpload} />
                     </Button>
-                    <Box display="flex" justifyContent="flex-end" mt={2}>
-                        <Button variant="contained" onClick={handleCreate}>
+                    <Box className="report-actions">
+                        <Button variant="contained" onClick={handleCreate} className="add-report-button">
                             Добавить доклад
                         </Button>
                     </Box>
