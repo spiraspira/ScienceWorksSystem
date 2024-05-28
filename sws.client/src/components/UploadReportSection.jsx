@@ -30,7 +30,7 @@ const UploadReportSection = () => {
 
     const fetchTeams = async () => {
       try {
-        const teamsList = await TeamActions.getTeamsOfUser(userId);
+        const teamsList = await TeamActions.getTeamsOfStudent(userId);
         setTeams(teamsList);
       } catch (error) {
         toast.error(error.message);
