@@ -6,7 +6,9 @@ public class TeamRepository(ApplicationDbContext context) : GenericRepository<Te
 	{
 		return Set
 			.Include(team => team.Teacher)
+			.ThenInclude(teacher => teacher!.User)
 			.Include(team => team.Student)
+			.ThenInclude(student => student!.User)
 			.FirstOrDefaultAsync(p => p.Id == id);
 	}
 
@@ -14,7 +16,9 @@ public class TeamRepository(ApplicationDbContext context) : GenericRepository<Te
 	{
 		return await Set
 			.Include(team => team.Teacher)
+			.ThenInclude(teacher => teacher!.User)
 			.Include(team => team.Student)
+			.ThenInclude(student => student!.User)
 			.ToListAsync();
 	}
 
@@ -54,7 +58,9 @@ public class TeamRepository(ApplicationDbContext context) : GenericRepository<Te
 	{
 		return await Set
 			.Include(team => team.Teacher)
+			.ThenInclude(teacher => teacher!.User)
 			.Include(team => team.Student)
+			.ThenInclude(student => student!.User)
 			.Where(team => team.TeacherId == teacherId)
 			.ToListAsync();
 	}
@@ -63,7 +69,9 @@ public class TeamRepository(ApplicationDbContext context) : GenericRepository<Te
 	{
 		return await Set
 			.Include(team => team.Teacher)
+			.ThenInclude(teacher => teacher!.User)
 			.Include(team => team.Student)
+			.ThenInclude(student => student!.User)
 			.Where(team => team.StudentId == studentId)
 			.ToListAsync();
 	}
