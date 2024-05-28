@@ -26,7 +26,7 @@ public class TeamController(
 
 		var studentIdClaim = claims.FirstOrDefault(c => c.Type == "StudentId");
 
-		return Ok(mapper.Map<TeamViewModel>(await teamService.GetTeamsOfStudent(new Guid(studentIdClaim!.Value))));
+		return Ok(mapper.Map<IEnumerable<TeamViewModel>>(await teamService.GetTeamsOfStudent(new Guid(studentIdClaim!.Value))));
 	}
 
 	[HttpGet("teacher/{teacherId}")]
@@ -45,7 +45,7 @@ public class TeamController(
 
 		var teacherIdClaim = claims.FirstOrDefault(c => c.Type == "TeacherId");
 
-		return Ok(mapper.Map<TeamViewModel>(await teamService.GetTeamsOfTeacher(new Guid(teacherIdClaim!.Value))));
+		return Ok(mapper.Map<IEnumerable<TeamViewModel>>(await teamService.GetTeamsOfTeacher(new Guid(teacherIdClaim!.Value))));
 	}
 
 	[HttpGet("{id}")]

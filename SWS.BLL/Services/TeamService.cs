@@ -11,7 +11,7 @@ public class TeamService(ITeamRepository repository, IMapper mapper) : GenericSe
 
 	public async Task<IEnumerable<TeamModel>> GetTeamsOfStudent(Guid studentId)
 	{
-		var teams = await repository.GetTeamsOfTeacher(studentId);
+		var teams = await repository.GetTeamsOfStudent(studentId);
 
 		return mapper.Map<IEnumerable<TeamModel>>(teams);
 	}
