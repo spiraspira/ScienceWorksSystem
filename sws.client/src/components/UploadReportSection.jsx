@@ -46,18 +46,18 @@ const UploadReportSection = () => {
     const handleUpdate = async () => {
         try {
             await ReportActions.update(userReport);
-            toast.success('Report updated successfully');
+            toast.success('Доклад обновлен успешно!');
         } catch (error) {
-            toast.error('Error updating report: ' + error.message);
+            toast.error('Ошибка обновления: ' + error.message);
         }
     };
 
     const handleCreate = async () => {
         try {
             await ReportActions.create(newReport);
-            toast.success('Report created successfully');
+            toast.success('Доклад загружен успешно!');
         } catch (error) {
-            toast.error('Error creating report: ' + error.message);
+            toast.error('Ошибка добавления доклада: ' + error.message);
         }
     };
 
@@ -89,38 +89,37 @@ const UploadReportSection = () => {
     return (
         <Box>
             <ToastContainer />
+            <Typography variant="h3">
+                Ваш доклад
+            </Typography>
             {userReport ? (
                 <Box>
-                    <TextField
-                        label="Name"
-                        defaultValue={userReport.name}
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                    />
-                    <Typography variant="body1">
-                        Uploaded: {new Date(userReport.dateUploaded).toLocaleString()}
+                    <Typography variant="h4">
+                        {userReport.name}
                     </Typography>
                     <Typography variant="body1">
-                        Updated: {new Date(userReport.dateUpdated).toLocaleString()}
+                        Загружен: {userReport.dateUploaded?.substring(0, 10)}
+                    </Typography>
+                    <Typography variant="body1">
+                        Обновлен: {userReport.dateUpdated?.substring(0, 10)}
                     </Typography>
                     <Box display="flex" justifyContent="space-between" mt={2}>
                         <Button variant="contained" onClick={() => downloadReport(userReport.file)}>
-                            Download
+                            Скачать
                         </Button>
                         <Button variant="contained" component="label">
-                            Reupload
+                            Обновить
                             <input type="file" hidden onChange={handleFileUpload} />
                         </Button>
                         <Button variant="contained" onClick={handleUpdate}>
-                            Update
+                            Сохранить
                         </Button>
                     </Box>
                 </Box>
             ) : (
                 <Box>
                     <TextField
-                        label="Name"
+                        label="Заголовок"
                         value={newReport.name}
                         onChange={(e) => setNewReport({ ...newReport, name: e.target.value })}
                         variant="outlined"
@@ -128,7 +127,7 @@ const UploadReportSection = () => {
                         margin="normal"
                     />
                     <FormControl fullWidth margin="normal">
-                        <InputLabel>Team</InputLabel>
+                        <InputLabel>Команда</InputLabel>
                         <Select
                             value={teams.find((team) => team.id === newReport.teamId)?.id || ''}
                             onChange={(event) => {
@@ -137,7 +136,7 @@ const UploadReportSection = () => {
                             }}
                         >
                             <MenuItem value="">
-                                <em>None</em>
+                                <em>Не выбрано</em>
                             </MenuItem>
                             {teams.map((team) => (
                                 <MenuItem key={team.id} value={team.id}>
@@ -147,12 +146,12 @@ const UploadReportSection = () => {
                         </Select>
                     </FormControl>
                     <Button variant="contained" component="label">
-                        Upload
+                        Загрузить файл
                         <input type="file" hidden onChange={handleFileUpload} />
                     </Button>
                     <Box display="flex" justifyContent="flex-end" mt={2}>
                         <Button variant="contained" onClick={handleCreate}>
-                            Submit
+                            Добавить доклад
                         </Button>
                     </Box>
                 </Box>
