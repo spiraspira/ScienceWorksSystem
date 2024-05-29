@@ -33,7 +33,7 @@ public class GenericService<TModel, TEntity>(IGenericRepository<TEntity> reposit
 		return mapper.Map<IEnumerable<TModel>>(entities);
 	}
 
-	public async Task<TModel> Update(TModel model)
+	public virtual async Task<TModel> Update(TModel model)
 	{
 		var entity = await repository.Update(mapper.Map<TEntity>(model));
 

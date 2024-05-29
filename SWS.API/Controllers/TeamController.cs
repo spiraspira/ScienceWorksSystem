@@ -5,9 +5,49 @@
 public class TeamController(
 	IMapper mapper,
 	ITeamService teamService,
-	IValidator<TeamViewModel> validator)
+	IValidator<TeamViewModel> validator,
+	IConfiguration configuration,
+	IHttpContextAccessor httpContextAccessor)
 	: ControllerBase
 {
+	[HttpGet("student/{studentId}")]
+	public async Task<IActionResult> GetTeamsOfStudent(Guid studentId)
+	{
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var studentIdClaim = claims.FirstOrDefault(c => c.Type == "StudentId");
+
+		return Ok(mapper.Map<IEnumerable<TeamViewModel>>(await teamService.GetTeamsOfStudent(new Guid(studentIdClaim!.Value))));
+	}
+
+	[HttpGet("teacher/{teacherId}")]
+	public async Task<IActionResult> GetTeamsOfTeacher(Guid teacherId)
+	{
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var teacherIdClaim = claims.FirstOrDefault(c => c.Type == "TeacherId");
+
+		return Ok(mapper.Map<IEnumerable<TeamViewModel>>(await teamService.GetTeamsOfTeacher(new Guid(teacherIdClaim!.Value))));
+	}
+
 	[HttpGet("{id}")]
 	public async Task<TeamViewModel> Get(Guid id)
 	{
