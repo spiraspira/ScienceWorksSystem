@@ -9,9 +9,8 @@ import ContestActions from '../actions/ContestActions';
 import CommitteeActions from '../actions/CommitteeActions';
 import ReportActions from '../actions/ReportActions';
 
-const ContestInfoSection = () => {
+const ContestInfoSection = ({contestData}) => {
     const { contestId } = useParams();
-    const [contestData, setContestData] = useState({});
     const [organizationCommitteeData, setOrganizationCommitteeData] = useState({});
     const [programCommitteeData, setProgramCommitteeData] = useState({});
     const [organizationCommitteeMembers, setOrganizationCommitteeMembers] = useState([]);
@@ -43,11 +42,12 @@ const ContestInfoSection = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const contestInfo = await ContestActions.getContestInfo(contestId);
-                setContestData(contestInfo);
+                if (!contestData.id) {
+                    return;
+                }
 
-                const organizationCommitteeId = contestInfo.organizationCommitteeId;
-                const programCommitteeId = contestInfo.programCommitteeId;
+                const organizationCommitteeId = contestData.organizationCommitteeId;
+                const programCommitteeId = contestData.programCommitteeId;
 
                 const organizationCommitteeInfo = await CommitteeActions.getCommitteeInfo(organizationCommitteeId);
                 setOrganizationCommitteeData(organizationCommitteeInfo);
@@ -72,7 +72,7 @@ const ContestInfoSection = () => {
         };
 
         fetchData();
-    }, [contestId]);
+    }, [contestId, contestData]);
 
     return (
         <Box>

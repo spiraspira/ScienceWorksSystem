@@ -8,7 +8,7 @@ import '../App.css';
 import ReportActions from '../actions/ReportActions';
 import TeamActions from '../actions/TeamActions';
 
-const UploadReportSection = () => {
+const UploadReportSection = ({isContestFinished}) => {
     const { contestId } = useParams();
     const userId = localStorage.getItem('userId');
     const [userReport, setUserReport] = useState(null);
@@ -47,7 +47,6 @@ const UploadReportSection = () => {
 
     const handleUpdate = async () => {
         try {
-            console.log(userReport.file);
             await ReportActions.update(userReport);
             toast.success('Доклад обновлен успешно!');
         } catch (error) {
@@ -102,9 +101,16 @@ const UploadReportSection = () => {
         const file = event.target.files[0];
         setUploadedFile(file);
         const fileBytes = await convertToBytes(file);
-        console.log(userReport.file);
-        setNewReport({ ...newReport, file: fileBytes });
+
         setUserReport({ ...userReport, file: fileBytes });
+    };
+
+    const handleNewFileUpload = async (event) => {
+        const file = event.target.files[0];
+        setUploadedFile(file);
+        const fileBytes = await convertToBytes(file);
+
+        setNewReport({ ...newReport, file: fileBytes });
     };
 
     return (
@@ -128,64 +134,75 @@ const UploadReportSection = () => {
                         <Button variant="contained" onClick={() => downloadReport(userReport.file)}>
                             Скачать
                         </Button>
-                        <div>
-                            <Button variant="contained" component="label" className="update-button">
-                                Обновить
-                                <input type="file" hidden onChange={handleFileUpload} />
-                            </Button>
-                            <Typography variant="body1" className="file-name">
-                                {uploadedFile?.name || ''}
-                            </Typography>
-                        </div>
-                        <Button variant="contained" onClick={handleUpdate} className="save-button">
-                            Сохранить
-                        </Button>
+                        {isContestFinished !== true && (
+                            <div>
+                                <Button variant="contained" component="label" className="update-button">
+                                    Обновить
+                                    <input type="file" hidden onChange={handleFileUpload} />
+                                </Button>
+                                <Typography variant="body1" className="file-name">
+                                    {uploadedFile?.name || ''}
+                                </Typography>
+                                <Button variant="contained" onClick={handleUpdate} className="save-button">
+                                    Сохранить
+                                </Button>
+                            </div>
+                        )}
                     </Box>
                 </Box>
             ) : (
-                <Box className="new-report-container">
-                    <TextField
-                        label="Заголовок"
-                        value={newReport.name}
-                        onChange={(e) => setNewReport({ ...newReport, name: e.target.value })}
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        className="report-name-input"
-                    />
-                    <FormControl fullWidth margin="normal" className="team-select">
-                        <InputLabel>Команда</InputLabel>
-                        <Select
-                            value={teams.find((team) => team.id === newReport.teamId)?.id || ''}
-                            onChange={(event) => {
-                                const selectedTeam = teams.find((team) => team.id === event.target.value);
-                                setNewReport({ ...newReport, teamId: selectedTeam?.id });
-                            }}
-                        >
-                            <MenuItem value="">
-                                <em>Не выбрано</em>
-                            </MenuItem>
-                            {teams.map((team) => (
-                                <MenuItem key={team.id} value={team.id}>
-                                    {`${team.student?.user?.name || ''} | ${team.teacher?.user?.name || ''}`}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <div>
-                        <Button variant="contained" component="label" className="file-upload-button">
-                            Загрузить файл
-                            <input type="file" hidden onChange={handleFileUpload} />
-                        </Button>
-                        <Typography variant="body1" className="file-name">
-                           {uploadedFile?.name || ''}
+                <Box>
+                    {isContestFinished !== true && (
+                        <Box className="new-report-container">
+                            <TextField
+                                label="Заголовок"
+                                value={newReport.name}
+                                onChange={(e) => setNewReport({ ...newReport, name: e.target.value })}
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                className="report-name-input"
+                            />
+                            <FormControl fullWidth margin="normal" className="team-select">
+                                <InputLabel>Команда</InputLabel>
+                                <Select
+                                    value={teams.find((team) => team.id === newReport.teamId)?.id || ''}
+                                    onChange={(event) => {
+                                        const selectedTeam = teams.find((team) => team.id === event.target.value);
+                                        setNewReport({ ...newReport, teamId: selectedTeam?.id });
+                                    }}
+                                >
+                                    <MenuItem value="">
+                                        <em>Не выбрано</em>
+                                    </MenuItem>
+                                    {teams.map((team) => (
+                                        <MenuItem key={team.id} value={team.id}>
+                                            {`${team.student?.user?.name || ''} | ${team.teacher?.user?.name || ''}`}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <div>
+                                <Button variant="contained" component="label" className="file-upload-button">
+                                    Загрузить файл
+                                    <input type="file" hidden onChange={handleNewFileUpload} />
+                                </Button>
+                                <Typography variant="body1" className="file-name">
+                                    {uploadedFile?.name || ''}
+                                </Typography>
+                            </div>
+                            <Box className="report-actions">
+                                <Button variant="contained" onClick={handleCreate} className="add-report-button">
+                                    Добавить доклад
+                                </Button>
+                            </Box>
+                        </Box>
+                    )}
+                    {isContestFinished && (
+                        <Typography variant="body1">
+                            Этап принятия работа завершен.
                         </Typography>
-                    </div>
-                    <Box className="report-actions">
-                        <Button variant="contained" onClick={handleCreate} className="add-report-button">
-                            Добавить доклад
-                        </Button>
-                    </Box>
+                    )}
                 </Box>
             )}
         </Box>
