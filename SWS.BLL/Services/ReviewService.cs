@@ -9,4 +9,11 @@ public class ReviewService(IReviewRepository repository, IMapper mapper) : Gener
 
 		return mapper.Map<IEnumerable<ReviewModel>>(review);
 	}
+
+	public async Task<IEnumerable<ReviewModel>> GetReviewsOfReportOfTeacher(Guid reportId, Guid teacherId)
+	{
+		var review = await repository.GetReviewsOfReportOfTeacher(reportId, teacherId);
+
+		return mapper.Map<IEnumerable<ReviewModel>>(review);
+	}
 }
