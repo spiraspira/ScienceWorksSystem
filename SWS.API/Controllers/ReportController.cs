@@ -5,7 +5,9 @@
 public class ReportController(
 	IMapper mapper,
 	IReportService reportService,
-	IValidator<ReportViewModel> validator)
+	IValidator<ReportViewModel> validator,
+	IConfiguration configuration,
+	IHttpContextAccessor httpContextAccessor)
 	: ControllerBase
 {
 	[HttpGet("winner/nomination/{nominationId}")]
@@ -21,9 +23,22 @@ public class ReportController(
 	}
 
 	[HttpGet("student/{studentId}/contest/{contestId}")]
-	public async Task<ReportViewModel> GetReportOfStudent(Guid studentId, Guid contestId)
+	public async Task<ActionResult> GetReportOfStudent(Guid studentId, Guid contestId)
 	{
-		return mapper.Map<ReportViewModel>(await reportService.GetReportOfStudent(contestId, studentId));
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var studentIdClaim = claims.FirstOrDefault(c => c.Type == "StudentId");
+
+		return Ok(mapper.Map<ReportViewModel>(await reportService.GetReportOfStudent(contestId, new Guid(studentIdClaim!.Value))));
 	}
 
 	[HttpGet("contest/{contestId}")]
