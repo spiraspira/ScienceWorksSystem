@@ -19,6 +19,7 @@ const UploadReportSection = () => {
         contestId: contestId,
         file: null,
     });
+    const [uploadedFile, setUploadedFile] = useState(null);
 
     useEffect(() => {
         const fetchUserReport = async () => {
@@ -46,6 +47,7 @@ const UploadReportSection = () => {
 
     const handleUpdate = async () => {
         try {
+            console.log(userReport.file);
             await ReportActions.update(userReport);
             toast.success('Доклад обновлен успешно!');
         } catch (error) {
@@ -83,8 +85,26 @@ const UploadReportSection = () => {
         }
     };
 
-    const handleFileUpload = (event) => {
-        setNewReport({ ...newReport, file: event.target.files[0] });
+    const convertToBytes = async (file) => {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            fileReader.onload = () => {
+                resolve(fileReader.result.split(',')[1]);
+            };
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
+
+    const handleFileUpload = async (event) => {
+        const file = event.target.files[0];
+        setUploadedFile(file);
+        const fileBytes = await convertToBytes(file);
+        console.log(userReport.file);
+        setNewReport({ ...newReport, file: fileBytes });
+        setUserReport({ ...userReport, file: fileBytes });
     };
 
     return (
@@ -108,10 +128,15 @@ const UploadReportSection = () => {
                         <Button variant="contained" onClick={() => downloadReport(userReport.file)}>
                             Скачать
                         </Button>
-                        <Button variant="contained" component="label" className="update-button">
-                            Обновить
-                            <input type="file" hidden onChange={handleFileUpload} />
-                        </Button>
+                        <div>
+                            <Button variant="contained" component="label" className="update-button">
+                                Обновить
+                                <input type="file" hidden onChange={handleFileUpload} />
+                            </Button>
+                            <Typography variant="body1" className="file-name">
+                                {uploadedFile?.name || ''}
+                            </Typography>
+                        </div>
                         <Button variant="contained" onClick={handleUpdate} className="save-button">
                             Сохранить
                         </Button>
@@ -147,10 +172,15 @@ const UploadReportSection = () => {
                             ))}
                         </Select>
                     </FormControl>
-                    <Button variant="contained" component="label" className="file-upload-button">
-                        Загрузить файл
-                        <input type="file" hidden onChange={handleFileUpload} />
-                    </Button>
+                    <div>
+                        <Button variant="contained" component="label" className="file-upload-button">
+                            Загрузить файл
+                            <input type="file" hidden onChange={handleFileUpload} />
+                        </Button>
+                        <Typography variant="body1" className="file-name">
+                           {uploadedFile?.name || ''}
+                        </Typography>
+                    </div>
                     <Box className="report-actions">
                         <Button variant="contained" onClick={handleCreate} className="add-report-button">
                             Добавить доклад
