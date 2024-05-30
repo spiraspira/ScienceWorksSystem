@@ -7,6 +7,7 @@ import UploadReportSection from '../components/UploadReportSection';
 import TeacherFirstTourSection from '../components/TeacherFirstTourSection';
 import StudentFirstTourSection from '../components/StudentFirstTourSection';
 import InvitedFirstTourSection from "../components/InvitedFirstTourSection";
+import HeadFirstTourComponent from "../components/HeadFirstTourSection";
 import ContestActions from "../actions/ContestActions";
 
 const ContestPage = () => {
@@ -53,6 +54,13 @@ const ContestPage = () => {
             {
                 teacherRoles.some(role => role.item1 === "invited") && (
                     <InvitedFirstTourSection
+                        contestId={contestId}
+                    />
+                )
+            }
+            {
+                teacherRoles.some(role => role.item1 === "organizationHead") && (
+                    <HeadFirstTourComponent
                         contestId={contestId}
                     />
                 )
