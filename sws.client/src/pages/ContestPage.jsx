@@ -6,6 +6,7 @@ import ContestInfoSection from '../components/ContestInfoSection';
 import UploadReportSection from '../components/UploadReportSection';
 import TeacherFirstTourSection from '../components/TeacherFirstTourSection';
 import StudentFirstTourSection from '../components/StudentFirstTourSection';
+import StudentSecondTourSection from "../components/StudentSecondTourSection";
 import InvitedFirstTourSection from "../components/InvitedFirstTourSection";
 import HeadFirstTourComponent from "../components/HeadFirstTourSection";
 import ContestActions from "../actions/ContestActions";
@@ -65,6 +66,7 @@ const ContestPage = () => {
                     />
                 )
             }
+            {role === "student" && <StudentSecondTourSection contestId={contestId} />}
             <Footer />
         </div>
     );
