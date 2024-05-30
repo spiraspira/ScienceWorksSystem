@@ -23,7 +23,7 @@ const ReviewActions = {
 
     create: async (reviewData) => {
         try {
-            const response = await host.post('api/Review/' + reviewData);
+            const response = await host.post('api/Review/', reviewData);
 
             return response.data;
         } catch (error) {
