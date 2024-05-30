@@ -22,6 +22,17 @@ public class GradeRepository(ApplicationDbContext context) : GenericRepository<G
 			.ToListAsync();
 	}
 
+	public async Task<IEnumerable<Grade>> GetGradesOfReportOfTeacher(Guid reportId, Guid programCommitteeMemberId)
+	{
+		return await Set
+			.Include(grade => grade.ProgramCommitteeMember)
+			.ThenInclude(member => member!.Teacher)
+			.ThenInclude(teacher => teacher!.User)
+			.Include(report => report.Nomination)
+			.Where(grade => grade.ReportId == reportId && grade.ProgramCommitteeMemberId == programCommitteeMemberId)
+			.ToListAsync();
+	}
+
 	public async Task<IEnumerable<Grade>> GetGradesOfNomination(Guid nominationId)
 	{
 		return await Set
