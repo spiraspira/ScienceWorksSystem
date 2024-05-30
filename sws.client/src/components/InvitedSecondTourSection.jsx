@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReportActions from '../actions/ReportActions';
 import ContestActions from '../actions/ContestActions';
-import GradeActions from '../actions/GradeActions';
 import '../App.css';
-import { Box, Typography, TextField, Button, Snackbar, Alert } from '@mui/material';
+import { Box, Typography, TextField, Button } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -21,8 +20,7 @@ const InvitedSecondTourSection = ({ contestId }) => {
                 const contestInfo = await ContestActions.getContestInfo(contestId);
                 setContest(contestInfo);
             } catch (error) {
-                console.error('Ошибка получения данных: ', error.message);
-                toast.error('Произошла ошибка при получении данных');
+                toast.error('Ошибка получения данных: ', error.message);
             }
         };
 
@@ -42,8 +40,7 @@ const InvitedSecondTourSection = ({ contestId }) => {
             await ReportActions.update(updatedReport);
             toast.success('Оценка успешно обновлена!');
         } catch (error) {
-            console.error('Ошибка добавления оценки: ', error.message);
-            toast.error('Произошла ошибка при обновлении оценки');
+            toast.error('Ошибка добавления оценки: ', error.message);
         }
     };
 
