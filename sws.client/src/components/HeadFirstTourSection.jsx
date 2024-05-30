@@ -102,9 +102,9 @@ const HeadFirstTourComponent = ({ contestId }) => {
                                 </Button>
                             </Box>
                         )}
-                                            {report.isAccepted && (
-                            <Typography>Доклад принят.</Typography>
-                        )}
+                    {report.isAccepted && (
+                        <Typography>Доклад принят.</Typography>
+                    )}
                 </Box>
             ))}
         </Box>

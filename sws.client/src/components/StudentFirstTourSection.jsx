@@ -9,6 +9,7 @@ import '../App.css';
 const StudentFirstTourSection = ({ contestId }) => {
     const [reviews, setReviews] = useState([]);
     const userId = localStorage.getItem('userId');
+    const [isAccepted, setIsAccepted] = useState("");
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -17,6 +18,7 @@ const StudentFirstTourSection = ({ contestId }) => {
                 if (!report) {
                     return;
                 }
+                setIsAccepted(report.isAccepted);
                 const reviewsData = await ReviewActions.getReviewsOfReport(report.id);
                 setReviews(reviewsData);
             } catch (error) {
@@ -35,7 +37,7 @@ const StudentFirstTourSection = ({ contestId }) => {
             </Typography>
             <Container maxWidth="md" className="review-section">
                 {reviews.length === 0 ? (
-                    <div>No reviews found.</div>
+                    <div>Отзывов нет.</div>
                 ) : (
                     reviews.map((review, index) => (
                         <Card key={index} className="review-card">
@@ -49,6 +51,9 @@ const StudentFirstTourSection = ({ contestId }) => {
                             </CardContent>
                         </Card>
                     ))
+                )}
+                {isAccepted && (
+                    <Typography>Доклад принят.</Typography>
                 )}
             </Container>
         </Box>
