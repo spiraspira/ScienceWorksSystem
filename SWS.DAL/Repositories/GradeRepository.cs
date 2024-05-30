@@ -8,6 +8,7 @@ public class GradeRepository(ApplicationDbContext context) : GenericRepository<G
 			.Include(grade => grade.ProgramCommitteeMember)
 			.ThenInclude(member => member!.Teacher)
 			.ThenInclude(teacher => teacher!.User)
+			.Include(grade => grade.Nomination)
 			.Where(grade => grade.ReportId == reportId)
 			.ToListAsync();
 	}
