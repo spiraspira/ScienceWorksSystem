@@ -9,4 +9,11 @@ public class GradeService(IGradeRepository repository, IMapper mapper) : Generic
 
 		return mapper.Map<IEnumerable<GradeModel>>(grades);
 	}
+
+	public async Task<IEnumerable<GradeModel>> GetGradesOfNomination(Guid nominationId)
+	{
+		var grades = await repository.GetGradesOfNomination(nominationId);
+
+		return mapper.Map<IEnumerable<GradeModel>>(grades);
+	}
 }

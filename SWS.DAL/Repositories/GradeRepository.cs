@@ -6,6 +6,8 @@ public class GradeRepository(ApplicationDbContext context) : GenericRepository<G
 	{
 		return await Set
 			.Include(grade => grade.ProgramCommitteeMember)
+			.ThenInclude(member => member!.Teacher)
+			.ThenInclude(teacher => teacher!.User)
 			.Where(grade => grade.ReportId == reportId)
 			.ToListAsync();
 	}
@@ -14,6 +16,8 @@ public class GradeRepository(ApplicationDbContext context) : GenericRepository<G
 	{
 		return await Set
 			.Include(grade => grade.ProgramCommitteeMember)
+			.ThenInclude(member => member!.Teacher)
+			.ThenInclude(teacher => teacher!.User)
 			.Where(grade => grade.NominationId == nominationId)
 			.ToListAsync();
 	}
