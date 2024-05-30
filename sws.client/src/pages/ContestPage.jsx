@@ -11,6 +11,7 @@ import StudentSecondTourSection from "../components/StudentSecondTourSection";
 import InvitedFirstTourSection from "../components/InvitedFirstTourSection";
 import InvitedSecondTourSection from "../components/InvitedSecondTourSection";
 import HeadFirstTourComponent from "../components/HeadFirstTourSection";
+import HeadSecondTourSection from "../components/HeadSecondTourSection";
 import ContestActions from "../actions/ContestActions";
 
 const ContestPage = () => {
@@ -82,6 +83,13 @@ const ContestPage = () => {
             {
                 teacherRoles.some(role => role.item1 === "invited") && (
                     <InvitedSecondTourSection
+                        contestId={contestId}
+                    />
+                )
+            }
+                        {
+                teacherRoles.some(role => role.item1 === "programHead") && (
+                    <HeadSecondTourSection
                         contestId={contestId}
                     />
                 )

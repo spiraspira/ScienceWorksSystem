@@ -21,6 +21,16 @@ const GradeActions = {
         }
     },
 
+    getGradesOfReport: async (reportId) => {
+        try {
+            const response = await host.get('api/Grade/report/' + reportId);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
+
     create: async (gradeData) => {
         try {
             console.log(gradeData);
