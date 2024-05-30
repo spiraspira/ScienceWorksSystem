@@ -227,3 +227,65 @@
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
+
+.teacher-second-tour-section {
+    padding: 20px;
+}
+
+.section-title {
+    margin-bottom: 20px;
+}
+
+.report-grid {
+    margin-top: 20px;
+}
+
+.report-item {
+    margin-bottom: 20px;
+}
+
+.report-paper {
+    padding: 20px;
+}
+
+.report-name {
+    margin-bottom: 10px;
+}
+
+.report-author {
+    margin-bottom: 15px;
+}
+
+.grades-title {
+    margin-bottom: 10px;
+}
+
+.grade-item {
+    margin-bottom: 5px;
+}
+
+.grade-info {
+    font-size: 14px;
+}
+
+.new-grade-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.new-grade-form {
+    margin-top: 10px;
+}
+
+.nomination-select {
+    width: 100%;
+}
+
+.grade-text-input,
+.report-grade-input {
+    width: 100%;
+}
+
+.submit-grade-button {
+    margin-top: 10px;
+}

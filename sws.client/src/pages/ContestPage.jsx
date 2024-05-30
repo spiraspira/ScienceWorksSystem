@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import ContestInfoSection from '../components/ContestInfoSection';
 import UploadReportSection from '../components/UploadReportSection';
 import TeacherFirstTourSection from '../components/TeacherFirstTourSection';
+import TeacherSecondTourSection from "../components/TeacherSecondTourSection";
 import StudentFirstTourSection from '../components/StudentFirstTourSection';
 import StudentSecondTourSection from "../components/StudentSecondTourSection";
 import InvitedFirstTourSection from "../components/InvitedFirstTourSection";
@@ -67,6 +68,16 @@ const ContestPage = () => {
                 )
             }
             {role === "student" && <StudentSecondTourSection contestId={contestId} />}
+            {
+                teacherRoles.some(role => role.item1 === "programMember") && (
+                    <TeacherSecondTourSection
+                        contestId={contestId}
+                        programCommitteeMemberId={
+                            teacherRoles.find(role => role.item1 === "programMember")?.item2
+                        }
+                    />
+                )
+            }
             <Footer />
         </div>
     );
