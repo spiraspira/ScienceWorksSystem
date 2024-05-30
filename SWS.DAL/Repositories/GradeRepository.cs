@@ -12,13 +12,13 @@ public class GradeRepository(ApplicationDbContext context) : GenericRepository<G
 			.ToListAsync();
 	}
 
-	public async Task<IEnumerable<Grade>> GetGradesOfNomination(Guid nominationId)
+	public async Task<IEnumerable<Grade>> GetGradesOfReportAndNomination(Guid nominationId, Guid reportId)
 	{
 		return await Set
 			.Include(grade => grade.ProgramCommitteeMember)
 			.ThenInclude(member => member!.Teacher)
 			.ThenInclude(teacher => teacher!.User)
-			.Where(grade => grade.NominationId == nominationId)
+			.Where(grade => grade.NominationId == nominationId && grade.ReportId == reportId)
 			.ToListAsync();
 	}
 }

@@ -14,10 +14,10 @@ public class GradeController(
 		return mapper.Map<IEnumerable<GradeViewModel>>(await gradeService.GetGradesOfReport(reportId));
 	}
 
-	[HttpGet("nomination/{nominationId}")]
-	public async Task<IEnumerable<GradeViewModel>> GetGradesOfNomination(Guid nominationId)
+	[HttpGet("report/{reportId}/nomination/{nominationId}")]
+	public async Task<IEnumerable<GradeViewModel>> GetGradesOfReportAndNomination(Guid nominationId, Guid reportId)
 	{
-		return mapper.Map<IEnumerable<GradeViewModel>>(await gradeService.GetGradesOfNomination(nominationId));
+		return mapper.Map<IEnumerable<GradeViewModel>>(await gradeService.GetGradesOfReportAndNomination(nominationId, reportId));
 	}
 
 	[HttpGet("{id}")]
