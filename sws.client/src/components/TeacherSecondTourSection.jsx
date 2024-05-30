@@ -56,26 +56,26 @@ const TeacherSecondTourSection = ({ contestId, programCommitteeMemberId }) => {
             <ToastContainer />
             {contest && (
                 <Box>
-                    <Typography variant="h4" className="section-title">Teacher Second Tour Section</Typography>
+                    <Typography variant="h4" className="section-title">Второй тур</Typography>
                     <Grid container spacing={2} className="report-grid">
                         {grades.map((report) => (
                             <Grid item xs={12} key={report.id} className="report-item">
                                 <Paper elevation={3} sx={{ p: 2 }} className="report-paper">
                                     <Typography variant="h6" className="report-name">{report.name}</Typography>
-                                    <Typography variant="body1" className="report-author">Author: {report.author}</Typography>
+                                    <Typography variant="body1" className="report-author">Автор: {report.team?.student?.user?.name}</Typography>
                                     <Box>
-                                        <Typography variant="h6" className="grades-title">Grades:</Typography>
+                                        <Typography variant="h6" className="grades-title">Оценки:</Typography>
                                         {report.grades.map((grade) => (
                                             <Box key={grade.id} className="grade-item">
                                                 <Typography variant="body1" className="grade-info">
-                                                    Report Grade: {grade.reportGrade}, Text: {grade.text}, Date: {grade.date}, Nomination: {grade.nomination?.name}
+                                                    Номинация: {grade.nomination?.name} | Оценка: {grade.reportGrade} | {grade.text} | ({grade.date})
                                                 </Typography>
                                             </Box>
                                         ))}
                                     </Box>
                                     {contest?.dateStartSecondTour <= new Date().toISOString() && contest?.dateEnd >= new Date().toISOString() && (
                                         <Box>
-                                            <Typography variant="h6" className="new-grade-title">Add New Grade:</Typography>
+                                            <Typography variant="h6" className="new-grade-title">Добавить оценку:</Typography>
                                             <Grid container spacing={2} className="new-grade-form">
                                                 <Grid item xs={4}>
                                                     <Select
@@ -88,7 +88,7 @@ const TeacherSecondTourSection = ({ contestId, programCommitteeMemberId }) => {
                                                         }
                                                         className="nomination-select"
                                                     >
-                                                        <MenuItem value="">Select Nomination</MenuItem>
+                                                        <MenuItem value="">Выберите номинацию</MenuItem>
                                                         {nominations.map((nomination) => (
                                                             <MenuItem key={nomination.id} value={nomination.id}>
                                                                 {nomination.name}
@@ -98,7 +98,7 @@ const TeacherSecondTourSection = ({ contestId, programCommitteeMemberId }) => {
                                                 </Grid>
                                                 <Grid item xs={4}>
                                                     <TextField
-                                                        label="Grade Text"
+                                                        label="Комментарий"
                                                         value={newGrades[report.id]?.text || ''}
                                                         onChange={(e) =>
                                                             setNewGrades((prevGrades) => ({
@@ -111,7 +111,7 @@ const TeacherSecondTourSection = ({ contestId, programCommitteeMemberId }) => {
                                                 </Grid>
                                                 <Grid item xs={4}>
                                                     <TextField
-                                                        label="Report Grade"
+                                                        label="Оценка"
                                                         type="number"
                                                         InputProps={{ inputProps: { min: 1, max: 10 } }}
                                                         value={newGrades[report.id]?.reportGrade || 0}
@@ -138,7 +138,7 @@ const TeacherSecondTourSection = ({ contestId, programCommitteeMemberId }) => {
                                                         }
                                                         className="submit-grade-button"
                                                     >
-                                                        Submit Grade
+                                                        Добавить
                                                     </Button>
                                                 </Grid>
                                             </Grid>
