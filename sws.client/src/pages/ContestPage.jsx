@@ -6,6 +6,7 @@ import ContestInfoSection from '../components/ContestInfoSection';
 import UploadReportSection from '../components/UploadReportSection';
 import TeacherFirstTourSection from '../components/TeacherFirstTourSection';
 import StudentFirstTourSection from '../components/StudentFirstTourSection';
+import InvitedFirstTourSection from "../components/InvitedFirstTourSection";
 import ContestActions from "../actions/ContestActions";
 
 const ContestPage = () => {
@@ -46,6 +47,13 @@ const ContestPage = () => {
                         organizationCommitteeMemberId={
                             teacherRoles.find(role => role.item1 === "organizationMember")?.item2
                         }
+                    />
+                )
+            }
+            {
+                teacherRoles.some(role => role.item1 === "invited") && (
+                    <InvitedFirstTourSection
+                        contestId={contestId}
                     />
                 )
             }
