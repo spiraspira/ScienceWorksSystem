@@ -1,9 +1,9 @@
 import host from ".";
 
 const GradeActions = {
-    getGradesOfNomination: async (nominationId) => {
+    getGradesOfNomination: async (nominationId, reportId) => {
         try {
-            const response = await host.get('api/Grade/nomination/' + nominationId);
+            const response = await host.get('api/Grade/report/' + reportId + '/nomination/' + nominationId);
 
             return response.data;
         } catch (error) {
