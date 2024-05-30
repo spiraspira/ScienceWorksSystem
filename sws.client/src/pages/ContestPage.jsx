@@ -4,6 +4,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ContestInfoSection from '../components/ContestInfoSection';
 import UploadReportSection from '../components/UploadReportSection';
+import TeacherFirstTourSection from '../components/TeacherFirstTourSection';
+import StudentFirstTourSection from '../components/StudentFirstTourSection';
 import ContestActions from "../actions/ContestActions";
 
 const ContestPage = () => {
@@ -30,6 +32,8 @@ const ContestPage = () => {
             <Header />
             <ContestInfoSection contestData={contestData} />
             {role === "student" && <UploadReportSection isContestFinished={new Date(contestData.dateStartSecondTour) <= new Date()} />}
+            {role === "student" && <StudentFirstTourSection contestId={contestId} />}
+            {role === "teacher" && <TeacherFirstTourSection contestId={contestId} />}
             <Footer />
         </div>
     );
