@@ -1,11 +1,8 @@
 import React from 'react';
+import AdminLoginSection from '../components/AdminLoginSection';
 
 const AdminLoginPage = () => {
-  return (
-    <div>
-      <h1>AdminLoginPage</h1>
-    </div>
-  );
+  return <AdminLoginSection />
 };
 
 export default AdminLoginPage;

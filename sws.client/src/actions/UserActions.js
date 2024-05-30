@@ -50,6 +50,39 @@ const UserActions = {
             throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
         }
     },
+
+    loginAdmin: async (login, password) => {
+        try {
+            const response = login === 'admin' && password === 'admin';
+
+            const someToken = 'eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTcxNzExMjAwNSwiaWF0IjoxNzE3MTEyMDA1fQ.9q3YsB6jeWXMj5txJa5xqjWjOyBXukwYyNcSGd_zrmw';
+
+            if (response === true) {
+                localStorage.setItem('token', someToken);
+                sessionStorage.setItem('token', someToken);
+                localStorage.setItem('isAdmin', 'true');
+                sessionStorage.setItem('isAdmin', 'true');
+                window.location.href = '/';
+            }
+            else {
+                throw new Error('Неправильный логин или пароль!');
+            }
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
+
+    logoutAdmin: async () => {
+        try {
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('token');
+            localStorage.removeItem('isAdmin');
+            sessionStorage.removeItem('isAdmin');
+            window.location.href = '/login/admin';
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка!');
+        }
+    },
 };
 
 export default UserActions;
