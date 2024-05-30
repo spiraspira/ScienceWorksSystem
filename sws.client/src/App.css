@@ -203,3 +203,121 @@
     gap: 1rem;
     margin-top: 1rem;
 }
+
+.student-second-tour-section {
+    padding: 2rem;
+}
+
+.nomination-container {
+    margin-bottom: 2rem;
+}
+
+.nomination-card {
+    background-color: #f5f5f5;
+    padding: 1rem;
+}
+
+.grade-container {
+    border: 1px solid #e0e0e0;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.divider {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.teacher-second-tour-section {
+    padding: 20px;
+}
+
+.section-title {
+    margin-bottom: 20px;
+}
+
+.report-grid {
+    margin-top: 20px;
+}
+
+.report-item {
+    margin-bottom: 20px;
+}
+
+.report-paper {
+    padding: 20px;
+}
+
+.report-name {
+    margin-bottom: 10px;
+}
+
+.report-author {
+    margin-bottom: 15px;
+}
+
+.grades-title {
+    margin-bottom: 10px;
+}
+
+.grade-item {
+    margin-bottom: 5px;
+}
+
+.grade-info {
+    font-size: 14px;
+}
+
+.new-grade-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.new-grade-form {
+    margin-top: 10px;
+}
+
+.nomination-select {
+    width: 100%;
+}
+
+.grade-text-input,
+.report-grade-input {
+    width: 100%;
+}
+
+.submit-grade-button {
+    margin-top: 10px;
+}
+
+.invited-second-tour-section {
+    margin-top: 2rem;
+}
+
+.report-item {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.grade-form {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.grade-form input {
+    margin-right: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.grade-form button {
+    padding: 0.5rem 1rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}

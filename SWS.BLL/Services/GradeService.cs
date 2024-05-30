@@ -9,4 +9,27 @@ public class GradeService(IGradeRepository repository, IMapper mapper) : Generic
 
 		return mapper.Map<IEnumerable<GradeModel>>(grades);
 	}
+
+	public async Task<IEnumerable<GradeModel>> GetGradesOfReportAndNomination(Guid nominationId, Guid reportId)
+	{
+		var grades = await repository.GetGradesOfReportAndNomination(nominationId, reportId);
+
+		return mapper.Map<IEnumerable<GradeModel>>(grades);
+	}
+
+	public async Task<IEnumerable<GradeModel>> GetGradesOfReportOfTeacher(Guid reportId, Guid programCommitteeMemberId)
+	{
+		var grades = await repository.GetGradesOfReportOfTeacher(reportId, programCommitteeMemberId);
+
+		return mapper.Map<IEnumerable<GradeModel>>(grades);
+	}
+
+	public override async Task<GradeModel> Create(GradeModel model)
+	{
+		model.Date = DateTime.UtcNow;
+
+		var entity = await repository.Create(mapper.Map<Grade>(model));
+
+		return mapper.Map<GradeModel>(entity);
+	}
 }

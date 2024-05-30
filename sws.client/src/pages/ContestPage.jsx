@@ -5,9 +5,13 @@ import Footer from '../components/Footer';
 import ContestInfoSection from '../components/ContestInfoSection';
 import UploadReportSection from '../components/UploadReportSection';
 import TeacherFirstTourSection from '../components/TeacherFirstTourSection';
+import TeacherSecondTourSection from "../components/TeacherSecondTourSection";
 import StudentFirstTourSection from '../components/StudentFirstTourSection';
+import StudentSecondTourSection from "../components/StudentSecondTourSection";
 import InvitedFirstTourSection from "../components/InvitedFirstTourSection";
+import InvitedSecondTourSection from "../components/InvitedSecondTourSection";
 import HeadFirstTourComponent from "../components/HeadFirstTourSection";
+import HeadSecondTourSection from "../components/HeadSecondTourSection";
 import ContestActions from "../actions/ContestActions";
 
 const ContestPage = () => {
@@ -61,6 +65,31 @@ const ContestPage = () => {
             {
                 teacherRoles.some(role => role.item1 === "organizationHead") && (
                     <HeadFirstTourComponent
+                        contestId={contestId}
+                    />
+                )
+            }
+            {role === "student" && <StudentSecondTourSection contestId={contestId} />}
+            {
+                teacherRoles.some(role => role.item1 === "programMember") && (
+                    <TeacherSecondTourSection
+                        contestId={contestId}
+                        programCommitteeMemberId={
+                            teacherRoles.find(role => role.item1 === "programMember")?.item2
+                        }
+                    />
+                )
+            }
+            {
+                teacherRoles.some(role => role.item1 === "invited") && (
+                    <InvitedSecondTourSection
+                        contestId={contestId}
+                    />
+                )
+            }
+                        {
+                teacherRoles.some(role => role.item1 === "programHead") && (
+                    <HeadSecondTourSection
                         contestId={contestId}
                     />
                 )
