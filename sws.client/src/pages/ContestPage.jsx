@@ -9,6 +9,7 @@ import TeacherSecondTourSection from "../components/TeacherSecondTourSection";
 import StudentFirstTourSection from '../components/StudentFirstTourSection';
 import StudentSecondTourSection from "../components/StudentSecondTourSection";
 import InvitedFirstTourSection from "../components/InvitedFirstTourSection";
+import InvitedSecondTourSection from "../components/InvitedSecondTourSection";
 import HeadFirstTourComponent from "../components/HeadFirstTourSection";
 import ContestActions from "../actions/ContestActions";
 
@@ -75,6 +76,13 @@ const ContestPage = () => {
                         programCommitteeMemberId={
                             teacherRoles.find(role => role.item1 === "programMember")?.item2
                         }
+                    />
+                )
+            }
+            {
+                teacherRoles.some(role => role.item1 === "invited") && (
+                    <InvitedSecondTourSection
+                        contestId={contestId}
                     />
                 )
             }

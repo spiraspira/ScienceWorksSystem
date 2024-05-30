@@ -30,6 +30,17 @@ const GradeActions = {
         } catch (error) {
             throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
         }
+    },
+
+    update: async (gradeData) => {
+        try {
+            console.log(gradeData);
+            const response = await host.put('api/Grade', gradeData);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
     }
 };
 

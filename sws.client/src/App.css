@@ -289,3 +289,35 @@
 .submit-grade-button {
     margin-top: 10px;
 }
+
+.invited-second-tour-section {
+    margin-top: 2rem;
+}
+
+.report-item {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.grade-form {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.grade-form input {
+    margin-right: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.grade-form button {
+    padding: 0.5rem 1rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
