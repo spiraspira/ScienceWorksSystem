@@ -4,7 +4,7 @@ public interface IContestService : IGenericService<ContestModel>
 {
 	Task<IEnumerable<ContestModel>> GetFinishedContests();
 
-	Task<IEnumerable<string>> GetRolesOfTeacher(Guid contestId, Guid teacherId);
+	Task<IEnumerable<(string, string)>> GetRolesOfTeacher(Guid contestId, Guid teacherId);
 
 	Task<IEnumerable<ContestModel>> GetActiveContests();
 
