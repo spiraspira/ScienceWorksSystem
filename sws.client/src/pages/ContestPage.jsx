@@ -24,7 +24,6 @@ const ContestPage = () => {
                 if (role === "teacher") {
                     const teacherRolesData = await ContestActions.getRolesOfTeacher(contestId, userId);
                     setTeacherRoles(teacherRolesData);
-                    console.log(teacherRolesData);
                 }
             } catch (error) {
 
@@ -40,7 +39,16 @@ const ContestPage = () => {
             <ContestInfoSection contestData={contestData} />
             {role === "student" && <UploadReportSection isContestFinished={new Date(contestData.dateStartSecondTour) <= new Date()} />}
             {role === "student" && <StudentFirstTourSection contestId={contestId} />}
-            {teacherRoles.includes("organizationMember") && <TeacherFirstTourSection contestId={contestId} />}
+            {
+                teacherRoles.some(role => role.item1 === "organizationMember") && (
+                    <TeacherFirstTourSection
+                        contestId={contestId}
+                        organizationCommitteeMemberId={
+                            teacherRoles.find(role => role.item1 === "organizationMember")?.item2
+                        }
+                    />
+                )
+            }
             <Footer />
         </div>
     );

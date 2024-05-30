@@ -30,10 +30,10 @@ const StudentFirstTourSection = ({ contestId }) => {
     return (
         <Box>
             <ToastContainer />
+            <Typography variant="h3" className="page-title">
+                Первый тур
+            </Typography>
             <Container maxWidth="md" className="review-section">
-                <Typography variant="h3" className="page-title">
-                    Первый тур
-                </Typography>
                 {reviews.length === 0 ? (
                     <div>No reviews found.</div>
                 ) : (
