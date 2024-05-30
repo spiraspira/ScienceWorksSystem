@@ -14,6 +14,40 @@ public class ContestService(
 		return mapper.Map<IEnumerable<ContestModel>>(entities);
 	}
 
+	public async Task<IEnumerable<string>> GetRolesOfTeacher(Guid contestId, Guid teacherId)
+	{
+		var contest = await repository.Get(contestId);
+
+		var roles = new List<string>();
+
+		if (contest!.InvitedTeacherId == teacherId)
+		{
+			roles.Add("invited");
+		}
+
+		if (contest.OrganizationCommittee!.TeacherId == teacherId)
+		{
+			roles.Add("organizationHead");
+		}
+
+		if (contest.ProgramCommittee!.TeacherId == teacherId)
+		{
+			roles.Add("programHead");
+		}
+
+		if (contest.OrganizationCommittee!.Members.Exists(member => member.TeacherId == teacherId))
+		{
+			roles.Add("organizationMember");
+		}
+
+		if (contest.ProgramCommittee!.Members.Exists(member => member.TeacherId == teacherId))
+		{
+			roles.Add("programMember");
+		}
+
+		return roles;
+	}
+
 	public async Task<IEnumerable<ContestModel>> GetActiveContests()
 	{
 		var entities = await repository.GetActiveContests();

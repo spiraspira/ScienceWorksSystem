@@ -11,7 +11,9 @@ import ContestActions from "../actions/ContestActions";
 const ContestPage = () => {
     const [role] = useState(localStorage.getItem("role"));
     const { contestId } = useParams();
+    const [userId] = useState(localStorage.getItem("userId"))
     const [contestData, setContestData] = useState({});
+    const [teacherRoles, setTeacherRoles] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -19,13 +21,18 @@ const ContestPage = () => {
                 const contestInfo = await ContestActions.getContestInfo(contestId);
                 setContestData(contestInfo);
 
+                if (role === "teacher") {
+                    const teacherRolesData = await ContestActions.getRolesOfTeacher(contestId, userId);
+                    setTeacherRoles(teacherRolesData);
+                    console.log(teacherRolesData);
+                }
             } catch (error) {
 
             }
         };
 
         fetchData();
-    }, [contestId]);
+    }, [contestId, userId, role]);
 
     return (
         <div>
@@ -33,7 +40,7 @@ const ContestPage = () => {
             <ContestInfoSection contestData={contestData} />
             {role === "student" && <UploadReportSection isContestFinished={new Date(contestData.dateStartSecondTour) <= new Date()} />}
             {role === "student" && <StudentFirstTourSection contestId={contestId} />}
-            {role === "teacher" && <TeacherFirstTourSection contestId={contestId} />}
+            {teacherRoles.includes("organizationMember") && <TeacherFirstTourSection contestId={contestId} />}
             <Footer />
         </div>
     );
