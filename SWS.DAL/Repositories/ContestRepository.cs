@@ -7,6 +7,10 @@ public class ContestRepository(ApplicationDbContext context) : GenericRepository
 		return Set
 			.Include(contest => contest.InvitedTeacher)
 			.ThenInclude(teacher => teacher!.User)
+			.Include(contest => contest.OrganizationCommittee)
+			.ThenInclude(committee => committee!.Members)
+			.Include(contest => contest.ProgramCommittee)
+			.ThenInclude(committee => committee!.Members)
 			.FirstOrDefaultAsync(p => p.Id == id);
 	}
 

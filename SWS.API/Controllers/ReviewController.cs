@@ -5,13 +5,34 @@
 public class ReviewController(
 	IMapper mapper,
 	IReviewService reviewService,
-	IValidator<ReviewViewModel> validator)
+	IValidator<ReviewViewModel> validator,
+	IConfiguration configuration,
+	IHttpContextAccessor httpContextAccessor)
 	: ControllerBase
 {
 	[HttpGet("report/{reportId}")]
 	public async Task<IEnumerable<ReviewViewModel>> GetReviewsOfReport(Guid reportId)
 	{
 		return mapper.Map<IEnumerable<ReviewViewModel>>(await reviewService.GetReviewsOfReport(reportId));
+	}
+
+	[HttpGet("report/{reportId}/teacher/{teacherId}")]
+	public async Task<ActionResult> GetReviewsOfReportOfTeacher(Guid reportId, Guid teacherId)
+	{
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var teacherIdClaim = claims.FirstOrDefault(c => c.Type == "TeacherId");
+
+		return Ok(mapper.Map<IEnumerable<ReviewViewModel>>(await reviewService.GetReviewsOfReportOfTeacher(reportId, new Guid(teacherIdClaim!.Value))));
 	}
 
 	[HttpGet("{id}")]

@@ -105,6 +105,16 @@ const ContestActions = {
             throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
         }
     },
+
+    getRolesOfTeacher: async (contestId, teacherId) => {
+        try {
+            const response = await host.get('api/Contest/' + contestId + '/teacher/' + teacherId);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    }
 };
 
 export default ContestActions;

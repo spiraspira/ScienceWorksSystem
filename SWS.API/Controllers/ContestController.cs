@@ -16,6 +16,25 @@ public class ContestController(
 		return mapper.Map<IEnumerable<ContestViewModel>>(await contestService.GetFinishedContests());
 	}
 
+	[HttpGet("{contestId}/teacher/{userId}")]
+	public async Task<ActionResult> GetContestRoleOfTeacher(Guid contestId, Guid userId)
+	{
+		var authorizationHeader = httpContextAccessor.HttpContext!.Request.Headers["Authorization"];
+
+		if (string.IsNullOrEmpty(authorizationHeader))
+		{
+			return Unauthorized();
+		}
+
+		var token = authorizationHeader.ToString().Split(" ")[0];
+
+		var claims = await JwtUtil.ValidateToken(configuration, token);
+
+		var teacherIdClaim = claims.FirstOrDefault(c => c.Type == "TeacherId");
+
+		return Ok(await contestService.GetRolesOfTeacher(contestId, new Guid(teacherIdClaim!.Value)));
+	}
+
 	[HttpGet("active")]
 	public async Task<IEnumerable<ContestViewModel>> GetActiveContests()
 	{
