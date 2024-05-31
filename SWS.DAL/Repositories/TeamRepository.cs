@@ -40,6 +40,8 @@ public class TeamRepository(ApplicationDbContext context) : GenericRepository<Te
 
 	public override async Task<Team?> Update(Team entity)
 	{
+		var actualTeam = await Set.FindAsync(entity.Id);
+
 		var currentTeam = await Set.FirstOrDefaultAsync(p => p.Id == entity.Id);
 
 		if (!await IsTeamUnique(entity, currentTeam))
@@ -47,11 +49,12 @@ public class TeamRepository(ApplicationDbContext context) : GenericRepository<Te
 			return null;
 		}
 
-		Context.Entry(entity).State = EntityState.Modified;
+		actualTeam!.StudentId = entity.StudentId;
+		actualTeam.TeacherId = entity.TeacherId;
 
 		await Context.SaveChangesAsync();
 
-		return entity;
+		return actualTeam;
 	}
 
 	public async Task<IEnumerable<Team>> GetTeamsOfTeacher(Guid teacherId)

@@ -1,16 +1,16 @@
 import React from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import AdminMenuSection from "../components/AdminMenuSection";
+import AdminContestSection from "../components/AdminContestSection";
 
-const AdminMainPage = () => {
+const AdminContestPage = () => {
     return (
         <div>
             <Header />
-            <AdminMenuSection />
+            <AdminContestSection />
             <Footer />
         </div>
     );
 };
 
-export default AdminMainPage;
+export default AdminContestPage;

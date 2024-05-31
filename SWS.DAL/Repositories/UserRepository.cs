@@ -15,11 +15,15 @@ public class UserRepository(ApplicationDbContext context) : GenericRepository<Us
 
 		await Context.SaveChangesAsync();
 
+		Context.Entry(entity).State = EntityState.Detached;
+
 		return entity;
 	}
 
 	public override async Task<User?> Update(User entity)
 	{
+		var currentUser = await Set.FindAsync(entity.Id);
+
 		var currentLogin = (await Set
 			.FirstOrDefaultAsync(p => p.Id == entity.Id))!.Login;
 
@@ -28,11 +32,17 @@ public class UserRepository(ApplicationDbContext context) : GenericRepository<Us
 			return null;
 		}
 
-		Context.Entry(entity).State = EntityState.Modified;
+		currentUser!.Name = entity.Name;
+		currentUser.Login = entity.Login;
+		currentUser.Password = entity.Password;
+		currentUser.StudentId = entity.StudentId;
+		currentUser.TeacherId = entity.TeacherId;
+		currentUser.IsStudent = entity.IsStudent;
+		currentUser.UniversityId = entity.UniversityId;
 
 		await Context.SaveChangesAsync();
 
-		return entity;
+		return currentUser;
 	}
 
 	public Task<User?> Login(string login, string password)

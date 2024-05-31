@@ -27,21 +27,25 @@ public class UserService(
 
 		if (entity.IsStudent == true)
 		{
-			var student = new StudentModel()
+			var student = new StudentModel
 			{
 				UserId = entity.Id
 			};
 
-			await studentRepository.Create(mapper.Map<Student>(student));
+			var newStudent = await studentRepository.Create(mapper.Map<Student>(student));
+
+			entity.StudentId = newStudent!.Id;
 		}
 		else
 		{
-			var teacher = new TeacherModel()
+			var teacher = new TeacherModel
 			{
 				UserId = entity.Id
 			};
 
-			await teacherRepository.Create(mapper.Map<Teacher>(teacher));
+			var newTeacher = await teacherRepository.Create(mapper.Map<Teacher>(teacher));
+
+			entity.TeacherId = newTeacher!.Id;
 		}
 
 		return mapper.Map<UserModel>(entity);

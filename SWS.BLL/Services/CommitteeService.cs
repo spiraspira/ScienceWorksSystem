@@ -8,9 +8,11 @@ public class CommitteeService(ICommitteeRepository repository, IContestRepositor
 
 		var models = mapper.Map<IEnumerable<CommitteeModel>>(entities);
 
+		var contests = await contestRepository.GetAll();
+
 		var updatedModels = await Task.WhenAll(models.Select(async model =>
 		{
-			await SetName(model);
+			SetName(model, contests);
 
 			return model;
 		}));
@@ -24,15 +26,15 @@ public class CommitteeService(ICommitteeRepository repository, IContestRepositor
 
 		var model = mapper.Map<CommitteeModel>(entity);
 
-		await SetName(model);
+		var contests = await contestRepository.GetAll();
+
+		SetName(model, contests);
 
 		return model;
 	}
 
-	private async Task SetName(CommitteeModel model)
+	private void SetName(CommitteeModel model, IEnumerable<Contest> contests)
 	{
-		var contests = await contestRepository.GetAll();
-
 		var contest = contests.FirstOrDefault(c =>
 			c.OrganizationCommitteeId == model.Id ||
 			c.ProgramCommitteeId == model.Id);

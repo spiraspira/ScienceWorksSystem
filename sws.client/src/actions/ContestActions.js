@@ -114,7 +114,47 @@ const ContestActions = {
         } catch (error) {
             throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
         }
-    }
+    },
+
+    getAll: async () => {
+        try {
+            const response = await host.get('api/Contest');
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
+
+    update: async (contestData) => {
+        try {
+            const response = await host.put('api/Contest', contestData);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
+
+    create: async (contestData) => {
+        try {
+            const response = await host.post('api/Contest', contestData);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
+
+    delete: async (contestId) => {
+        try {
+            const response = await host.delete('api/Contest/' + contestId);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
 };
 
 export default ContestActions;

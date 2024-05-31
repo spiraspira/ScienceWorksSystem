@@ -1,16 +1,16 @@
 import React from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import AdminMenuSection from "../components/AdminMenuSection";
+import AdminCommitteeMemberSection from "../components/AdminCommitteeMemberSection";
 
-const AdminMainPage = () => {
+const AdminCommitteePage = () => {
     return (
         <div>
             <Header />
-            <AdminMenuSection />
+            <AdminCommitteeMemberSection />
             <Footer />
         </div>
     );
 };
 
-export default AdminMainPage;
+export default AdminCommitteePage;

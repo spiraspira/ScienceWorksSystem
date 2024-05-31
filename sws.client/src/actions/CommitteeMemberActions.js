@@ -1,19 +1,9 @@
 import host from ".";
 
-const TeamActions = {
-    getTeamsOfStudent: async (userId) => {
-        try {
-            const response = await host.get('api/Team/student/' + userId);
-
-            return response.data;
-        } catch (error) {
-            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
-        }
-    },
-
+const CommitteeMemberActions = {
     getAll: async () => {
         try {
-            const response = await host.get('api/Team');
+            const response = await host.get('api/CommitteeMember');
 
             return response.data;
         } catch (error) {
@@ -21,9 +11,9 @@ const TeamActions = {
         }
     },
 
-    update: async (teamData) => {
+    update: async (committeeMemberData) => {
         try {
-            const response = await host.put('api/Team', teamData);
+            const response = await host.put('api/CommitteeMember', committeeMemberData);
 
             return response.data;
         } catch (error) {
@@ -31,9 +21,9 @@ const TeamActions = {
         }
     },
 
-    create: async (teamData) => {
+    create: async (committeeMemberData) => {
         try {
-            const response = await host.post('api/Team', teamData);
+            const response = await host.post('api/CommitteeMember', committeeMemberData);
 
             return response.data;
         } catch (error) {
@@ -41,9 +31,9 @@ const TeamActions = {
         }
     },
 
-    delete: async (teamId) => {
+    delete: async (committeeMemberId) => {
         try {
-            const response = await host.delete('api/Team/' + teamId);
+            const response = await host.delete('api/CommitteeMember/' + committeeMemberId);
 
             return response.data;
         } catch (error) {
@@ -52,4 +42,4 @@ const TeamActions = {
     },
 };
 
-export default TeamActions;
+export default CommitteeMemberActions;

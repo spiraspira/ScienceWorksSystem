@@ -1,16 +1,16 @@
 import React from "react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import AdminMenuSection from "../components/AdminMenuSection";
+import AdminUserSection from "../components/AdminUserSection";
 
-const AdminMainPage = () => {
+const AdminUserPage = () => {
     return (
         <div>
             <Header />
-            <AdminMenuSection />
+            <AdminUserSection />
             <Footer />
         </div>
     );
 };
 
-export default AdminMainPage;
+export default AdminUserPage;

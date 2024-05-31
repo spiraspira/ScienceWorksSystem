@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const Header = () => {
     const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
+    const isAdmin = localStorage.getItem('isAdmin');
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -20,12 +21,20 @@ const Header = () => {
                 toast.error(error.message);
             }
         };
-        fetchUserData();
-    }, []);
+
+        if (!isAdmin) {
+            fetchUserData();
+        }
+    }, [isAdmin]);
 
     const handleLogout = async () => {
         try {
-            await UserActions.logout();
+            if (isAdmin) {
+                await UserActions.logoutAdmin();
+            }
+            else {
+                await UserActions.logout();
+            }
             navigate('/');
         }
         catch (error) {
@@ -37,11 +46,16 @@ const Header = () => {
         <AppBar position="static" className="App-header">
             <ToastContainer />
             <Toolbar className="toolbar-content">
-                {userData && (
+                {userData ? (
                     <Typography variant="body1" className="welcome-text">
                         Добро пожаловать, {userData.name}.
                     </Typography>
-                )}
+                )
+                    : (
+                        <Typography variant="body1" className="welcome-text">
+                            Добро пожаловать, администратор.
+                        </Typography>
+                    )}
                 <Button color="inherit" onClick={() => navigate('/')} className="main-page-button">
                     Главная
                 </Button>
