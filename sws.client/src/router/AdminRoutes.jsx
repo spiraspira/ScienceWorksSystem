@@ -1,5 +1,6 @@
 import AdminMainPage from "../pages/AdminMainPage";
 import AdminUniversityPage from "../pages/AdminUniversityPage";
+import AdminUserPage from "../pages/AdminUserPage";
 
 export const AdminRoutes = [
     {
@@ -9,5 +10,9 @@ export const AdminRoutes = [
     {
         path: "/universities",
         Component: AdminUniversityPage,
+    },
+    {
+        path: "/users",
+        Component: AdminUserPage,
     },
 ];
