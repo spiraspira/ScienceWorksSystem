@@ -345,3 +345,11 @@
     align-items: center;
     gap: 1rem;
 }
+
+.admin-menu-section {
+    margin-top: 2rem;
+}
+
+.admin-menu-section .MuiButton-root {
+    width: 200px;
+}
