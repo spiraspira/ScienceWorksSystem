@@ -1,6 +1,7 @@
 import AdminMainPage from "../pages/AdminMainPage";
 import AdminUniversityPage from "../pages/AdminUniversityPage";
 import AdminUserPage from "../pages/AdminUserPage";
+import AdminTeamPage from "../pages/AdminTeamPage";
 
 export const AdminRoutes = [
     {
@@ -14,5 +15,9 @@ export const AdminRoutes = [
     {
         path: "/users",
         Component: AdminUserPage,
+    },
+    {
+        path: "/teams",
+        Component: AdminTeamPage,
     },
 ];
