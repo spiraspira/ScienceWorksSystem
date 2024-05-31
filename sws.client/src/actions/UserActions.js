@@ -83,6 +83,46 @@ const UserActions = {
             throw new Error(error.response?.data?.message || error.message || 'Ошибка!');
         }
     },
+
+    getAll: async () => {
+        try {
+            const response = await host.get('api/user');
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
+
+    update: async (userData) => {
+        try {
+            const response = await host.put('api/user', userData);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
+
+    create: async (userData) => {
+        try {
+            const response = await host.post('api/user', userData);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
+
+    delete: async (userId) => {
+        try {
+            const response = await host.delete('api/user/' + userId);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
 };
 
 export default UserActions;
