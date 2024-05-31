@@ -2,6 +2,7 @@ import AdminMainPage from "../pages/AdminMainPage";
 import AdminUniversityPage from "../pages/AdminUniversityPage";
 import AdminUserPage from "../pages/AdminUserPage";
 import AdminTeamPage from "../pages/AdminTeamPage";
+import AdminCommitteePage from "../pages/AdminCommitteePage";
 
 export const AdminRoutes = [
     {
@@ -19,5 +20,9 @@ export const AdminRoutes = [
     {
         path: "/teams",
         Component: AdminTeamPage,
+    },
+    {
+        path: "/committees",
+        Component: AdminCommitteePage,
     },
 ];
