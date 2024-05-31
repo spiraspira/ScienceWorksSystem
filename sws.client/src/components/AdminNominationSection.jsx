@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, TextField, Button, IconButton, Select, MenuItem } from '@mui/material';
+import { Box, Grid, TextField, Button, IconButton, Select, MenuItem, InputLabel } from '@mui/material';
 import { Edit, Delete, Save } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -80,8 +80,8 @@ const AdminNominationSection = () => {
   return (
     <Box className="admin-section">
       <ToastContainer />
-      <Select value={selectedContestId} onChange={handleContestChange}>
-        <MenuItem value={null}>Select a contest</MenuItem>
+      <InputLabel id="select-label">Select a contest</InputLabel>
+      <Select label="select-label" value={selectedContestId} onChange={handleContestChange}>
         {contests.map((contest) => (
           <MenuItem key={contest.id} value={contest.id}>
             {contest.name}

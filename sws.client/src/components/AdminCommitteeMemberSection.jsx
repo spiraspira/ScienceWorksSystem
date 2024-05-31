@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Button, IconButton, MenuItem, Select } from '@mui/material';
+import { Box, Grid, Button, IconButton, MenuItem, Select, InputLabel } from '@mui/material';
 import { Edit, Delete, Save } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -80,8 +80,8 @@ const AdminCommitteeMemberSection = () => {
     <Box className="admin-section">
       <ToastContainer />
       <Box className="committee-selector">
-        <Select value={selectedCommittee} onChange={handleCommitteeChange}>
-          <MenuItem value={null}>Select a committee</MenuItem>
+      <InputLabel id="select-label">Select a committee</InputLabel>
+        <Select label={"select-label"} value={selectedCommittee} onChange={handleCommitteeChange} name={'select'}>
           {committees.map((committee) => (
             <MenuItem key={committee.id} value={committee.id}>
               {committee.name}
