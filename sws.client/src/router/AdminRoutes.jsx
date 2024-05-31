@@ -5,6 +5,7 @@ import AdminTeamPage from "../pages/AdminTeamPage";
 import AdminCommitteePage from "../pages/AdminCommitteePage";
 import AdminCommitteeMemberPage from "../pages/AdminCommitteeMemberPage";
 import AdminContestPage from "../pages/AdminContestPage";
+import AdminNominationPage from "../pages/AdminNominationPage";
 
 export const AdminRoutes = [
     {
@@ -34,5 +35,9 @@ export const AdminRoutes = [
     {
         path: "/contests",
         Component: AdminContestPage,
+    },
+    {
+        path: "/nominations",
+        Component: AdminNominationPage,
     },
 ];
