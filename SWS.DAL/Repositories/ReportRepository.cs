@@ -10,6 +10,7 @@ public class ReportRepository(ApplicationDbContext context) : GenericRepository<
 			.ThenInclude(team => team!.Teacher)
 			.Include(report => report.Team)
 			.ThenInclude(team => team!.Student)
+			.ThenInclude(student => student!.User)
 			.FirstOrDefaultAsync(p => p.Id == id);
 	}
 

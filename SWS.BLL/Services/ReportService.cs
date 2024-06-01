@@ -71,20 +71,19 @@ public class ReportService(
 
 	private async Task<Guid?> GetWinningReportId(IEnumerable<Report> reports)
 	{
-		var reportGradesSums = await Task.WhenAll(reports.Select(async report =>
+		var reportGradesSums = new List<(Guid ReportId, double? Sum)>();
+
+		var allGrades = await gradeRepository.GetAll();
+
+		foreach (var report in reports)
 		{
-			var grades = await gradeRepository.GetGradesOfReport(report.Id);
-
+			var grades = allGrades.Where(grade => grade.ReportId == report.Id);
 			var sum = CalculateGradesSum(grades, report.InvitedTeacherGrade);
+			reportGradesSums.Add((report.Id, sum));
+		}
 
-			return new
-			{
-				ReportId = report.Id,
-				Sum = sum
-			};
-		}));
-
-		return reportGradesSums.MaxBy(rgs => rgs.Sum)?.ReportId;
+		var winningReportId = reportGradesSums.MaxBy(rgs => rgs.Sum).ReportId;
+		return winningReportId;
 	}
 
 	private static double? CalculateGradesSum(IEnumerable<Grade> grades, int? invitedTeacherGrade)
