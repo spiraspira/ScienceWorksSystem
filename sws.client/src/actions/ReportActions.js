@@ -40,6 +40,26 @@ const ReportActions = {
             throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
         }
     },
+
+    getWinnerOfContest: async (contestId) => {
+        try {
+            const response = await host.get('api/Report/winner/contest/' + contestId);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
+
+    getWinnerOfNomination: async (nominationId) => {
+        try {
+            const response = await host.get('api/Report/winner/nomination/' + nominationId);
+
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || error.message || 'Ошибка сервера!');
+        }
+    },
 };
 
 export default ReportActions;
