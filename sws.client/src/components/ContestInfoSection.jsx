@@ -9,7 +9,7 @@ import ContestActions from '../actions/ContestActions';
 import CommitteeActions from '../actions/CommitteeActions';
 import ReportActions from '../actions/ReportActions';
 
-const ContestInfoSection = ({contestData}) => {
+const ContestInfoSection = ({ contestData }) => {
     const { contestId } = useParams();
     const [organizationCommitteeData, setOrganizationCommitteeData] = useState({});
     const [programCommitteeData, setProgramCommitteeData] = useState({});
@@ -17,6 +17,7 @@ const ContestInfoSection = ({contestData}) => {
     const [programCommitteeMembers, setProgramCommitteeMembers] = useState([]);
     const [nominations, setNominations] = useState([]);
     const [allReports, setAllReports] = useState([]);
+    const [winner, setWinner] = useState(null);
 
     const downloadReport = (file) => {
         if (file) {
@@ -37,6 +38,15 @@ const ContestInfoSection = ({contestData}) => {
             link.click();
             document.body.removeChild(link);
         }
+    };
+
+    const updateNominationWinners = async (nominations) => {
+        const updatedNominations = [...nominations];
+        for (const [index, nomination] of updatedNominations.entries()) {
+            const winningReportId = await ReportActions.getWinnerOfNomination(nomination.id);
+            updatedNominations[index].winner = winningReportId;
+        }
+        setNominations(updatedNominations);
     };
 
     useEffect(() => {
@@ -66,6 +76,12 @@ const ContestInfoSection = ({contestData}) => {
 
                 const allReportsData = await ReportActions.getAllReportsOfContest(contestId);
                 setAllReports(allReportsData);
+
+                if (contestData.dateEnd < new Date().toISOString()) {
+                    const winnerData = await ReportActions.getWinnerOfContest(contestData.id);
+                    setWinner(winnerData);
+                    await updateNominationWinners(nominationsData);
+                }
             } catch (error) {
                 toast.error(error.message);
             }
@@ -94,7 +110,11 @@ const ContestInfoSection = ({contestData}) => {
                     <Typography variant="body2">
                         Приглашенный преподаватель: {contestData.invitedTeacher?.user?.name || 'Loading...'}
                     </Typography>
-
+                    {winner && (
+                        <Typography variant="body2">
+                            Победитель: {winner.name || 'Loading...'} (Автор: {winner.team?.student?.user?.name || 'Loading...'})
+                        </Typography>
+                    )}
                     <Accordion>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
@@ -153,7 +173,7 @@ const ContestInfoSection = ({contestData}) => {
                             <Typography>
                                 {nominations.map((nomination, index) => (
                                     <Typography key={index}>
-                                        {nomination.name || 'Loading...'}
+                                        {nomination.name || 'Loading...'} {'Победитель: ' + nomination.winner?.team?.student?.user?.name || 'Loading...'}
                                     </Typography>
                                 ))}
                             </Typography>
