@@ -48,6 +48,8 @@ public class UserService(
 			entity.TeacherId = newTeacher!.Id;
 		}
 
+		entity = await repository.Update(entity);
+
 		return mapper.Map<UserModel>(entity);
 	}
 }

@@ -46,7 +46,7 @@ public class CommitteeService(ICommitteeRepository repository, IContestRepositor
 			return;
 		}
 
-		var committeeType = contest.ProgramCommitteeId is null ? "Организационный" : "Программный";
+		var committeeType = contest.OrganizationCommitteeId == model.Id ? "Организационный" : "Программный";
 
 		model.Name = $"{committeeType} комитет конкурса {contest.Name}";
 	}
