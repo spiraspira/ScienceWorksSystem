@@ -15,6 +15,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserActions from '../actions/UserActions';
 import UniversityActions from '../actions/UniversityActions';
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import * as FileSaver from 'file-saver';
 
 const AdminUserSection = () => {
   const [users, setUsers] = useState([]);
@@ -92,6 +94,99 @@ const AdminUserSection = () => {
     } catch (error) {
       toast.error('Error updating user: ' + error.message);
     }
+  };
+
+  const generateReport = async () => {
+    const currentDate = new Date().toLocaleDateString();
+
+    const rows = [
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Name", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+          new TableCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Login", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+          new TableCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Is Student", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+          new TableCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "University", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+        ],
+      }),
+      ...users.map(user => (
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: user.name, size: 28, font: "Times New Roman" })]
+              })]
+            }),
+            new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: user.login, size: 28, font: "Times New Roman" })]
+              })]
+            }),
+            new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: user.isStudent ? 'Yes' : 'No', size: 28, font: "Times New Roman" })]
+              })]
+            }),
+            new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: universities.find((u) => u.id === user.universityId)?.name || '', size: 28, font: "Times New Roman" })]
+              })]
+            }),
+          ],
+        })
+      )),
+    ];
+
+    const table = new Table({
+      rows: rows,
+      width: { size: 10000, type: 'dxa' },
+    });
+
+    const doc = new Document({
+      sections: [{
+        children: [
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: "User Report",
+                bold: true,
+                size: 28,
+                font: "Times New Roman"
+              }),
+            ]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: currentDate, size: 28, font: "Times New Roman" })]
+          }),
+          new Paragraph({ text: "\n" }), // Add some spacing
+          table, // Add the table to the document
+        ],
+      }],
+    });
+
+    Packer.toBlob(doc).then(blob => {
+      FileSaver.saveAs(blob, "User_Report.docx");
+    }).catch(err => {
+      console.error("Error generating report:", err);
+    });
   };
 
   return (
@@ -203,6 +298,9 @@ const AdminUserSection = () => {
         </Select>
         <Button onClick={handleCreate}>Create</Button>
       </Box>
+      <Button variant="contained" color="primary" onClick={generateReport}>
+        Download Report
+      </Button>
     </Box>
   );
 };
