@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import ContestActions from '../actions/ContestActions';
 import CommitteeActions from '../actions/CommitteeActions';
 import TeacherActions from '../actions/TeacherActions';
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import * as FileSaver from 'file-saver';
 
 const AdminContestSection = () => {
     const [contests, setContests] = useState([]);
@@ -97,6 +99,82 @@ const AdminContestSection = () => {
         } catch (error) {
             toast.error('Error updating contest: ' + error.message);
         }
+    };
+
+    const generateReport = async () => {
+        const currentDate = new Date().toLocaleDateString();
+    
+        const rows = contests.map(contest => (
+            new TableRow({
+                children: [
+                    new TableCell({
+                        children: [new Paragraph({ text: contest.name, size: 28 })]
+                    }),
+                    new TableCell({
+                        children: [new Paragraph({ text: contest.description, size: 28 })]
+                    }),
+                    new TableCell({
+                        children: [new Paragraph({ text: new Date(contest.dateStart).toLocaleString(), size: 28 })]
+                    }),
+                    new TableCell({
+                        children: [new Paragraph({ text: new Date(contest.dateEnd).toLocaleString(), size: 28 })]
+                    }),
+                ],
+            })
+        ));
+    
+        const table = new Table({
+            rows: [
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [new Paragraph({ children: [new TextRun({ text: "Contest Name", bold: true })] })]
+                        }),
+                        new TableCell({
+                            children: [new Paragraph({ children: [new TextRun({ text: "Description", bold: true })] })]
+                        }),
+                        new TableCell({
+                            children: [new Paragraph({ children: [new TextRun({ text: "Date Start", bold: true })] })]
+                        }),
+                        new TableCell({
+                            children: [new Paragraph({ children: [new TextRun({ text: "Date End", bold: true })] })]
+                        }),
+                    ],
+                }),
+                ...rows,
+            ],
+            width: { size: 10000, type: 'dxa' },
+        });
+    
+        const doc = new Document({
+            sections: [{
+                children: [
+                    new Paragraph({
+                        heading: HeadingLevel.HEADING_1,
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                            new TextRun({
+                                text: "Contests Report",
+                                bold: true,
+                                size: 28,
+                            }),
+                        ]
+                    }),
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [new TextRun({ text: currentDate, size: 28 })]
+                    }),
+                    new Paragraph({ text: "\n" }),
+                    table,
+                ],
+            }],
+        });
+    
+        Packer.toBlob(doc).then(blob => {
+            FileSaver.saveAs(blob, "Contests_Report.docx");
+        }).catch(err => {
+            console.error("Error generating report:", err);
+        });
     };
 
     return (
@@ -282,6 +360,11 @@ const AdminContestSection = () => {
                         </FormControl>
                         <Button onClick={handleCreate}>Create</Button>
                     </Box>
+                </Grid>
+                <Grid item xs={12}>
+                    <Button variant="contained" color="primary" onClick={generateReport}>
+                        Download Report
+                    </Button>
                 </Grid>
             </Grid>
         </Box>

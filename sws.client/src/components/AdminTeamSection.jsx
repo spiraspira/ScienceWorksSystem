@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import TeamActions from '../actions/TeamActions';
 import TeacherActions from '../actions/TeacherActions';
 import StudentActions from '../actions/StudentActions';
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import * as FileSaver from 'file-saver';
 
 const AdminTeamSection = () => {
   const [teams, setTeams] = useState([]);
@@ -67,6 +69,79 @@ const AdminTeamSection = () => {
     } catch (error) {
       toast.error('Error updating team: ' + error.message);
     }
+  };
+
+  const generateReport = async () => {
+    const currentDate = new Date().toLocaleDateString();
+
+    const rows = [
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Student", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+          new TableCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Teacher", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+        ],
+      }),
+      ...teams.map(team => (
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: students.find((s) => s.id === team.studentId)?.user?.name || '', size: 28, font: "Times New Roman" })]
+              })]
+            }),
+            new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: teachers.find((t) => t.id === team.teacherId)?.user?.name || '', size: 28, font: "Times New Roman" })]
+              })]
+            }),
+          ],
+        })
+      )),
+    ];
+
+    const table = new Table({
+      rows: rows,
+      width: { size: 10000, type: 'dxa' },
+    });
+
+    const doc = new Document({
+      sections: [{
+        children: [
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: "Team Report",
+                bold: true,
+                size: 28,
+                font: "Times New Roman"
+              }),
+            ]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: currentDate, size: 28, font: "Times New Roman" })]
+          }),
+          new Paragraph({ text: "\n" }), // Add some spacing
+          table, // Add the table to the document
+        ],
+      }],
+    });
+
+    Packer.toBlob(doc).then(blob => {
+      FileSaver.saveAs(blob, "Team_Report.docx");
+    }).catch(err => {
+      console.error("Error generating report:", err);
+    });
   };
 
   return (
@@ -149,6 +224,9 @@ const AdminTeamSection = () => {
         </Select>
         <Button onClick={handleCreate}>Create</Button>
       </Box>
+      <Button variant="contained" color="primary" onClick={generateReport}>
+        Download Report
+      </Button>
     </Box>
   );
 };

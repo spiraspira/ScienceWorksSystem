@@ -5,6 +5,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CommitteeActions from '../actions/CommitteeActions';
 import TeacherActions from '../actions/TeacherActions';
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import * as FileSaver from 'file-saver';
 
 const AdminCommitteeSection = () => {
   const [committees, setCommittees] = useState([]);
@@ -72,6 +74,89 @@ const AdminCommitteeSection = () => {
     }
   };
 
+  const generateReport = async () => {
+    const currentDate = new Date().toLocaleDateString();
+
+    const rows = [
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Committee Name", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+          new TableCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "ID", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+          new TableCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Teacher", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+        ],
+      }),
+      ...committees.map(committee => (
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: committee.name, size: 28, font: "Times New Roman" })]
+              })]
+            }),
+            new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: committee.id.toString(), size: 28, font: "Times New Roman" })]
+              })]
+            }),
+            new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: committee.teacher?.user?.name || '', size: 28, font: "Times New Roman" })]
+              })]
+            }),
+          ],
+        })
+      )),
+    ];
+
+    const table = new Table({
+      rows: rows,
+      width: { size: 10000, type: 'dxa' },
+    });
+
+    const doc = new Document({
+      sections: [{
+        children: [
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: "Committee Report",
+                bold: true,
+                size: 28,
+                font: "Times New Roman"
+              }),
+            ]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: currentDate, size: 28, font: "Times New Roman" })]
+          }),
+          new Paragraph({ text: "\n" }), // Add some spacing
+          table, // Add the table to the document
+        ],
+      }],
+    });
+
+    Packer.toBlob(doc).then(blob => {
+      FileSaver.saveAs(blob, "Committee_Report.docx");
+    }).catch(err => {
+      console.error("Error generating report:", err);
+    });
+  };
+
   return (
     <Box className="admin-section">
       <ToastContainer />
@@ -132,6 +217,9 @@ const AdminCommitteeSection = () => {
         </Select>
         <Button onClick={handleCreate}>Create</Button>
       </Box>
+      <Button variant="contained" color="primary" onClick={generateReport}>
+        Download Report
+      </Button>
     </Box>
   );
 };

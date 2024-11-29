@@ -8,6 +8,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ContestActions from '../actions/ContestActions';
 import CommitteeActions from '../actions/CommitteeActions';
 import ReportActions from '../actions/ReportActions';
+import { Document, Packer, Paragraph, AlignmentType, HeadingLevel } from "docx";
+import * as FileSaver from 'file-saver';
 
 const ContestInfoSection = ({ contestData }) => {
     const { contestId } = useParams();
@@ -38,6 +40,90 @@ const ContestInfoSection = ({ contestData }) => {
             link.click();
             document.body.removeChild(link);
         }
+    };
+
+    const generateContestReport = async () => {
+        const doc = new Document({
+            sections: [{
+                children: [
+                    new Paragraph({
+                        text: contestData.name,
+                        heading: HeadingLevel.HEADING_1,
+                        alignment: AlignmentType.CENTER,
+                    }),
+                    new Paragraph({
+                        text: contestData.description,
+                        alignment: AlignmentType.CENTER,
+                    }),
+                    new Paragraph({
+                        text: `First Round: ${contestData.dateStart?.substring(0, 10)} to ${contestData.dateStartSecondTour?.substring(0, 10)}`,
+                    }),
+                    new Paragraph({
+                        text: `Second Round: ${contestData.dateStartSecondTour?.substring(0, 10)} to ${contestData.dateEnd?.substring(0, 10)}`,
+                    }),
+                    new Paragraph({
+                        text: `Invited Teacher: ${contestData.invitedTeacher?.user?.name || 'N/A'}`,
+                    }),
+                    new Paragraph({
+                        text: `Winner: ${winner ? `${winner.name} (Author: ${winner.team?.student?.user?.name || 'N/A'})` : 'N/A'}`,
+                    }),
+                    new Paragraph({ text: "\n" }),
+
+                    new Paragraph({
+                        text: "Organization Committee",
+                        heading: HeadingLevel.HEADING_2,
+                    }),
+                    new Paragraph({
+                        text: `Chair: ${organizationCommitteeData.teacher?.user?.name || 'N/A'}`,
+                    }),
+                    new Paragraph({
+                        text: "Members:",
+                    }),
+                    ...organizationCommitteeMembers.map(member => 
+                        new Paragraph({ text: member.teacher?.user?.name || 'Loading...' })
+                    ),
+                    new Paragraph({ text: "\n" }),
+
+                    new Paragraph({
+                        text: "Program Committee",
+                        heading: HeadingLevel.HEADING_2,
+                    }),
+                    new Paragraph({
+                        text: `Chair: ${programCommitteeData.teacher?.user?.name || 'N/A'}`,
+                    }),
+                    new Paragraph({
+                        text: "Members:",
+                    }),
+                    ...programCommitteeMembers.map(member => 
+                        new Paragraph({ text: member.teacher?.user?.name || 'Loading...' })
+                    ),
+                    new Paragraph({ text: "\n" }),
+
+                    new Paragraph({
+                        text: "Nominations",
+                        heading: HeadingLevel.HEADING_2,
+                    }),
+                    ...nominations.map(nomination => 
+                        new Paragraph({ text: `${nomination.name} (Winner: ${nomination.winner?.team?.student?.user?.name || 'N/A'})` })
+                    ),
+                    new Paragraph({ text: "\n" }),
+
+                    new Paragraph({
+                        text: "Reports",
+                        heading: HeadingLevel.HEADING_2,
+                    }),
+                    ...allReports.map(report => 
+                        new Paragraph({ text: `"${report.name || 'Loading...'}" (Author: ${report.team?.student?.user?.name || 'N/A'}, Assigned Teacher: ${report.team?.teacher?.user?.name || 'N/A'})` })
+                    ),
+                ],
+            }],
+        });
+
+        Packer.toBlob(doc).then(blob => {
+            FileSaver.saveAs(blob, `${contestData.name}_Report.docx`);
+        }).catch(err => {
+            console.error("Error generating report:", err);
+        });
     };
 
     const updateNominationWinners = async (nominations) => {
@@ -115,6 +201,14 @@ const ContestInfoSection = ({ contestData }) => {
                             Победитель: {winner.name || 'Loading...'} (Автор: {winner.team?.student?.user?.name || 'Loading...'})
                         </Typography>
                     )}
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={generateContestReport}
+                        startIcon={<DownloadIcon />}
+                    >
+                        Download Contest Info
+                    </Button>
                     <Accordion>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
@@ -164,8 +258,8 @@ const ContestInfoSection = ({ contestData }) => {
                     <Accordion>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
-                            aria-controls="program-committee-content"
-                            id="program-committee-header"
+                            aria-controls="nominations-content"
+                            id="nominations-header"
                         >
                             <Typography variant="h5">Номинации</Typography>
                         </AccordionSummary>
@@ -173,7 +267,7 @@ const ContestInfoSection = ({ contestData }) => {
                             <Typography>
                                 {nominations.map((nomination, index) => (
                                     <Typography key={index}>
-                                        {nomination.name || 'Loading...'} {'Победитель: ' + nomination.winner?.team?.student?.user?.name || 'Loading...'}
+                                        {nomination.name || 'Loading...'} {'Победитель: ' + (nomination.winner?.team?.student?.user?.name || 'Loading...')}
                                     </Typography>
                                 ))}
                             </Typography>
@@ -183,8 +277,8 @@ const ContestInfoSection = ({ contestData }) => {
                     <Accordion>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
-                            aria-controls="program-committee-content"
-                            id="program-committee-header"
+                            aria-controls="reports-content"
+                            id="reports-header"
                         >
                             <Typography variant="h5">Работы</Typography>
                         </AccordionSummary>
@@ -201,6 +295,7 @@ const ContestInfoSection = ({ contestData }) => {
                                             onClick={() => downloadReport(model.file)}
                                             startIcon={<DownloadIcon />}
                                         >
+                                            Download
                                         </Button>
                                     </div>
                                 ))}

@@ -5,6 +5,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ContestActions from '../actions/ContestActions';
 import NominationActions from '../actions/NominationActions';
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import * as FileSaver from 'file-saver';
 
 const AdminNominationSection = () => {
   const [contests, setContests] = useState([]);
@@ -77,6 +79,72 @@ const AdminNominationSection = () => {
     }
   };
 
+  const generateReport = async () => {
+    const currentDate = new Date().toLocaleDateString();
+
+    const rows = nominations
+      .filter(nomination => nomination.contestId === selectedContestId)
+      .map(nomination => (
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ text: nomination.name, size: 28 })]
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: contests.find(c => c.id === selectedContestId)?.name || 'N/A', size: 28 })]
+            }),
+          ],
+        })
+      ));
+
+    const table = new Table({
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Nomination Name", bold: true })] })]
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: "Contest Name", bold: true })] })]
+            }),
+          ],
+        }),
+        ...rows,
+      ],
+      width: { size: 10000, type: 'dxa' },
+    });
+
+    const doc = new Document({
+      sections: [{
+        children: [
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: "Nominations Report",
+                bold: true,
+                size: 28,
+              }),
+            ]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: currentDate, size: 28 })]
+          }),
+          new Paragraph({ text: "\n" }),
+          table,
+        ],
+      }],
+    });
+
+    Packer.toBlob(doc).then(blob => {
+      FileSaver.saveAs(blob, "Nominations_Report.docx");
+    }).catch(err => {
+      console.error("Error generating report:", err);
+    });
+  };
+
   return (
     <Box className="admin-section">
       <ToastContainer />
@@ -132,6 +200,9 @@ const AdminNominationSection = () => {
         />
         <Button onClick={handleCreate}>Create</Button>
       </Box>
+      <Button variant="contained" color="primary" onClick={generateReport}>
+        Download Report
+      </Button>
     </Box>
   );
 };

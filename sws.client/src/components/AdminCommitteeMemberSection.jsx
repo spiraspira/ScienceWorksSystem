@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import CommitteeActions from '../actions/CommitteeActions';
 import CommitteeMemberActions from '../actions/CommitteeMemberActions';
 import TeacherActions from '../actions/TeacherActions';
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import * as FileSaver from 'file-saver';
 
 const AdminCommitteeMemberSection = () => {
   const [committees, setCommittees] = useState([]);
@@ -76,11 +78,79 @@ const AdminCommitteeMemberSection = () => {
     }
   };
 
+  const generateReport = async () => {
+    const currentDate = new Date().toLocaleDateString();
+  
+    // Find the selected committee
+    const selectedCommitteeData = committees.find(c => c.id === selectedCommittee);
+  
+    // Filter members for the selected committee
+    const filteredMembers = committeMembers.filter(cm => cm.committeeId === selectedCommittee);
+  
+    const rows = [
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Teacher", bold: true, size: 28 })]
+            })]
+          }),
+        ],
+      }),
+      ...filteredMembers.map(committeeMember => (
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: teachers.find(t => t.id === committeeMember.teacherId)?.user?.name || '', size: 28 })]
+              })]
+            }),
+          ],
+        })
+      )),
+    ];
+  
+    const table = new Table({
+      rows: rows,
+      width: { size: 10000, type: 'dxa' },
+    });
+  
+    const doc = new Document({
+      sections: [{
+        children: [
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: `Committee Members Report for ${selectedCommitteeData?.name || 'Selected Committee'}`,
+                bold: true,
+                size: 28,
+              }),
+            ]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: currentDate, size: 28 })]
+          }),
+          new Paragraph({ text: "\n" }),
+          table,
+        ],
+      }],
+    });
+  
+    Packer.toBlob(doc).then(blob => {
+      FileSaver.saveAs(blob, "Committee_Members_Report.docx");
+    }).catch(err => {
+      console.error("Error generating report:", err);
+    });
+  };
+
   return (
     <Box className="admin-section">
       <ToastContainer />
       <Box className="committee-selector">
-      <InputLabel id="select-label">Select a committee</InputLabel>
+        <InputLabel id="select-label">Select a committee</InputLabel>
         <Select label={"select-label"} value={selectedCommittee} onChange={handleCommitteeChange} name={'select'}>
           {committees.map((committee) => (
             <MenuItem key={committee.id} value={committee.id}>
@@ -160,6 +230,9 @@ const AdminCommitteeMemberSection = () => {
         </Select>
         <Button onClick={handleCreate}>Create</Button>
       </Box>
+      <Button variant="contained" color="primary" onClick={generateReport}>
+        Download Report
+      </Button>
     </Box>
   );
 };
