@@ -8,7 +8,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ContestActions from '../actions/ContestActions';
 import CommitteeActions from '../actions/CommitteeActions';
 import ReportActions from '../actions/ReportActions';
-import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import { Document, Packer, Paragraph, AlignmentType, HeadingLevel } from "docx";
 import * as FileSaver from 'file-saver';
 
 const ContestInfoSection = ({ contestData }) => {
@@ -43,8 +43,6 @@ const ContestInfoSection = ({ contestData }) => {
     };
 
     const generateContestReport = async () => {
-        const currentDate = new Date().toLocaleDateString();
-
         const doc = new Document({
             sections: [{
                 children: [
