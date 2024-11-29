@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Container } from '@mui/material';
+import { Box, Card, CardContent, Typography, Container, Button } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReviewActions from '../actions/ReviewActions';
 import ReportActions from '../actions/ReportActions';
+import { Document, Packer, Paragraph, HeadingLevel } from "docx";
+import * as FileSaver from 'file-saver';
 import '../App.css';
 
 const StudentFirstTourSection = ({ contestId }) => {
@@ -28,6 +30,30 @@ const StudentFirstTourSection = ({ contestId }) => {
 
         fetchReviews();
     }, [contestId, userId]);
+
+    const downloadReviews = async () => {
+        const doc = new Document({
+            sections: [{
+                children: [
+                    new Paragraph({
+                        text: "Reviews",
+                        heading: HeadingLevel.HEADING_1,
+                    }),
+                    ...reviews.map(review => 
+                        new Paragraph({
+                            text: `${review.text} - ${review.date} (Reviewer: ${review.organizationCommitteeMember?.teacher?.user?.name || 'Unknown'})`,
+                        })
+                    ),
+                ],
+            }],
+        });
+
+        Packer.toBlob(doc).then(blob => {
+            FileSaver.saveAs(blob, "Reviews_Report.docx");
+        }).catch(err => {
+            console.error("Error generating report:", err);
+        });
+    };
 
     return (
         <Box>
@@ -55,6 +81,14 @@ const StudentFirstTourSection = ({ contestId }) => {
                 {isAccepted && (
                     <Typography>Доклад принят.</Typography>
                 )}
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={downloadReviews} 
+                    style={{ marginTop: '20px' }}
+                >
+                    Download Reviews
+                </Button>
             </Container>
         </Box>
     );
