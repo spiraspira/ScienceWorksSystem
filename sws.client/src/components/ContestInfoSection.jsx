@@ -79,7 +79,7 @@ const ContestInfoSection = ({ contestData }) => {
                     new Paragraph({
                         text: "Members:",
                     }),
-                    ...organizationCommitteeMembers.map(member => 
+                    ...organizationCommitteeMembers.map(member =>
                         new Paragraph({ text: member.teacher?.user?.name || 'Loading...' })
                     ),
                     new Paragraph({ text: "\n" }),
@@ -94,7 +94,7 @@ const ContestInfoSection = ({ contestData }) => {
                     new Paragraph({
                         text: "Members:",
                     }),
-                    ...programCommitteeMembers.map(member => 
+                    ...programCommitteeMembers.map(member =>
                         new Paragraph({ text: member.teacher?.user?.name || 'Loading...' })
                     ),
                     new Paragraph({ text: "\n" }),
@@ -103,7 +103,7 @@ const ContestInfoSection = ({ contestData }) => {
                         text: "Nominations",
                         heading: HeadingLevel.HEADING_2,
                     }),
-                    ...nominations.map(nomination => 
+                    ...nominations.map(nomination =>
                         new Paragraph({ text: `${nomination.name} (Winner: ${nomination.winner?.team?.student?.user?.name || 'N/A'})` })
                     ),
                     new Paragraph({ text: "\n" }),
@@ -112,7 +112,7 @@ const ContestInfoSection = ({ contestData }) => {
                         text: "Reports",
                         heading: HeadingLevel.HEADING_2,
                     }),
-                    ...allReports.map(report => 
+                    ...allReports.map(report =>
                         new Paragraph({ text: `"${report.name || 'Loading...'}" (Author: ${report.team?.student?.user?.name || 'N/A'}, Assigned Teacher: ${report.team?.teacher?.user?.name || 'N/A'})` })
                     ),
                 ],
@@ -177,131 +177,152 @@ const ContestInfoSection = ({ contestData }) => {
     }, [contestId, contestData]);
 
     return (
-        <Box>
+        <Box className="contest-info-container">
             <ToastContainer />
-            <Card>
-                <CardContent>
-                    <Typography variant="h4">
-                        {contestData.name || 'Loading...'}
-                    </Typography>
-                    <Typography variant="body1">
-                        {contestData.description || 'Loading...'}
-                    </Typography>
-                    <Typography variant="body2">
-                        Первый тур: с {contestData.dateStart?.substring(0, 10) || 'Loading...'} по {contestData.dateStartSecondTour?.substring(0, 10) || 'Loading...'}
-                    </Typography>
-                    <Typography variant="body2">
-                        Второй тур: с {contestData.dateStartSecondTour?.substring(0, 10) || 'Loading...'} по {contestData.dateEnd?.substring(0, 10) || 'Loading...'}
-                    </Typography>
-                    <Typography variant="body2">
-                        Приглашенный преподаватель: {contestData.invitedTeacher?.user?.name || 'Loading...'}
-                    </Typography>
-                    {winner && (
-                        <Typography variant="body2">
-                            Победитель: {winner.name || 'Loading...'} (Автор: {winner.team?.student?.user?.name || 'Loading...'})
+            <Card className="contest-info-card">
+                <CardContent className="contest-info-content">
+                    {/* Header Section */}
+                    <Box className="contest-header-section">
+                        <Typography variant="h5" className="contest-title">
+                            {contestData.name || 'Loading...'}
                         </Typography>
-                    )}
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={generateContestReport}
-                        startIcon={<DownloadIcon />}
-                    >
-                        Download Contest Info
-                    </Button>
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="organization-committee-content"
-                            id="organization-committee-header"
-                        >
-                            <Typography variant="h5">Организационный комитет</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                Глава: {organizationCommitteeData.teacher?.user?.name || 'Loading...'}
+                        <Typography variant="body1" className="contest-description">
+                            {contestData.description || 'Loading...'}
+                        </Typography>
+
+                        <Box className="contest-dates-grid">
+                            <Typography variant="body2" className="contest-date">
+                                <strong>First Round:</strong> {contestData.dateStart?.substring(0, 10) || 'N/A'} to {contestData.dateStartSecondTour?.substring(0, 10) || 'N/A'}
                             </Typography>
-                            <Typography>
-                                Члены:
+                            <Typography variant="body2" className="contest-date">
+                                <strong>Second Round:</strong> {contestData.dateStartSecondTour?.substring(0, 10) || 'N/A'} to {contestData.dateEnd?.substring(0, 10) || 'N/A'}
+                            </Typography>
+                            <Typography variant="body2" className="contest-date">
+                                <strong>Invited Teacher:</strong> {contestData.invitedTeacher?.user?.name || 'N/A'}
+                            </Typography>
+                            {winner && (
+                                <Typography variant="body2" className="contest-date">
+                                    <strong>Winner:</strong> {winner.name || 'N/A'} (Author: {winner.team?.student?.user?.name || 'N/A'})
+                                </Typography>
+                            )}
+                        </Box>
+
+                        <Button
+                            variant="contained"
+                            size="small"
+                            onClick={generateContestReport}
+                            startIcon={<DownloadIcon />}
+                            className="export-report-btn"
+                        >
+                            Export Contest Report
+                        </Button>
+                    </Box>
+
+                    {/* Committees Section */}
+                    <Box className="section-container">
+                        <Accordion className="contest-accordion">
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />} className="accordion-summary">
+                                <Typography className="accordion-title">
+                                    Organization Committee
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails className="accordion-details">
+                                <Typography className="committee-chair">
+                                    <strong>Chair:</strong> {organizationCommitteeData.teacher?.user?.name || 'N/A'}
+                                </Typography>
+                                <Typography className="committee-members-title">
+                                    Members:
+                                </Typography>
                                 {organizationCommitteeMembers.map((member, index) => (
-                                    <Typography key={index}>
-                                        {member.teacher?.user?.name || 'Loading...'}
+                                    <Typography key={index} className="committee-member">
+                                        • {member.teacher?.user?.name || 'N/A'}
                                     </Typography>
                                 ))}
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Box>
 
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="program-committee-content"
-                            id="program-committee-header"
-                        >
-                            <Typography variant="h5">Программный комитет</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                Глава: {programCommitteeData.teacher?.user?.name || 'Loading...'}
-                            </Typography>
-                            <Typography>
-                                Члены:
+                    {/* Committees Section */}
+                    <Box className="section-container">
+                        <Accordion className="contest-accordion">
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />} className="accordion-summary">
+                                <Typography className="accordion-title">
+                                    Program Committee
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails className="accordion-details">
+                                <Typography className="committee-chair">
+                                    <strong>Chair:</strong> {programCommitteeData.teacher?.user?.name || 'N/A'}
+                                </Typography>
+                                <Typography className="committee-members-title">
+                                    Members:
+                                </Typography>
                                 {programCommitteeMembers.map((member, index) => (
-                                    <Typography key={index}>
-                                        {member.teacher?.user?.name || 'Loading...'}
+                                    <Typography key={index} className="committee-member">
+                                        • {member.teacher?.user?.name || 'N/A'}
                                     </Typography>
                                 ))}
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Box>
 
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="nominations-content"
-                            id="nominations-header"
-                        >
-                            <Typography variant="h5">Номинации</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
+                    {/* Nominations Section */}
+                    <Box className="section-container">
+                        <Accordion className="contest-accordion">
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />} className="accordion-summary">
+                                <Typography className="accordion-title">
+                                    Nominations
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails className="accordion-details">
                                 {nominations.map((nomination, index) => (
-                                    <Typography key={index}>
-                                        {nomination.name || 'Loading...'} {'Победитель: ' + (nomination.winner?.team?.student?.user?.name || 'Loading...')}
-                                    </Typography>
-                                ))}
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
-
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="reports-content"
-                            id="reports-header"
-                        >
-                            <Typography variant="h5">Работы</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                {allReports.map((model, index) => (
-                                    <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <Typography>
-                                            "{model.name || 'Loading...'}" (автор: {model.team?.student?.user?.name || 'Loading...'}, закрепленный преподаватель: {model.team?.teacher?.user?.name || 'Loading...'})
+                                    <Box key={index} className="nomination-item">
+                                        <Typography className="nomination-name">
+                                            {nomination.name || 'N/A'}
                                         </Typography>
+                                        <Typography className="nomination-winner">
+                                            Winner: {nomination.winner?.team?.student?.user?.name || 'Not selected'}
+                                        </Typography>
+                                    </Box>
+                                ))}
+                            </AccordionDetails>
+                        </Accordion>
+                    </Box>
+
+                    {/* Reports Section */}
+                    <Box className="section-container">
+                        <Accordion className="contest-accordion">
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />} className="accordion-summary">
+                                <Typography className="accordion-title">
+                                    Submitted Reports
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails className="reports-accordion-details">
+                                {allReports.map((model, index) => (
+                                    <Box key={index} className="report-item">
+                                        <Box>
+                                            <Typography className="report-name">
+                                                "{model.name || 'Untitled'}"
+                                            </Typography>
+                                            <Typography className="report-meta">
+                                                Author: {model.team?.student?.user?.name || 'N/A'} •
+                                                Teacher: {model.team?.teacher?.user?.name || 'N/A'}
+                                            </Typography>
+                                        </Box>
                                         <Button
-                                            variant="contained"
-                                            color="primary"
+                                            variant="outlined"
+                                            size="small"
                                             onClick={() => downloadReport(model.file)}
                                             startIcon={<DownloadIcon />}
+                                            className="download-report-btn"
                                         >
                                             Download
                                         </Button>
-                                    </div>
+                                    </Box>
                                 ))}
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Box>
                 </CardContent>
             </Card>
         </Box>
