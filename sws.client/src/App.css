@@ -492,3 +492,63 @@
         font-size: 0.85rem;
     }
 }   
+
+/* Footer Styles */
+.app-footer {
+    background-image: linear-gradient(to right, #1976d2, #2196f3);
+    top: auto;
+    bottom: 0;
+    margin-top: 40px;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-toolbar {
+    min-height: 48px;
+    justify-content: center;
+    padding: 0 24px;
+}
+
+.footer-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .footer-toolbar {
+        min-height: 44px;
+        padding: 0 20px;
+    }
+    
+    .footer-text {
+        font-size: 0.8125rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .app-footer {
+        margin-top: 30px;
+    }
+    
+    .footer-toolbar {
+        min-height: 40px;
+        padding: 0 16px;
+    }
+    
+    .footer-text {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .app-footer {
+        margin-top: 24px;
+    }
+    
+    .footer-text {
+        font-size: 0.6875rem;
+    }
+}
