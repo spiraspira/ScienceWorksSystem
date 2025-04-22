@@ -64,7 +64,7 @@ const MainPage = () => {
     const currentTabs = isStudent === 'student' ? studentTabs : teacherTabs;
 
     return (
-        <div>
+        <div className="app-container">
             <Header />
             <Box sx={{ width: '100%', p: 2 }}>
                 <Tabs 
