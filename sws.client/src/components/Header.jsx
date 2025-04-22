@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import UserActions from '../actions/UserActions';
 import '../App.css';
@@ -43,25 +43,29 @@ const Header = () => {
     };
 
     return (
-        <AppBar position="static" className="App-header">
+        <AppBar position="static" className="app-header">
             <ToastContainer />
-            <Toolbar className="toolbar-content">
-                {userData ? (
-                    <Typography variant="body1" className="welcome-text">
-                        Добро пожаловать, {userData.name}.
-                    </Typography>
-                )
-                    : (
-                        <Typography variant="body1" className="welcome-text">
-                            Добро пожаловать, администратор.
-                        </Typography>
-                    )}
-                <Button color="inherit" onClick={() => navigate('/')} className="main-page-button">
-                    Главная
-                </Button>
-                <Button color="inherit" onClick={handleLogout} className="logout-button">
-                    Выйти
-                </Button>
+            <Toolbar className="header-toolbar">
+                <Typography variant="h6" className="welcome-message">
+                    {userData ? `Добро пожаловать, ${userData.name}` : 'Добро пожаловать, администратор'}
+                </Typography>
+                
+                <Box className="header-buttons">
+                    <Button 
+                        color="inherit" 
+                        onClick={() => navigate('/')}
+                        className="header-button"
+                    >
+                        Главная
+                    </Button>
+                    <Button 
+                        color="inherit" 
+                        onClick={handleLogout}
+                        className="header-button"
+                    >
+                        Выйти
+                    </Button>
+                </Box>
             </Toolbar>
         </AppBar>
     );
