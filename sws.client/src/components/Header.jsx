@@ -47,7 +47,7 @@ const Header = () => {
             <ToastContainer />
             <Toolbar className="header-toolbar">
                 <Typography variant="h6" className="welcome-message">
-                    {userData ? `Добро пожаловать, ${userData.name}` : 'Добро пожаловать, администратор'}
+                    {userData ? `Добро пожаловать, ${userData.name}!` : 'Добро пожаловать, администратор!'}
                 </Typography>
                 
                 <Box className="header-buttons">
