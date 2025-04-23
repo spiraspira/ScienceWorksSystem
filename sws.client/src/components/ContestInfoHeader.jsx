@@ -29,15 +29,28 @@ const ContestInfoHeader = ({ contestData, winner, onExport }) => {
                 )}
             </Box>
 
-            <Button
-                variant="contained"
-                size="small"
-                onClick={onExport}
-                startIcon={<DownloadIcon />}
-                className="export-report-btn"
-            >
-                Export Contest Report
-            </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={onExport}
+                    startIcon={<DownloadIcon fontSize="small" />}
+                    sx={{
+                        fontSize: '0.75rem',
+                        padding: '4px 8px',
+                        minWidth: 'auto',
+                        textTransform: 'none',
+                        color: '#616161',
+                        borderColor: '#e0e0e0',
+                        '&:hover': {
+                            borderColor: '#bdbdbd',
+                            backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                        }
+                    }}
+                >
+                    Export Report
+                </Button>
+            </Box>
         </Box>
     );
 };
