@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Box, Card, CardContent, Typography, Button, Tabs, Tab } from '@mui/material';
-import DownloadIcon from '@mui/icons-material/Download';
+import { Box, Card, CardContent } from '@mui/material';
 import ContestActions from '../actions/ContestActions';
 import CommitteeActions from '../actions/CommitteeActions';
 import ReportActions from '../actions/ReportActions';
 import { Document, Packer, Paragraph, AlignmentType, HeadingLevel } from "docx";
 import * as FileSaver from 'file-saver';
+import ContestInfoHeader from './ContestInfoHeader';
+import ContestInfoTabs from './ContestInfoTabs';
+import CommitteeTab from './CommitteeTab';
+import NominationsTab from './NominationsTab';
+import ReportsTab from './ReportsTab';
 
 const ContestInfoSection = ({ contestData }) => {
     const { contestId } = useParams();
@@ -179,88 +183,32 @@ const ContestInfoSection = ({ contestData }) => {
 
         fetchData();
     }, [contestId, contestData]);
+
     const tabs = [
         {
             label: "Organization Committee",
-            content: (
-                <Box className="tab-content">
-                    <Typography className="committee-chair">
-                        <strong>Chair:</strong> {organizationCommitteeData.teacher?.user?.name || 'N/A'}
-                    </Typography>
-                    <Typography className="committee-members-title">
-                        Members:
-                    </Typography>
-                    {organizationCommitteeMembers.map((member, index) => (
-                        <Typography key={index} className="committee-member">
-                            • {member.teacher?.user?.name || 'N/A'}
-                        </Typography>
-                    ))}
-                </Box>
-            )
+            content: <CommitteeTab
+                chair={organizationCommitteeData.teacher?.user?.name}
+                members={organizationCommitteeMembers}
+            />
         },
         {
             label: "Program Committee",
-            content: (
-                <Box className="tab-content">
-                    <Typography className="committee-chair">
-                        <strong>Chair:</strong> {programCommitteeData.teacher?.user?.name || 'N/A'}
-                    </Typography>
-                    <Typography className="committee-members-title">
-                        Members:
-                    </Typography>
-                    {programCommitteeMembers.map((member, index) => (
-                        <Typography key={index} className="committee-member">
-                            • {member.teacher?.user?.name || 'N/A'}
-                        </Typography>
-                    ))}
-                </Box>
-            )
+            content: <CommitteeTab
+                chair={programCommitteeData.teacher?.user?.name}
+                members={programCommitteeMembers}
+            />
         },
         {
             label: "Nominations",
-            content: (
-                <Box className="tab-content">
-                    {nominations.map((nomination, index) => (
-                        <Box key={index} className="nomination-item">
-                            <Typography className="nomination-name">
-                                {nomination.name || 'N/A'}
-                            </Typography>
-                            <Typography className="nomination-winner">
-                                Winner: {nomination.winner?.team?.student?.user?.name || 'Not selected'}
-                            </Typography>
-                        </Box>
-                    ))}
-                </Box>
-            )
+            content: <NominationsTab nominations={nominations} />
         },
         {
             label: "Reports",
-            content: (
-                <Box className="tab-content">
-                    {allReports.map((model, index) => (
-                        <Box key={index} className="report-item">
-                            <Box>
-                                <Typography className="report-name">
-                                    "{model.name || 'Untitled'}"
-                                </Typography>
-                                <Typography className="report-meta">
-                                    Author: {model.team?.student?.user?.name || 'N/A'} • 
-                                    Teacher: {model.team?.teacher?.user?.name || 'N/A'}
-                                </Typography>
-                            </Box>
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                onClick={() => downloadReport(model.file)}
-                                startIcon={<DownloadIcon />}
-                                className="download-report-btn"
-                            >
-                                Download
-                            </Button>
-                        </Box>
-                    ))}
-                </Box>
-            )
+            content: <ReportsTab
+                reports={allReports}
+                onDownload={downloadReport}
+            />
         }
     ];
 
@@ -269,79 +217,16 @@ const ContestInfoSection = ({ contestData }) => {
             <ToastContainer />
             <Card className="contest-info-card">
                 <CardContent className="contest-info-content">
-                    {/* Header Section */}
-                    <Box className="contest-header-section">
-                        <Typography variant="h5" className="contest-title">
-                            {contestData.name || 'Loading...'}
-                        </Typography>
-                        <Typography variant="body1" className="contest-description">
-                            {contestData.description || 'Loading...'}
-                        </Typography>
-                        
-                        <Box className="contest-dates-grid">
-                            <Typography variant="body2" className="contest-date">
-                                <strong>First Round:</strong> {contestData.dateStart?.substring(0, 10) || 'N/A'} to {contestData.dateStartSecondTour?.substring(0, 10) || 'N/A'}
-                            </Typography>
-                            <Typography variant="body2" className="contest-date">
-                                <strong>Second Round:</strong> {contestData.dateStartSecondTour?.substring(0, 10) || 'N/A'} to {contestData.dateEnd?.substring(0, 10) || 'N/A'}
-                            </Typography>
-                            <Typography variant="body2" className="contest-date">
-                                <strong>Invited Teacher:</strong> {contestData.invitedTeacher?.user?.name || 'N/A'}
-                            </Typography>
-                            {winner && (
-                                <Typography variant="body2" className="contest-date">
-                                    <strong>Winner:</strong> {winner.name || 'N/A'} (Author: {winner.team?.student?.user?.name || 'N/A'})
-                                </Typography>
-                            )}
-                        </Box>
-
-                        <Button
-                            variant="contained"
-                            size="small"
-                            onClick={generateContestReport}
-                            startIcon={<DownloadIcon />}
-                            className="export-report-btn"
-                        >
-                            Export Contest Report
-                        </Button>
-                    </Box>
-
-                    {/* Tabbed Section */}
-                    <Box className="tabbed-section">
-                        <Tabs 
-                            value={activeTab}
-                            onChange={handleTabChange}
-                            variant="scrollable"
-                            scrollButtons="auto"
-                            className="contest-tabs"
-                        >
-                            {tabs.map((tab, index) => (
-                                <Tab 
-                                    key={index}
-                                    label={tab.label}
-                                    className="contest-tab"
-                                />
-                            ))}
-                        </Tabs>
-                        
-                        <Box className="tab-panel-container">
-                            {tabs.map((tab, index) => (
-                                <div 
-                                    key={index}
-                                    role="tabpanel"
-                                    hidden={activeTab !== index}
-                                    id={`contest-tabpanel-${index}`}
-                                    aria-labelledby={`contest-tab-${index}`}
-                                >
-                                    {activeTab === index && (
-                                        <Box sx={{ p: 2 }}>
-                                            {tab.content}
-                                        </Box>
-                                    )}
-                                </div>
-                            ))}
-                        </Box>
-                    </Box>
+                    <ContestInfoHeader
+                        contestData={contestData}
+                        winner={winner}
+                        onExport={generateContestReport}
+                    />
+                    <ContestInfoTabs
+                        activeTab={activeTab}
+                        handleTabChange={handleTabChange}
+                        tabs={tabs}
+                    />
                 </CardContent>
             </Card>
         </Box>
