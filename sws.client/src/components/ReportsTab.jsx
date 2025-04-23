@@ -9,11 +9,11 @@ const ReportsTab = ({ reports, onDownload }) => {
                 <Box key={index} className="report-item">
                     <Box>
                         <Typography className="report-name">
-                            "{report.name || 'Untitled'}"
+                            "{report.name || 'Без названия'}"
                         </Typography>
                         <Typography className="report-meta">
-                            Author: {report.team?.student?.user?.name || 'N/A'} • 
-                            Teacher: {report.team?.teacher?.user?.name || 'N/A'}
+                            Автор: {report.team?.student?.user?.name || 'N/A'} • 
+                            Научный руководитель: {report.team?.teacher?.user?.name || 'N/A'}
                         </Typography>
                     </Box>
                     <Button
@@ -23,7 +23,7 @@ const ReportsTab = ({ reports, onDownload }) => {
                         startIcon={<DownloadIcon />}
                         className="download-report-btn"
                     >
-                        Download
+                        Скачать
                     </Button>
                 </Box>
             ))}

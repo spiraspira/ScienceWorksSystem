@@ -6,25 +6,25 @@ const ContestInfoHeader = ({ contestData, winner, onExport }) => {
     return (
         <Box className="contest-header-section">
             <Typography variant="h5" className="contest-title">
-                {contestData.name || 'Loading...'}
+                {contestData.name || 'Загрузка...'}
             </Typography>
             <Typography variant="body1" className="contest-description">
-                {contestData.description || 'Loading...'}
+                {contestData.description || 'Загрузка...'}
             </Typography>
             
             <Box className="contest-dates-grid">
                 <Typography variant="body2" className="contest-date">
-                    <strong>First Round:</strong> {contestData.dateStart?.substring(0, 10) || 'N/A'} to {contestData.dateStartSecondTour?.substring(0, 10) || 'N/A'}
+                    <strong>Первый тур:</strong> с {contestData.dateStart?.substring(0, 10) || 'N/A'} по {contestData.dateStartSecondTour?.substring(0, 10) || 'N/A'}
                 </Typography>
                 <Typography variant="body2" className="contest-date">
-                    <strong>Second Round:</strong> {contestData.dateStartSecondTour?.substring(0, 10) || 'N/A'} to {contestData.dateEnd?.substring(0, 10) || 'N/A'}
+                    <strong>Второй тур:</strong> с {contestData.dateStartSecondTour?.substring(0, 10) || 'N/A'} по {contestData.dateEnd?.substring(0, 10) || 'N/A'}
                 </Typography>
                 <Typography variant="body2" className="contest-date">
-                    <strong>Invited Teacher:</strong> {contestData.invitedTeacher?.user?.name || 'N/A'}
+                    <strong>Приглашенный преподаватель:</strong> {contestData.invitedTeacher?.user?.name || 'N/A'}
                 </Typography>
                 {winner && (
                     <Typography variant="body2" className="contest-date">
-                        <strong>Winner:</strong> {winner.name || 'N/A'} (Author: {winner.team?.student?.user?.name || 'N/A'})
+                        <strong>Победитель:</strong> {winner.name || 'N/A'} (Автор: {winner.team?.student?.user?.name || 'N/A'})
                     </Typography>
                 )}
             </Box>
@@ -47,9 +47,7 @@ const ContestInfoHeader = ({ contestData, winner, onExport }) => {
                             backgroundColor: 'rgba(0, 0, 0, 0.04)'
                         }
                     }}
-                >
-                    Export Report
-                </Button>
+                >Скачать информацию о конкурсе</Button>
             </Box>
         </Box>
     );

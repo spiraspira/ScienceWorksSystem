@@ -186,25 +186,25 @@ const ContestInfoSection = ({ contestData }) => {
 
     const tabs = [
         {
-            label: "Organization Committee",
+            label: "Организационный комитет",
             content: <CommitteeTab
                 chair={organizationCommitteeData.teacher?.user?.name}
                 members={organizationCommitteeMembers}
             />
         },
         {
-            label: "Program Committee",
+            label: "Программный комитет",
             content: <CommitteeTab
                 chair={programCommitteeData.teacher?.user?.name}
                 members={programCommitteeMembers}
             />
         },
         {
-            label: "Nominations",
+            label: "Номинации",
             content: <NominationsTab nominations={nominations} />
         },
         {
-            label: "Reports",
+            label: "Работы",
             content: <ReportsTab
                 reports={allReports}
                 onDownload={downloadReport}

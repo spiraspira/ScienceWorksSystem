@@ -10,7 +10,7 @@ const NominationsTab = ({ nominations }) => {
                         {nomination.name || 'N/A'}
                     </Typography>
                     <Typography className="nomination-winner">
-                        Winner: {nomination.winner?.team?.student?.user?.name || 'Not selected'}
+                        Победитель: "{nomination.winner?.name || 'Не выбран'}" (Автор: {nomination.winner?.team?.student?.user?.name || 'Не выбран'})
                     </Typography>
                 </Box>
             ))}
