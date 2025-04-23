@@ -1004,3 +1004,37 @@
         grid-template-columns: 1fr 1fr;
     }
 }
+
+/* Tabbed Section Styles */
+.tabbed-section {
+    margin-top: 24px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.contest-tabs {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.contest-tab {
+    text-transform: none !important;
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+    min-width: 120px !important;
+    padding: 8px 16px !important;
+}
+
+.contest-tab.Mui-selected {
+    color: #1976d2 !important;
+}
+
+.tab-panel-container {
+    background-color: white;
+}
+
+.tab-content {
+    padding: 16px;
+}
+
+/* Keep all your existing styles from previous implementation */

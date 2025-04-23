@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Box, Card, CardContent, Typography, Accordion, AccordionSummary, AccordionDetails, Button } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Box, Card, CardContent, Typography, Button, Tabs, Tab } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import ContestActions from '../actions/ContestActions';
 import CommitteeActions from '../actions/CommitteeActions';
@@ -20,6 +19,11 @@ const ContestInfoSection = ({ contestData }) => {
     const [nominations, setNominations] = useState([]);
     const [allReports, setAllReports] = useState([]);
     const [winner, setWinner] = useState(null);
+    const [activeTab, setActiveTab] = useState(0);
+
+    const handleTabChange = (event, newValue) => {
+        setActiveTab(newValue);
+    };
 
     const downloadReport = (file) => {
         if (file) {
@@ -175,6 +179,90 @@ const ContestInfoSection = ({ contestData }) => {
 
         fetchData();
     }, [contestId, contestData]);
+    const tabs = [
+        {
+            label: "Organization Committee",
+            content: (
+                <Box className="tab-content">
+                    <Typography className="committee-chair">
+                        <strong>Chair:</strong> {organizationCommitteeData.teacher?.user?.name || 'N/A'}
+                    </Typography>
+                    <Typography className="committee-members-title">
+                        Members:
+                    </Typography>
+                    {organizationCommitteeMembers.map((member, index) => (
+                        <Typography key={index} className="committee-member">
+                            • {member.teacher?.user?.name || 'N/A'}
+                        </Typography>
+                    ))}
+                </Box>
+            )
+        },
+        {
+            label: "Program Committee",
+            content: (
+                <Box className="tab-content">
+                    <Typography className="committee-chair">
+                        <strong>Chair:</strong> {programCommitteeData.teacher?.user?.name || 'N/A'}
+                    </Typography>
+                    <Typography className="committee-members-title">
+                        Members:
+                    </Typography>
+                    {programCommitteeMembers.map((member, index) => (
+                        <Typography key={index} className="committee-member">
+                            • {member.teacher?.user?.name || 'N/A'}
+                        </Typography>
+                    ))}
+                </Box>
+            )
+        },
+        {
+            label: "Nominations",
+            content: (
+                <Box className="tab-content">
+                    {nominations.map((nomination, index) => (
+                        <Box key={index} className="nomination-item">
+                            <Typography className="nomination-name">
+                                {nomination.name || 'N/A'}
+                            </Typography>
+                            <Typography className="nomination-winner">
+                                Winner: {nomination.winner?.team?.student?.user?.name || 'Not selected'}
+                            </Typography>
+                        </Box>
+                    ))}
+                </Box>
+            )
+        },
+        {
+            label: "Reports",
+            content: (
+                <Box className="tab-content">
+                    {allReports.map((model, index) => (
+                        <Box key={index} className="report-item">
+                            <Box>
+                                <Typography className="report-name">
+                                    "{model.name || 'Untitled'}"
+                                </Typography>
+                                <Typography className="report-meta">
+                                    Author: {model.team?.student?.user?.name || 'N/A'} • 
+                                    Teacher: {model.team?.teacher?.user?.name || 'N/A'}
+                                </Typography>
+                            </Box>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() => downloadReport(model.file)}
+                                startIcon={<DownloadIcon />}
+                                className="download-report-btn"
+                            >
+                                Download
+                            </Button>
+                        </Box>
+                    ))}
+                </Box>
+            )
+        }
+    ];
 
     return (
         <Box className="contest-info-container">
@@ -189,7 +277,7 @@ const ContestInfoSection = ({ contestData }) => {
                         <Typography variant="body1" className="contest-description">
                             {contestData.description || 'Loading...'}
                         </Typography>
-
+                        
                         <Box className="contest-dates-grid">
                             <Typography variant="body2" className="contest-date">
                                 <strong>First Round:</strong> {contestData.dateStart?.substring(0, 10) || 'N/A'} to {contestData.dateStartSecondTour?.substring(0, 10) || 'N/A'}
@@ -218,110 +306,41 @@ const ContestInfoSection = ({ contestData }) => {
                         </Button>
                     </Box>
 
-                    {/* Committees Section */}
-                    <Box className="section-container">
-                        <Accordion className="contest-accordion">
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />} className="accordion-summary">
-                                <Typography className="accordion-title">
-                                    Organization Committee
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails className="accordion-details">
-                                <Typography className="committee-chair">
-                                    <strong>Chair:</strong> {organizationCommitteeData.teacher?.user?.name || 'N/A'}
-                                </Typography>
-                                <Typography className="committee-members-title">
-                                    Members:
-                                </Typography>
-                                {organizationCommitteeMembers.map((member, index) => (
-                                    <Typography key={index} className="committee-member">
-                                        • {member.teacher?.user?.name || 'N/A'}
-                                    </Typography>
-                                ))}
-                            </AccordionDetails>
-                        </Accordion>
-                    </Box>
-
-                    {/* Committees Section */}
-                    <Box className="section-container">
-                        <Accordion className="contest-accordion">
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />} className="accordion-summary">
-                                <Typography className="accordion-title">
-                                    Program Committee
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails className="accordion-details">
-                                <Typography className="committee-chair">
-                                    <strong>Chair:</strong> {programCommitteeData.teacher?.user?.name || 'N/A'}
-                                </Typography>
-                                <Typography className="committee-members-title">
-                                    Members:
-                                </Typography>
-                                {programCommitteeMembers.map((member, index) => (
-                                    <Typography key={index} className="committee-member">
-                                        • {member.teacher?.user?.name || 'N/A'}
-                                    </Typography>
-                                ))}
-                            </AccordionDetails>
-                        </Accordion>
-                    </Box>
-
-                    {/* Nominations Section */}
-                    <Box className="section-container">
-                        <Accordion className="contest-accordion">
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />} className="accordion-summary">
-                                <Typography className="accordion-title">
-                                    Nominations
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails className="accordion-details">
-                                {nominations.map((nomination, index) => (
-                                    <Box key={index} className="nomination-item">
-                                        <Typography className="nomination-name">
-                                            {nomination.name || 'N/A'}
-                                        </Typography>
-                                        <Typography className="nomination-winner">
-                                            Winner: {nomination.winner?.team?.student?.user?.name || 'Not selected'}
-                                        </Typography>
-                                    </Box>
-                                ))}
-                            </AccordionDetails>
-                        </Accordion>
-                    </Box>
-
-                    {/* Reports Section */}
-                    <Box className="section-container">
-                        <Accordion className="contest-accordion">
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />} className="accordion-summary">
-                                <Typography className="accordion-title">
-                                    Submitted Reports
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails className="reports-accordion-details">
-                                {allReports.map((model, index) => (
-                                    <Box key={index} className="report-item">
-                                        <Box>
-                                            <Typography className="report-name">
-                                                "{model.name || 'Untitled'}"
-                                            </Typography>
-                                            <Typography className="report-meta">
-                                                Author: {model.team?.student?.user?.name || 'N/A'} •
-                                                Teacher: {model.team?.teacher?.user?.name || 'N/A'}
-                                            </Typography>
+                    {/* Tabbed Section */}
+                    <Box className="tabbed-section">
+                        <Tabs 
+                            value={activeTab}
+                            onChange={handleTabChange}
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            className="contest-tabs"
+                        >
+                            {tabs.map((tab, index) => (
+                                <Tab 
+                                    key={index}
+                                    label={tab.label}
+                                    className="contest-tab"
+                                />
+                            ))}
+                        </Tabs>
+                        
+                        <Box className="tab-panel-container">
+                            {tabs.map((tab, index) => (
+                                <div 
+                                    key={index}
+                                    role="tabpanel"
+                                    hidden={activeTab !== index}
+                                    id={`contest-tabpanel-${index}`}
+                                    aria-labelledby={`contest-tab-${index}`}
+                                >
+                                    {activeTab === index && (
+                                        <Box sx={{ p: 2 }}>
+                                            {tab.content}
                                         </Box>
-                                        <Button
-                                            variant="outlined"
-                                            size="small"
-                                            onClick={() => downloadReport(model.file)}
-                                            startIcon={<DownloadIcon />}
-                                            className="download-report-btn"
-                                        >
-                                            Download
-                                        </Button>
-                                    </Box>
-                                ))}
-                            </AccordionDetails>
-                        </Accordion>
+                                    )}
+                                </div>
+                            ))}
+                        </Box>
                     </Box>
                 </CardContent>
             </Card>
