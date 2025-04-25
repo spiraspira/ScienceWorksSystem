@@ -7,6 +7,7 @@ import GradeActions from '../actions/GradeActions';
 import ReportActions from '../actions/ReportActions';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
 import * as FileSaver from 'file-saver';
+import '../App.css';
 
 const StudentSecondTourSection = ({ contestId }) => {
   const [nominations, setNominations] = useState([]);
@@ -91,30 +92,51 @@ const StudentSecondTourSection = ({ contestId }) => {
   };
 
   return (
-    <Box className="student-second-tour-section">
+    <Box className="contest-info-container">
       <ToastContainer />
-      <Typography variant="h3" className="page-title">
-        Второй тур
-      </Typography>
-      {nominations.map((nomination) => (
-        <Box key={nomination.id} className="nomination-container">
-          <Card className="nomination-card">
-            <CardContent>
-              <Typography variant="h5">{nomination.name}</Typography>
-              <Divider className="divider" />
-              {report && (<NominationGrades nominationId={nomination.id} reportId={report?.id} />)}
-            </CardContent>
-          </Card>
-        </Box>
-      ))}
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={downloadGrades} 
-        style={{ marginTop: '20px' }}
-      >
-        Download Grades
-      </Button>
+      <Card className="contest-info-card">
+        <CardContent className="contest-info-content">
+          <Typography variant="h5" className="contest-title">
+            Второй тур
+          </Typography>
+          
+          {nominations.length === 0 ? (
+            <Typography variant="body2" className="no-nominations-message">
+              Номинации пока не определены
+            </Typography>
+          ) : (
+            <Box className="nominations-container">
+              {nominations.map((nomination) => (
+                <Box key={nomination.id} className="nomination-item">
+                  <Typography variant="h6" className="nomination-title">
+                    {nomination.name}
+                  </Typography>
+                  <Divider className="nomination-divider" />
+                  {report && (
+                    <NominationGrades 
+                      nominationId={nomination.id} 
+                      reportId={report?.id} 
+                    />
+                  )}
+                </Box>
+              ))}
+            </Box>
+          )}
+
+          {nominations.length > 0 && (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={downloadGrades}
+                className="download-grades-btn"
+              >
+                Скачать оценки
+              </Button>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
     </Box>
   );
 };
@@ -137,14 +159,40 @@ const NominationGrades = ({ nominationId, reportId }) => {
 
   return (
     <>
-      {grades.map((grade) => (
-        <Box key={grade.id} className="grade-container">
-          <Typography>Оценка: {grade.reportGrade}</Typography>
-          <Typography>Отзыв: {grade.text}</Typography>
-          <Typography>Дата: {grade.date}</Typography>
-          <Typography>Автор: {grade.programCommitteeMember?.teacher?.user?.name}</Typography>
+      {grades.length === 0 ? (
+        <Typography variant="body2" className="no-grades-message">
+          Оценки пока не выставлены
+        </Typography>
+      ) : (
+        <Box className="grades-container">
+          {grades.map((grade) => (
+            <Card key={grade.id} className="grade-card">
+              <CardContent>
+                <Typography variant="body1" className="grade-value">
+                  <strong>Оценка:</strong> {grade.reportGrade}
+                </Typography>
+                {grade.text && (
+                  <Typography variant="body1" className="grade-text">
+                    <strong>Отзыв:</strong> {grade.text}
+                  </Typography>
+                )}
+                <Typography variant="body2" className="grade-meta">
+                  <strong>Дата:</strong> {new Date(grade.date).toLocaleDateString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </Typography>
+                <Typography variant="body2" className="grade-meta">
+                  <strong>Автор:</strong> {grade.programCommitteeMember?.teacher?.user?.name || 'Неизвестно'}
+                </Typography>
+              </CardContent>
+            </Card>
+          ))}
         </Box>
-      ))}
+      )}
     </>
   );
 };

@@ -1181,3 +1181,81 @@
     border-color: #bdbdbd !important;
     background-color: rgba(0, 0, 0, 0.04) !important;
 }
+
+/* Second Tour Section Styles */
+.nominations-container {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .nomination-item {
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+  }
+  
+  .nomination-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #212121 !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .nomination-divider {
+    margin: 8px 0 !important;
+    border-color: #e0e0e0 !important;
+  }
+  
+  .no-nominations-message,
+  .no-grades-message {
+    color: #616161 !important;
+    font-style: italic !important;
+    margin-top: 16px !important;
+  }
+  
+  .grades-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  
+  .grade-card {
+    border-radius: 4px !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: none !important;
+  }
+  
+  .grade-value {
+    font-size: 0.875rem !important;
+    color: #212121 !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .grade-text {
+    font-size: 0.875rem !important;
+    color: #212121 !important;
+    margin-bottom: 8px !important;
+    white-space: pre-line;
+  }
+  
+  .grade-meta {
+    font-size: 0.8125rem !important;
+    color: #616161 !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .download-grades-btn {
+    font-size: 0.8125rem !important;
+    padding: 6px 12px !important;
+    text-transform: none !important;
+    border-color: #e0e0e0 !important;
+    color: #616161 !important;
+  }
+  
+  .download-grades-btn:hover {
+    border-color: #bdbdbd !important;
+    background-color: rgba(0, 0, 0, 0.04) !important;
+  }
