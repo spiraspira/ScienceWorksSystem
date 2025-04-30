@@ -24,6 +24,7 @@ const StudentSecondTourSection = ({ contestId }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [containerHeight, setContainerHeight] = useState(400);
   const userId = localStorage.getItem('userId');
+  const [overallAverage, setOverallAverage] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,11 +112,53 @@ const StudentSecondTourSection = ({ contestId }) => {
     }
   };
 
+  const calculateAverageGrade = (grades) => {
+    if (!grades || grades.length === 0) return null;
+    const sum = grades.reduce((acc, grade) => acc + grade.reportGrade, 0);
+    return (sum / grades.length).toFixed(2);
+  };
+
+  useEffect(() => {
+    const calculateOverallAverage = async () => {
+      if (nominations.length > 0 && report?.id) {
+        let totalSum = 0;
+        let totalCount = 0;
+        
+        try {
+          // Fetch grades for all nominations
+          const gradesPromises = nominations.map(nomination => 
+            GradeActions.getGradesOfNomination(nomination.id, report.id)
+          );
+          
+          const allGrades = await Promise.all(gradesPromises);
+          
+          allGrades.forEach(grades => {
+            if (grades && grades.length > 0) {
+              const avg = calculateAverageGrade(grades);
+              if (avg) {
+                totalSum += parseFloat(avg);
+                totalCount++;
+              }
+            }
+          });
+          
+          setOverallAverage(totalCount > 0 ? (totalSum / totalCount).toFixed(2) : null);
+        } catch (error) {
+          console.error('Error calculating overall average:', error);
+          setOverallAverage(null);
+        }
+      }
+    };
+  
+    calculateOverallAverage();
+  }, [nominations, report]);
+
   const TabPanel = ({ value, index, nomination, report }) => {
     const [grades, setGrades] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [contentHeight, setContentHeight] = useState(0);
+    const [averageGrade, setAverageGrade] = useState(null);
 
     useEffect(() => {
       let isMounted = true;
@@ -159,10 +202,14 @@ const StudentSecondTourSection = ({ contestId }) => {
 
     useEffect(() => {
       if (grades.length > 0) {
+        setAverageGrade(calculateAverageGrade(grades));
         // Calculate approximate content height
-        const newHeight = 100 + (grades.length * 125); // Base height + 120px per grade card
+        const newHeight = 100 + (grades.length * 125) + 50; // Base height + 120px per grade card
         setContentHeight(newHeight);
         updateContainerHeight(newHeight);
+      }
+      else {
+        setAverageGrade(null);
       }
     }, [grades]);
 
@@ -228,6 +275,19 @@ const StudentSecondTourSection = ({ contestId }) => {
             ))}
           </Box>
         )}
+        {grades.length > 0 && (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* ... existing grade cards ... */}
+          <Typography variant="body1" sx={{ 
+            mt: 2,
+            textAlign: 'right',
+            fontWeight: 500,
+            color: '#1976d2'
+          }}>
+            Средний балл: {averageGrade}
+          </Typography>
+        </Box>
+      )}
       </div>
     );
   };
@@ -298,11 +358,20 @@ const StudentSecondTourSection = ({ contestId }) => {
               </Box>
 
               <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'flex-end', 
-                mt: 2,
-                px: { xs: 1, sm: 0 }
-              }}>
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        mt: 2,
+        px: { xs: 1, sm: 0 }
+      }}>
+        {overallAverage && (
+          <Typography variant="body1" sx={{ 
+            fontWeight: 500,
+            color: '#1976d2'
+          }}>
+            Общий средний балл: {overallAverage}
+          </Typography>
+        )}
                 <Button
                   variant="outlined"
                   size="small"
