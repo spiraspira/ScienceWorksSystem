@@ -7,7 +7,11 @@ import {
   Card,
   CardContent,
   Divider,
-  CircularProgress
+  CircularProgress,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,8 +24,9 @@ const TeacherFirstTourSection = ({ contestId, organizationCommitteeMemberId }) =
     const userId = localStorage.getItem('userId');
     const [contestInfo, setContestInfo] = useState(null);
     const [reports, setReports] = useState([]);
-    const [reviews, setReviews] = useState({});
-    const [newReviewTexts, setNewReviewTexts] = useState({});
+    const [selectedReportId, setSelectedReportId] = useState('');
+    const [reviews, setReviews] = useState([]);
+    const [newReviewText, setNewReviewText] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -35,15 +40,11 @@ const TeacherFirstTourSection = ({ contestId, organizationCommitteeMemberId }) =
                 
                 setContestInfo(contest);
                 setReports(allReports);
-
-                const reportReviews = {};
-                const reviewPromises = allReports.map(async (report) => {
-                    const reviewsForReport = await ReviewActions.getReviewsOfReportOfTeacher(report.id, userId);
-                    reportReviews[report.id] = reviewsForReport;
-                });
                 
-                await Promise.all(reviewPromises);
-                setReviews(reportReviews);
+                if (allReports.length > 0) {
+                    setSelectedReportId(allReports[0].id);
+                    await loadReviews(allReports[0].id);
+                }
             } catch (error) {
                 toast.error(`Ошибка при загрузке данных: ${error.message}`);
             } finally {
@@ -54,24 +55,66 @@ const TeacherFirstTourSection = ({ contestId, organizationCommitteeMemberId }) =
         fetchData();
     }, [contestId, userId]);
 
-    const handleNewReviewSubmit = async (reportId) => {
+    const loadReviews = async (reportId) => {
+        try {
+            const reviewsForReport = await ReviewActions.getReviewsOfReportOfTeacher(reportId, userId);
+            setReviews(reviewsForReport);
+        } catch (error) {
+            toast.error(`Ошибка при загрузке отзывов: ${error.message}`);
+        }
+    };
+
+    const handleReportChange = async (event) => {
+        const reportId = event.target.value;
+        setSelectedReportId(reportId);
+        await loadReviews(reportId);
+    };
+
+    const handleNewReviewSubmit = async () => {
         try {
             await ReviewActions.create({ 
-                text: newReviewTexts[reportId], 
-                reportId, 
+                text: newReviewText, 
+                reportId: selectedReportId, 
                 organizationCommitteeMemberId 
             });
             
-            // Refresh reviews for this report
-            const updatedReviews = await ReviewActions.getReviewsOfReportOfTeacher(reportId, userId);
-            setReviews(prev => ({...prev, [reportId]: updatedReviews}));
+            // Refresh reviews
+            await loadReviews(selectedReportId);
             
             // Clear the text field
-            setNewReviewTexts(prev => ({...prev, [reportId]: ''}));
+            setNewReviewText('');
             
             toast.success('Отзыв успешно отправлен');
         } catch (error) {
             toast.error(`Ошибка при отправке отзыва: ${error.message}`);
+        }
+    };
+
+    const downloadReport = async (reportId) => {
+        try {
+            const report = reports.find(r => r.id === reportId);
+            if (report?.file) {
+                const binaryData = atob(report.file);
+                const arrayBuffer = new ArrayBuffer(binaryData.length);
+                const uint8Array = new Uint8Array(arrayBuffer);
+
+                for (let i = 0; i < binaryData.length; i++) {
+                    uint8Array[i] = binaryData.charCodeAt(i);
+                }
+
+                const blob = new Blob([uint8Array], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `${report.name}.docx`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                toast.error('Файл отчета не найден');
+            }
+        } catch (error) {
+            toast.error(`Ошибка при скачивании отчета: ${error.message}`);
         }
     };
 
@@ -82,6 +125,8 @@ const TeacherFirstTourSection = ({ contestId, organizationCommitteeMemberId }) =
             </Box>
         );
     }
+
+    const selectedReport = reports.find(report => report.id === selectedReportId);
 
     return (
         <Box className="teacher-first-tour-container">
@@ -97,25 +142,51 @@ const TeacherFirstTourSection = ({ contestId, organizationCommitteeMemberId }) =
                             Работы пока не загружены
                         </Typography>
                     ) : (
-                        <Box className="reports-list">
-                            {reports.map((report) => (
-                                <Card key={report.id} className="report-card">
+                        <>
+                            <FormControl fullWidth className="report-selector" sx={{ paddingBottom: '16px', paddingTop: '20px' }}>
+                                <InputLabel id="report-select-label" sx={{ paddingTop: '30px' }}>Выберите работу</InputLabel>
+                                <Select
+                                    labelId="report-select-label"
+                                    value={selectedReportId}
+                                    onChange={handleReportChange}
+                                    label="Выберите работу"
+                                >
+                                    {reports.map((report) => (
+                                        <MenuItem key={report.id} value={report.id}>
+                                            {report.name} ({report.team?.student?.user.name || 'Неизвестно'})
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            {selectedReport && (
+                                <Card className="report-card">
                                     <CardContent>
-                                        <Typography variant="h6" className="report-title">
-                                            {report.name}
+                                        <Box className="report-header">
+                                            <Typography variant="h6" className="report-title">
+                                                {selectedReport.name}
+                                            </Typography>
+                                            <Button
+                                                variant="outlined"
+                                                size="small"
+                                                onClick={() => downloadReport(selectedReportId)}
+                                                className="download-report-btn"
+                                            >
+                                                Скачать работу
+                                            </Button>
+                                        </Box>
+                                        <Typography variant="body2" className="report-meta">
+                                            Автор: {selectedReport.team?.student?.user.name || 'Неизвестно'}
                                         </Typography>
                                         <Typography variant="body2" className="report-meta">
-                                            Автор: {report.team?.student?.user.name || 'Неизвестно'}
-                                        </Typography>
-                                        <Typography variant="body2" className="report-meta">
-                                            Дата обновления: {new Date(report.dateUpdated).toLocaleDateString('ru-RU')}
+                                            Дата обновления: {new Date(selectedReport.dateUpdated).toLocaleDateString('ru-RU')}
                                         </Typography>
                                         
                                         <Divider className="report-divider" />
                                         
                                         <Box className="reviews-container">
-                                            {reviews[report.id]?.length > 0 ? (
-                                                reviews[report.id].map((review) => (
+                                            {reviews.length > 0 ? (
+                                                reviews.map((review) => (
                                                     <Card key={review.id} className="review-card">
                                                         <CardContent>
                                                             <Typography variant="body1" className="review-text">
@@ -149,19 +220,14 @@ const TeacherFirstTourSection = ({ contestId, organizationCommitteeMemberId }) =
                                                         fullWidth
                                                         multiline
                                                         rows={4}
-                                                        value={newReviewTexts[report.id] || ''}
-                                                        onChange={(e) =>
-                                                            setNewReviewTexts(prev => ({
-                                                                ...prev,
-                                                                [report.id]: e.target.value
-                                                            }))
-                                                        }
+                                                        value={newReviewText}
+                                                        onChange={(e) => setNewReviewText(e.target.value)}
                                                         className="review-textfield"
                                                     />
                                                     <Button
                                                         variant="contained"
-                                                        onClick={() => handleNewReviewSubmit(report.id)}
-                                                        disabled={!newReviewTexts[report.id]?.trim()}
+                                                        onClick={handleNewReviewSubmit}
+                                                        disabled={!newReviewText.trim()}
                                                         className="submit-review-btn"
                                                     >
                                                         Отправить отзыв
@@ -170,8 +236,8 @@ const TeacherFirstTourSection = ({ contestId, organizationCommitteeMemberId }) =
                                             )}
                                     </CardContent>
                                 </Card>
-                            ))}
-                        </Box>
+                            )}
+                        </>
                     )}
                 </CardContent>
             </Card>
