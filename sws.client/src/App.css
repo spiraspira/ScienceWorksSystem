@@ -1473,3 +1473,153 @@
       background: #9e9e9e;
     }
   }
+
+  /* Teacher First Tour Section Styles */
+.teacher-first-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.teacher-first-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.report-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: none;
+    transition: box-shadow 0.3s ease;
+}
+
+.report-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.report-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #212121;
+}
+
+.report-meta {
+    font-size: 0.8125rem;
+    color: #616161;
+    margin-bottom: 4px;
+}
+
+.report-divider {
+    margin: 12px 0;
+    border-color: #f0f0f0;
+}
+
+.reviews-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.review-card {
+    border-radius: 4px;
+    border: 1px solid #f0f0f0;
+    background-color: #fafafa;
+    box-shadow: none;
+}
+
+.review-text {
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+    white-space: pre-line;
+}
+
+.review-meta {
+    font-size: 0.75rem;
+    color: #757575;
+    text-align: right;
+}
+
+.no-reviews-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 16px 0;
+}
+
+.new-review-form {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.review-textfield .MuiOutlinedInput-root {
+    font-size: 0.875rem;
+}
+
+.submit-review-btn {
+    align-self: flex-end;
+    font-size: 0.8125rem;
+    padding: 8px 16px;
+    text-transform: none;
+    background-color: #1976d2;
+}
+
+.submit-review-btn:disabled {
+    opacity: 0.7;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .teacher-first-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .report-title {
+        font-size: 0.9375rem;
+    }
+    
+    .review-text {
+        font-size: 0.8125rem;
+    }
+    
+    .submit-review-btn {
+        width: 100%;
+    }
+}
