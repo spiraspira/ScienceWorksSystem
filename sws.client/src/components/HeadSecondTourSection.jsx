@@ -15,8 +15,11 @@ import {
   TextField,
   Button,
   CircularProgress,
-  Divider
+  Divider,
+  Collapse,
+  IconButton
 } from '@mui/material';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ContestActions from '../actions/ContestActions';
@@ -31,6 +34,7 @@ const HeadSecondTourSection = ({ contestId }) => {
   const [finalGradeInput, setFinalGradeInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [grades, setGrades] = useState([]);
+  const [expandedNominations, setExpandedNominations] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,50 +83,42 @@ const HeadSecondTourSection = ({ contestId }) => {
     return now >= start && now <= end;
   };
 
+  const toggleNominationExpand = (nominationId) => {
+    setExpandedNominations(prev => ({
+      ...prev,
+      [nominationId]: !prev[nominationId]
+    }));
+  };
+
   const calculateGradeStats = (reportGrades) => {
     if (!reportGrades || reportGrades.length === 0) return null;
 
-    // Group grades by nomination and teacher
+    // Group grades by nomination
     const byNomination = {};
-    const byTeacher = {};
 
     reportGrades.forEach(grade => {
-      // Group by nomination
       const nomId = grade.nominationId || 'unknown';
       if (!byNomination[nomId]) {
         byNomination[nomId] = {
+          id: nomId,
           name: grade.nomination?.name || 'Без номинации',
           grades: [],
-          teachers: new Set()
+          teachers: []
         };
       }
       byNomination[nomId].grades.push(grade.reportGrade);
-      byNomination[nomId].teachers.add(grade.programCommitteeMemberId);
-
-      // Group by teacher
-      const teacherId = grade.programCommitteeMemberId || 'unknown';
-      if (!byTeacher[teacherId]) {
-        byTeacher[teacherId] = {
-          name: grade.programCommitteeMember?.teacher?.user?.name || 'Анонимный член жюри',
-          grades: []
-        };
-      }
-      byTeacher[teacherId].grades.push(grade.reportGrade);
+      byNomination[nomId].teachers.push({
+        name: grade.programCommitteeMember?.teacher?.user?.name || 'Анонимный член жюри',
+        grade: grade.reportGrade,
+        comment: grade.text || '-'
+      });
     });
 
     // Calculate averages
-    const nominationStats = Object.entries(byNomination).map(([id, data]) => ({
-      id,
-      name: data.name,
-      average: data.grades.reduce((a, b) => a + b, 0) / data.grades.length,
-      teacherCount: data.teachers.size,
-      gradeCount: data.grades.length
-    }));
-
-    const teacherStats = Object.entries(byTeacher).map(([id, data]) => ({
-      id,
-      name: data.name,
-      average: data.grades.reduce((a, b) => a + b, 0) / data.grades.length
+    const nominationStats = Object.values(byNomination).map(nomination => ({
+      ...nomination,
+      average: nomination.grades.reduce((a, b) => a + b, 0) / nomination.grades.length,
+      gradeCount: nomination.grades.length
     }));
 
     const overallAverage = nominationStats.length > 0 
@@ -131,7 +127,6 @@ const HeadSecondTourSection = ({ contestId }) => {
 
     return {
       byNomination: nominationStats,
-      byTeacher: teacherStats,
       overallAverage
     };
   };
@@ -167,6 +162,12 @@ const HeadSecondTourSection = ({ contestId }) => {
     }
   };
 
+  const handleEditFinalGrade = () => {
+    if (selectedReport?.grade) {
+      setFinalGradeInput(selectedReport.grade.toString());
+    }
+  };
+
   if (loading) {
     return (
       <Box className="head-second-tour-container">
@@ -183,8 +184,8 @@ const HeadSecondTourSection = ({ contestId }) => {
       <ToastContainer limit={3} />
       <Card className="head-second-tour-card">
         <CardContent>
-          <Typography variant="h5" className="section-title" sx={{paddingBottom:1}}>
-            Второй тур
+          <Typography variant="h5" className="section-title">
+            Второй тур (Председатель жюри)
             {contest && !isContestActive() && (
               <Typography variant="body2" color="error" sx={{ mt: 1 }}>
                 Конкурс завершен. Редактирование оценок недоступно.
@@ -204,6 +205,7 @@ const HeadSecondTourSection = ({ contestId }) => {
                   onChange={(e) => {
                     const report = reports.find(r => r.id === e.target.value);
                     setSelectedReport(report);
+                    setExpandedNominations({});
                   }}
                   fullWidth
                   size="small"
@@ -224,28 +226,6 @@ const HeadSecondTourSection = ({ contestId }) => {
 
                   {currentGrades.length > 0 ? (
                     <>
-                      <TableContainer className="grades-table" sx={{ mb: 3 }}>
-                        <Table size="small">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell colSpan={3} className="table-header">
-                                Статистика оценок
-                              </TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell>
-                                <Typography fontWeight="bold">Общий средний балл:</Typography>
-                              </TableCell>
-                              <TableCell colSpan={2}>
-                                {gradeStats ? gradeStats.overallAverage.toFixed(2) : 'Нет данных'}
-                              </TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-
                       <Typography variant="subtitle1" sx={{ mb: 1 }}>
                         Оценки по номинациям:
                       </Typography>
@@ -256,53 +236,67 @@ const HeadSecondTourSection = ({ contestId }) => {
                               <TableCell className="table-header">Номинация</TableCell>
                               <TableCell className="table-header" align="right">Средний балл</TableCell>
                               <TableCell className="table-header" align="right">Кол-во оценок</TableCell>
+                              <TableCell className="table-header" align="right"></TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
                             {gradeStats?.byNomination?.map((nomination) => (
-                              <TableRow key={nomination.id}>
-                                <TableCell>{nomination.name}</TableCell>
-                                <TableCell align="right">{nomination.average.toFixed(2)}</TableCell>
-                                <TableCell align="right">{nomination.gradeCount}</TableCell>
-                              </TableRow>
+                              <React.Fragment key={nomination.id}>
+                                <TableRow>
+                                  <TableCell>{nomination.name}</TableCell>
+                                  <TableCell align="right">{nomination.average.toFixed(2)}</TableCell>
+                                  <TableCell align="right">{nomination.gradeCount}</TableCell>
+                                  <TableCell align="right">
+                                    <IconButton
+                                      size="small"
+                                      onClick={() => toggleNominationExpand(nomination.id)}
+                                    >
+                                      {expandedNominations[nomination.id] ? (
+                                        <KeyboardArrowUp />
+                                      ) : (
+                                        <KeyboardArrowDown />
+                                      )}
+                                    </IconButton>
+                                  </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                  <TableCell colSpan={4} sx={{ py: 0 }}>
+                                    <Collapse in={expandedNominations[nomination.id]} timeout="auto" unmountOnExit>
+                                      <Box sx={{ margin: 1 }}>
+                                        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                          Оценки членов жюри:
+                                        </Typography>
+                                        <Table size="small">
+                                          <TableHead>
+                                            <TableRow>
+                                              <TableCell>Член жюри</TableCell>
+                                              <TableCell align="right">Оценка</TableCell>
+                                              <TableCell>Комментарий</TableCell>
+                                            </TableRow>
+                                          </TableHead>
+                                          <TableBody>
+                                            {nomination.teachers.map((teacher, index) => (
+                                              <TableRow key={index}>
+                                                <TableCell>{teacher.name}</TableCell>
+                                                <TableCell align="right">{teacher.grade}</TableCell>
+                                                <TableCell>{teacher.comment}</TableCell>
+                                              </TableRow>
+                                            ))}
+                                          </TableBody>
+                                        </Table>
+                                      </Box>
+                                    </Collapse>
+                                  </TableCell>
+                                </TableRow>
+                              </React.Fragment>
                             ))}
                           </TableBody>
                         </Table>
                       </TableContainer>
 
                       <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                        Оценки членов жюри:
+                        Общий средний балл: {gradeStats?.overallAverage.toFixed(2)}
                       </Typography>
-                      <TableContainer className="grades-table" sx={{ mb: 3 }}>
-                        <Table size="small">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell className="table-header">Член жюри</TableCell>
-                              <TableCell className="table-header">Номинация</TableCell>
-                              <TableCell className="table-header" align="right">Оценка</TableCell>
-                              <TableCell className="table-header">Комментарий</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {currentGrades.map((grade) => (
-                              <TableRow key={grade.id}>
-                                <TableCell>
-                                  {grade.programCommitteeMember?.teacher?.user?.name || 'Анонимный член жюри'}
-                                </TableCell>
-                                <TableCell>
-                                  {grade.nomination?.name || 'Без номинации'}
-                                </TableCell>
-                                <TableCell align="right">
-                                  {grade.reportGrade}
-                                </TableCell>
-                                <TableCell>
-                                  {grade.text || '-'}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
                     </>
                   ) : (
                     <Typography variant="body2" sx={{ mb: 3 }}>
@@ -316,10 +310,21 @@ const HeadSecondTourSection = ({ contestId }) => {
                     <Typography variant="subtitle1" sx={{ mr: 2 }}>
                       Итоговая оценка:
                     </Typography>
-                    {selectedReport.grade !== null ? (
-                      <Typography fontWeight="bold" sx={{ fontSize: '1.2rem' }}>
-                        {selectedReport.grade}
-                      </Typography>
+                    {selectedReport.grade !== null && !finalGradeInput ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography fontWeight="bold" sx={{ fontSize: '1.2rem', mr: 2 }}>
+                          {selectedReport.grade}
+                        </Typography>
+                        {isContestActive() && (
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={handleEditFinalGrade}
+                          >
+                            Изменить
+                          </Button>
+                        )}
+                      </Box>
                     ) : isContestActive() ? (
                       <>
                         <TextField
@@ -339,6 +344,16 @@ const HeadSecondTourSection = ({ contestId }) => {
                         >
                           Сохранить
                         </Button>
+                        {finalGradeInput && (
+                          <Button
+                            variant="text"
+                            size="small"
+                            onClick={() => setFinalGradeInput('')}
+                            sx={{ ml: 1 }}
+                          >
+                            Отмена
+                          </Button>
+                        )}
                       </>
                     ) : (
                       <Typography color="text.secondary">
