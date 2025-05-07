@@ -2149,3 +2149,180 @@
         padding: 4px 8px;
     }
 }
+
+/* Teacher Second Tour Section Styles */
+.teacher-second-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.teacher-second-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message,
+.no-grades-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.report-selector .MuiSelect-select {
+    font-size: 0.875rem;
+}
+
+.grades-table {
+    margin: 16px 0;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+}
+
+.table-header {
+    font-weight: 600;
+    background-color: #f5f5f5;
+}
+
+.grades-table .MuiTableCell-root {
+    padding: 8px 16px;
+}
+
+.new-grade-form {
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #fafafa;
+}
+
+.nomination-select .MuiSelect-select {
+    font-size: 0.875rem;
+}
+
+.grade-input .MuiInputBase-input {
+    text-align: center;
+}
+
+.submit-grade-btn {
+    font-size: 0.8125rem;
+    padding: 8px 16px;
+    text-transform: none;
+    background-color: #1976d2;
+}
+
+.submit-grade-btn:disabled {
+    opacity: 0.7;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .teacher-second-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .grades-table .MuiTableCell-root {
+        padding: 6px 12px;
+        font-size: 0.8125rem;
+    }
+    
+    .submit-grade-btn {
+        width: 100%;
+    }
+}
+
+/* Teacher Second Tour Section Styles */
+.teacher-second-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.teacher-second-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.report-selector .MuiSelect-select {
+    font-size: 0.875rem;
+}
+
+.grades-table {
+    margin: 16px 0;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+}
+
+.table-header {
+    font-weight: 600;
+    background-color: #f5f5f5;
+}
+
+.grades-table .MuiTableCell-root {
+    padding: 12px 16px;
+}
+
+.grade-input .MuiInputBase-input {
+    text-align: center;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .teacher-second-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .grades-table .MuiTableCell-root {
+        padding: 8px 12px;
+        font-size: 0.8125rem;
+    }
+}
