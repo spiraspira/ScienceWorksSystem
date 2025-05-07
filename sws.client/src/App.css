@@ -1879,3 +1879,150 @@
         font-size: 0.8125rem;
     }
 }
+
+/* Invited First Tour Section Styles */
+.invited-first-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.invited-first-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.report-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: none;
+    margin-top: 16px;
+}
+
+.report-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #212121;
+}
+
+.report-meta {
+    font-size: 0.8125rem;
+    color: #616161;
+    margin-bottom: 4px;
+}
+
+.report-divider {
+    margin: 12px 0;
+    border-color: #f0f0f0;
+}
+
+.review-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    margin-bottom: 16px;
+}
+
+.review-label {
+    font-weight: 500;
+    color: #1976d2;
+    margin-bottom: 4px;
+}
+
+.review-text {
+    font-size: 0.875rem;
+    white-space: pre-line;
+}
+
+.no-review-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 16px 0;
+}
+
+.new-review-form {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.review-textfield .MuiOutlinedInput-root {
+    font-size: 0.875rem;
+}
+
+.submit-review-btn {
+    align-self: flex-end;
+    font-size: 0.8125rem;
+    padding: 8px 16px;
+    text-transform: none;
+    background-color: #1976d2;
+}
+
+.submit-review-btn:disabled {
+    opacity: 0.7;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Report Selector Styles */
+.report-selector {
+    margin-bottom: 16px;
+}
+
+.report-selector .MuiInputLabel-root {
+    font-size: 0.875rem;
+}
+
+.report-selector .MuiSelect-select {
+    font-size: 0.875rem;
+    padding: 12px 14px;
+}
+
+.report-selector .MuiMenuItem-root {
+    font-size: 0.875rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .invited-first-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .report-selector .MuiSelect-select {
+        padding: 10px 12px;
+        font-size: 0.8125rem;
+    }
+    
+    .submit-review-btn {
+        width: 100%;
+    }
+}
