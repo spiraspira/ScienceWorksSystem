@@ -100,7 +100,7 @@ const HeadFirstTourComponent = ({ contestId }) => {
             <Card className="head-first-tour-card">
                 <CardContent>
                     <Typography variant="h5" className="section-title">
-                        Первый тур (Режим председателя)
+                        Первый тур
                     </Typography>
                     
                     {reports.length === 0 ? (
