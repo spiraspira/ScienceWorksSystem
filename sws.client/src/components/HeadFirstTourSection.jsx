@@ -119,7 +119,7 @@ const HeadFirstTourComponent = ({ contestId }) => {
                                 >
                                     {reports.map((report) => (
                                         <MenuItem key={report.id} value={report.id}>
-                                            {report.name} ({report.team?.student?.user.name || 'Неизвестно'})
+                                            [{report.isAccepted ? 'ПРИНЯТА' : 'НЕ ПРИНЯТА'}] {report.name} ({report.team?.student?.user.name || 'Неизвестно'})
                                         </MenuItem>
                                     ))}
                                 </Select>
