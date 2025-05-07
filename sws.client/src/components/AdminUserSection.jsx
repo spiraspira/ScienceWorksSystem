@@ -23,6 +23,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserActions from '../actions/UserActions';
 import UniversityActions from '../actions/UniversityActions';
+import { Document, Packer, Paragraph, Table as DocxTable, TableRow as DocxRow, TableCell as DocxCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import * as FileSaver from 'file-saver';
 
 const AdminUserSection = () => {
   const [users, setUsers] = useState([]);
@@ -61,6 +63,99 @@ const AdminUserSection = () => {
     };
     fetchData();
   }, []);
+
+  const generateReport = async () => {
+    const currentDate = new Date().toLocaleDateString();
+
+    const rows = [
+      new DocxRow({
+        children: [
+          new DocxCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "ФИО", bold: true, size: 20, font: "Times New Roman" })]
+            })]
+          }),
+          new DocxCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Логин", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+          new DocxCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Студент?", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+          new DocxCell({
+            children: [new Paragraph({
+              children: [new TextRun({ text: "Учебное заведение", bold: true, size: 28, font: "Times New Roman" })]
+            })]
+          }),
+        ],
+      }),
+      ...users.map(user => (
+        new DocxRow({
+          children: [
+            new DocxCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: user.name, size: 28, font: "Times New Roman" })]
+              })]
+            }),
+            new DocxCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: user.login, size: 28, font: "Times New Roman" })]
+              })]
+            }),
+            new DocxCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: user.isStudent ? 'Да' : 'Нет', size: 28, font: "Times New Roman" })]
+              })]
+            }),
+            new DocxCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: universities.find((u) => u.id === user.universityId)?.name || '', size: 28, font: "Times New Roman" })]
+              })]
+            }),
+          ],
+        })
+      )),
+    ];
+
+    const table = new DocxTable({
+      rows: rows,
+      width: { size: 10000, type: 'dxa' },
+    });
+
+    const doc = new Document({
+      sections: [{
+        children: [
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: "Отчет о пользователях",
+                bold: true,
+                size: 28,
+                font: "Times New Roman"
+              }),
+            ]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: currentDate, size: 28, font: "Times New Roman" })]
+          }),
+          new Paragraph({ text: "\n" }), // Add some spacing
+          table, // Add the table to the document
+        ],
+      }],
+    });
+
+    Packer.toBlob(doc).then(blob => {
+      FileSaver.saveAs(blob, "Пользователи_отчет.docx");
+    }).catch(err => {
+      console.error("Ошибка генерации отчета:", err);
+    });
+  };
 
   const handleDelete = async (userId) => {
     try {
@@ -305,6 +400,16 @@ const AdminUserSection = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+                  <Box mt={3} display="flex" justifyContent="flex-end">
+                    <Button 
+                      variant="contained" 
+                      onClick={generateReport}
+                      disabled={universities.length === 0}
+                    >
+                      Скачать отчет
+                    </Button>
+                  </Box>
     </Box>
   );
 };
