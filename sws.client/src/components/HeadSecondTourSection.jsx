@@ -4,6 +4,8 @@ import {
   Typography, 
   Card, 
   CardContent, 
+  Select, 
+  MenuItem, 
   Table, 
   TableBody, 
   TableCell, 
@@ -12,7 +14,8 @@ import {
   TableRow,
   TextField,
   Button,
-  CircularProgress
+  CircularProgress,
+  Divider
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -24,8 +27,10 @@ import '../App.css';
 const HeadSecondTourSection = ({ contestId }) => {
   const [reports, setReports] = useState([]);
   const [contest, setContest] = useState(null);
-  const [gradeInputs, setGradeInputs] = useState({});
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [finalGradeInput, setFinalGradeInput] = useState('');
   const [loading, setLoading] = useState(true);
+  const [grades, setGrades] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,14 +42,25 @@ const HeadSecondTourSection = ({ contestId }) => {
         ]);
 
         setContest(contestInfo);
+        setReports(allReports);
 
-        const reportsWithGrades = await Promise.all(
-          allReports.map(async (report) => {
-            const grades = await GradeActions.getGradesOfReport(report.id);
-            return { ...report, grades };
-          })
+        // Fetch grades for all reports
+        const gradesData = await Promise.all(
+          allReports.map(report => 
+            GradeActions.getGradesOfReport(report.id)
+          )
         );
-        setReports(reportsWithGrades);
+        
+        // Create a map of reportId to grades
+        const gradesMap = {};
+        allReports.forEach((report, index) => {
+          gradesMap[report.id] = gradesData[index];
+        });
+        setGrades(gradesMap);
+
+        if (allReports.length > 0) {
+          setSelectedReport(allReports[0]);
+        }
       } catch (error) {
         toast.error('Ошибка при получении данных: ' + error.message);
       } finally {
@@ -63,38 +79,89 @@ const HeadSecondTourSection = ({ contestId }) => {
     return now >= start && now <= end;
   };
 
-  const handleGradeChange = (reportId, grade) => {
-    if (!isContestActive()) {
-      toast.error('Добавление оценок доступно только в период проведения конкурса');
-      return;
-    }
-    setGradeInputs((prevInputs) => ({
-      ...prevInputs,
-      [reportId]: grade,
+  const calculateGradeStats = (reportGrades) => {
+    if (!reportGrades || reportGrades.length === 0) return null;
+
+    // Group grades by nomination and teacher
+    const byNomination = {};
+    const byTeacher = {};
+
+    reportGrades.forEach(grade => {
+      // Group by nomination
+      const nomId = grade.nominationId || 'unknown';
+      if (!byNomination[nomId]) {
+        byNomination[nomId] = {
+          name: grade.nomination?.name || 'Без номинации',
+          grades: [],
+          teachers: new Set()
+        };
+      }
+      byNomination[nomId].grades.push(grade.reportGrade);
+      byNomination[nomId].teachers.add(grade.programCommitteeMemberId);
+
+      // Group by teacher
+      const teacherId = grade.programCommitteeMemberId || 'unknown';
+      if (!byTeacher[teacherId]) {
+        byTeacher[teacherId] = {
+          name: grade.programCommitteeMember?.teacher?.user?.name || 'Анонимный член жюри',
+          grades: []
+        };
+      }
+      byTeacher[teacherId].grades.push(grade.reportGrade);
+    });
+
+    // Calculate averages
+    const nominationStats = Object.entries(byNomination).map(([id, data]) => ({
+      id,
+      name: data.name,
+      average: data.grades.reduce((a, b) => a + b, 0) / data.grades.length,
+      teacherCount: data.teachers.size,
+      gradeCount: data.grades.length
     }));
+
+    const teacherStats = Object.entries(byTeacher).map(([id, data]) => ({
+      id,
+      name: data.name,
+      average: data.grades.reduce((a, b) => a + b, 0) / data.grades.length
+    }));
+
+    const overallAverage = nominationStats.length > 0 
+      ? nominationStats.reduce((sum, nom) => sum + nom.average, 0) / nominationStats.length
+      : 0;
+
+    return {
+      byNomination: nominationStats,
+      byTeacher: teacherStats,
+      overallAverage
+    };
   };
 
-  const handleGradeSubmit = async (report) => {
+  const handleFinalGradeSubmit = async () => {
     if (!isContestActive()) {
       toast.error('Добавление оценок доступно только в период проведения конкурса');
       return;
     }
 
-    if (!gradeInputs[report.id] || gradeInputs[report.id] < 1 || gradeInputs[report.id] > 5) {
+    if (!finalGradeInput || finalGradeInput < 1 || finalGradeInput > 5) {
       toast.error('Оценка должна быть от 1 до 5');
       return;
     }
 
     try {
-      const updatedReport = { ...report, grade: gradeInputs[report.id] };
+      const updatedReport = { 
+        ...selectedReport, 
+        grade: Number(finalGradeInput) 
+      };
       await ReportActions.update(updatedReport);
       
       // Update local state
       setReports(prev => prev.map(r => 
-        r.id === report.id ? updatedReport : r
+        r.id === selectedReport.id ? updatedReport : r
       ));
+      setSelectedReport(updatedReport);
       
       toast.success('Итоговая оценка сохранена!');
+      setFinalGradeInput('');
     } catch (error) {
       toast.error('Ошибка при добавлении оценки: ' + error.message);
     }
@@ -108,13 +175,16 @@ const HeadSecondTourSection = ({ contestId }) => {
     );
   }
 
+  const currentGrades = selectedReport ? grades[selectedReport.id] || [] : [];
+  const gradeStats = calculateGradeStats(currentGrades);
+
   return (
     <Box className="head-second-tour-container">
       <ToastContainer limit={3} />
       <Card className="head-second-tour-card">
         <CardContent>
-          <Typography variant="h5" className="section-title">
-            Второй тур (Председатель жюри)
+          <Typography variant="h5" className="section-title" sx={{paddingBottom:1}}>
+            Второй тур
             {contest && !isContestActive() && (
               <Typography variant="body2" color="error" sx={{ mt: 1 }}>
                 Конкурс завершен. Редактирование оценок недоступно.
@@ -127,82 +197,158 @@ const HeadSecondTourSection = ({ contestId }) => {
               Доклады пока не загружены
             </Typography>
           ) : (
-            <TableContainer className="reports-table">
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell className="table-header">Доклад</TableCell>
-                    <TableCell className="table-header">Автор</TableCell>
-                    <TableCell className="table-header">Оценки жюри</TableCell>
-                    <TableCell className="table-header">Итоговая оценка</TableCell>
-                    <TableCell className="table-header">Действия</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
+            <>
+              <Box className="report-selector" sx={{ mb: 3 }}>
+                <Select
+                  value={selectedReport?.id || ''}
+                  onChange={(e) => {
+                    const report = reports.find(r => r.id === e.target.value);
+                    setSelectedReport(report);
+                  }}
+                  fullWidth
+                  size="small"
+                >
                   {reports.map((report) => (
-                    <TableRow key={report.id} className="report-row">
-                      <TableCell>
-                        <Typography className="report-name">
-                          {report.name}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        {report.team?.student?.user?.name || 'Неизвестно'}
-                      </TableCell>
-                      <TableCell>
-                        {report.grades?.length > 0 ? (
-                          <Box className="grades-container">
-                            {report.grades.map((grade) => (
-                              <Typography key={grade.id} variant="body2" className="grade-item">
-                                <strong>{grade.nomination?.name}:</strong> {grade.reportGrade} ({grade.text})
-                              </Typography>
-                            ))}
-                          </Box>
-                        ) : (
-                          <Typography variant="body2" className="no-grades">
-                            Оценки отсутствуют
-                          </Typography>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {report.grade !== null ? (
-                          <Typography className="final-grade">
-                            {report.grade}
-                          </Typography>
-                        ) : (
-                          <Typography className="no-final-grade">
-                            Не выставлена
-                          </Typography>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {isContestActive() && (
-                          <Box className="grade-form">
-                            <TextField
-                              type="number"
-                              size="small"
-                              placeholder="Оценка"
-                              value={gradeInputs[report.id] || ''}
-                              onChange={(e) => handleGradeChange(report.id, e.target.value)}
-                              inputProps={{ min: 1, max: 5 }}
-                              sx={{ width: '80px', mr: 1 }}
-                            />
-                            <Button
-                              variant="contained"
-                              size="small"
-                              onClick={() => handleGradeSubmit(report)}
-                              disabled={!gradeInputs[report.id]}
-                            >
-                              Сохранить
-                            </Button>
-                          </Box>
-                        )}
-                      </TableCell>
-                    </TableRow>
+                    <MenuItem key={report.id} value={report.id}>
+                      {report.name} ({report.team?.student?.user?.name || 'Неизвестный автор'})
+                    </MenuItem>
                   ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                </Select>
+              </Box>
+
+              {selectedReport && (
+                <Box>
+                  <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                    Автор: {selectedReport.team?.student?.user?.name || 'Неизвестно'}
+                  </Typography>
+
+                  {currentGrades.length > 0 ? (
+                    <>
+                      <TableContainer className="grades-table" sx={{ mb: 3 }}>
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell colSpan={3} className="table-header">
+                                Статистика оценок
+                              </TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            <TableRow>
+                              <TableCell>
+                                <Typography fontWeight="bold">Общий средний балл:</Typography>
+                              </TableCell>
+                              <TableCell colSpan={2}>
+                                {gradeStats ? gradeStats.overallAverage.toFixed(2) : 'Нет данных'}
+                              </TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+
+                      <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                        Оценки по номинациям:
+                      </Typography>
+                      <TableContainer className="grades-table" sx={{ mb: 3 }}>
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell className="table-header">Номинация</TableCell>
+                              <TableCell className="table-header" align="right">Средний балл</TableCell>
+                              <TableCell className="table-header" align="right">Кол-во оценок</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {gradeStats?.byNomination?.map((nomination) => (
+                              <TableRow key={nomination.id}>
+                                <TableCell>{nomination.name}</TableCell>
+                                <TableCell align="right">{nomination.average.toFixed(2)}</TableCell>
+                                <TableCell align="right">{nomination.gradeCount}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+
+                      <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                        Оценки членов жюри:
+                      </Typography>
+                      <TableContainer className="grades-table" sx={{ mb: 3 }}>
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell className="table-header">Член жюри</TableCell>
+                              <TableCell className="table-header">Номинация</TableCell>
+                              <TableCell className="table-header" align="right">Оценка</TableCell>
+                              <TableCell className="table-header">Комментарий</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {currentGrades.map((grade) => (
+                              <TableRow key={grade.id}>
+                                <TableCell>
+                                  {grade.programCommitteeMember?.teacher?.user?.name || 'Анонимный член жюри'}
+                                </TableCell>
+                                <TableCell>
+                                  {grade.nomination?.name || 'Без номинации'}
+                                </TableCell>
+                                <TableCell align="right">
+                                  {grade.reportGrade}
+                                </TableCell>
+                                <TableCell>
+                                  {grade.text || '-'}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </>
+                  ) : (
+                    <Typography variant="body2" sx={{ mb: 3 }}>
+                      Нет данных об оценках для этого доклада
+                    </Typography>
+                  )}
+
+                  <Divider sx={{ my: 3 }} />
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                    <Typography variant="subtitle1" sx={{ mr: 2 }}>
+                      Итоговая оценка:
+                    </Typography>
+                    {selectedReport.grade !== null ? (
+                      <Typography fontWeight="bold" sx={{ fontSize: '1.2rem' }}>
+                        {selectedReport.grade}
+                      </Typography>
+                    ) : isContestActive() ? (
+                      <>
+                        <TextField
+                          type="number"
+                          size="small"
+                          placeholder="1-5"
+                          value={finalGradeInput}
+                          onChange={(e) => setFinalGradeInput(e.target.value)}
+                          inputProps={{ min: 1, max: 5 }}
+                          sx={{ width: '80px', mr: 2 }}
+                        />
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={handleFinalGradeSubmit}
+                          disabled={!finalGradeInput}
+                        >
+                          Сохранить
+                        </Button>
+                      </>
+                    ) : (
+                      <Typography color="text.secondary">
+                        Не выставлена
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
