@@ -155,8 +155,8 @@ const TeacherSecondTourSection = ({ contestId, programCommitteeMemberId }) => {
             <ToastContainer limit={3} />
             <Card className="teacher-second-tour-card">
                 <CardContent>
-                    <Typography variant="h5" className="section-title">
-                        Второй тур (Преподаватель)
+                    <Typography variant="h5" className="section-title" sx={{paddingBottom:1}}>
+                        Второй тур
                     </Typography>
 
                     {reports.length === 0 ? (
