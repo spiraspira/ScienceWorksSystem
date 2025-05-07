@@ -12,25 +12,25 @@ const AdminMenuSection = () => {
     return (
         <Box className="admin-menu-section" display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap={2}>
             <Button variant="contained" onClick={() => handleNavigate('/universities')}>
-                Universities
+                Учебные заведения
             </Button>
             <Button variant="contained" onClick={() => handleNavigate('/users')}>
-                Users
+                Пользователи
             </Button>
             <Button variant="contained" onClick={() => handleNavigate('/teams')}>
-                Teams
+                Команды
             </Button>
             <Button variant="contained" onClick={() => handleNavigate('/committees')}>
-                Committees
+                Комитеты
             </Button>
             <Button variant="contained" onClick={() => handleNavigate('/committeeMembers')}>
-                Committee Members
+                Члены комитетов
             </Button>
             <Button variant="contained" onClick={() => handleNavigate('/contests')}>
-                Contests
+                Конкурсы
             </Button>
             <Button variant="contained" onClick={() => handleNavigate('/nominations')}>
-                Nominations
+                Номинации
             </Button>
         </Box>
     );
