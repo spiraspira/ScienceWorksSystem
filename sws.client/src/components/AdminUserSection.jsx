@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Grid,
-  TextField,
-  Button,
+import { 
+  Box, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  TextField, 
+  Button, 
   IconButton,
-  Select,
-  MenuItem,
+  Paper,
+  CircularProgress,
+  Grid,
   Checkbox,
   FormControlLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
-import { Edit, Delete, Save } from '@mui/icons-material';
+import { Edit, Delete, Save, Cancel } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserActions from '../actions/UserActions';
 import UniversityActions from '../actions/UniversityActions';
-import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
-import * as FileSaver from 'file-saver';
 
 const AdminUserSection = () => {
   const [users, setUsers] = useState([]);
@@ -28,45 +34,52 @@ const AdminUserSection = () => {
     isStudent: false,
     universityId: '',
   });
-  const [editingUser, setEditingUser] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editData, setEditData] = useState({
+    name: '',
+    login: '',
+    password: '',
+    isStudent: false,
+    universityId: '',
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
-        const userData = await UserActions.getAll();
+        const [userData, universityData] = await Promise.all([
+          UserActions.getAll(),
+          UniversityActions.getAll()
+        ]);
         setUsers(userData);
-      } catch (error) {
-        toast.error('Error fetching users: ' + error.message);
-      }
-    };
-
-    const fetchUniversities = async () => {
-      try {
-        const universityData = await UniversityActions.getAll();
         setUniversities(universityData);
       } catch (error) {
-        toast.error('Error fetching universities: ' + error.message);
+        toast.error('Ошибка загрузки данных: ' + error.message);
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchUsers();
-    fetchUniversities();
+    fetchData();
   }, []);
 
   const handleDelete = async (userId) => {
     try {
       await UserActions.delete(userId);
       setUsers(users.filter((u) => u.id !== userId));
-      toast.success('User deleted successfully');
+      toast.success('Пользователь успешно удален');
     } catch (error) {
-      toast.error('Error deleting user: ' + error.message);
+      toast.error('Ошибка удаления пользователя: ' + error.message);
     }
   };
 
   const handleCreate = async () => {
+    if (!newUser.name || !newUser.login || !newUser.password) {
+      toast.error('Пожалуйста, заполните все обязательные поля');
+      return;
+    }
+
     try {
-      const newUserData = { ...newUser };
-      const createdUser = await UserActions.create(newUserData);
+      const createdUser = await UserActions.create(newUser);
       setUsers([...users, createdUser]);
       setNewUser({
         name: '',
@@ -75,232 +88,223 @@ const AdminUserSection = () => {
         isStudent: false,
         universityId: '',
       });
-      toast.success('User created successfully');
+      toast.success('Пользователь успешно создан');
     } catch (error) {
-      toast.error('Error creating user: ' + error.message);
+      toast.error('Ошибка создания пользователя: ' + error.message);
     }
   };
 
-  const handleEdit = (user) => {
-    setEditingUser(user);
+  const startEditing = (user) => {
+    setEditingId(user.id);
+    setEditData({
+      name: user.name,
+      login: user.login,
+      password: user.password,
+      isStudent: user.isStudent,
+      universityId: user.universityId
+    });
   };
 
-  const handleSave = async (user) => {
+  const cancelEditing = () => {
+    setEditingId(null);
+  };
+
+  const handleSave = async (id) => {
+    if (!editData.name || !editData.login || !editData.password) {
+      toast.error('Пожалуйста, заполните все обязательные поля');
+      return;
+    }
+
     try {
-      const updatedUser = await UserActions.update(user);
-      setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
-      setEditingUser(null);
-      toast.success('User updated successfully');
+      const updatedUser = await UserActions.update({ id, ...editData });
+      setUsers(users.map((u) => (u.id === id ? updatedUser : u)));
+      setEditingId(null);
+      toast.success('Пользователь успешно обновлен');
     } catch (error) {
-      toast.error('Error updating user: ' + error.message);
+      toast.error('Ошибка обновления пользователя: ' + error.message);
     }
   };
 
-  const generateReport = async () => {
-    const currentDate = new Date().toLocaleDateString();
-
-    const rows = [
-      new TableRow({
-        children: [
-          new TableCell({
-            children: [new Paragraph({
-              children: [new TextRun({ text: "Name", bold: true, size: 28, font: "Times New Roman" })]
-            })]
-          }),
-          new TableCell({
-            children: [new Paragraph({
-              children: [new TextRun({ text: "Login", bold: true, size: 28, font: "Times New Roman" })]
-            })]
-          }),
-          new TableCell({
-            children: [new Paragraph({
-              children: [new TextRun({ text: "Is Student", bold: true, size: 28, font: "Times New Roman" })]
-            })]
-          }),
-          new TableCell({
-            children: [new Paragraph({
-              children: [new TextRun({ text: "University", bold: true, size: 28, font: "Times New Roman" })]
-            })]
-          }),
-        ],
-      }),
-      ...users.map(user => (
-        new TableRow({
-          children: [
-            new TableCell({
-              children: [new Paragraph({
-                children: [new TextRun({ text: user.name, size: 28, font: "Times New Roman" })]
-              })]
-            }),
-            new TableCell({
-              children: [new Paragraph({
-                children: [new TextRun({ text: user.login, size: 28, font: "Times New Roman" })]
-              })]
-            }),
-            new TableCell({
-              children: [new Paragraph({
-                children: [new TextRun({ text: user.isStudent ? 'Yes' : 'No', size: 28, font: "Times New Roman" })]
-              })]
-            }),
-            new TableCell({
-              children: [new Paragraph({
-                children: [new TextRun({ text: universities.find((u) => u.id === user.universityId)?.name || '', size: 28, font: "Times New Roman" })]
-              })]
-            }),
-          ],
-        })
-      )),
-    ];
-
-    const table = new Table({
-      rows: rows,
-      width: { size: 10000, type: 'dxa' },
-    });
-
-    const doc = new Document({
-      sections: [{
-        children: [
-          new Paragraph({
-            heading: HeadingLevel.HEADING_1,
-            alignment: AlignmentType.CENTER,
-            children: [
-              new TextRun({
-                text: "User Report",
-                bold: true,
-                size: 28,
-                font: "Times New Roman"
-              }),
-            ]
-          }),
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            children: [new TextRun({ text: currentDate, size: 28, font: "Times New Roman" })]
-          }),
-          new Paragraph({ text: "\n" }), // Add some spacing
-          table, // Add the table to the document
-        ],
-      }],
-    });
-
-    Packer.toBlob(doc).then(blob => {
-      FileSaver.saveAs(blob, "User_Report.docx");
-    }).catch(err => {
-      console.error("Error generating report:", err);
-    });
-  };
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <Box className="admin-section">
+    <Box sx={{ p: 3 }}>
       <ToastContainer />
-      <Grid container spacing={2}>
-        {users.map((user) => (
-          <Grid item xs={12} sm={6} md={4} key={user.id}>
-            <Box className="university-card">
-              {editingUser?.id === user.id ? (
-                <>
-                  <TextField
-                    label="Name"
-                    value={editingUser.name}
-                    onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
-                  />
-                  <TextField
-                    label="Login"
-                    value={editingUser.login}
-                    onChange={(e) => setEditingUser({ ...editingUser, login: e.target.value })}
-                  />
-                  <TextField
-                    label="Password"
-                    value={editingUser.password}
-                    onChange={(e) => setEditingUser({ ...editingUser, password: e.target.value })}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={editingUser.isStudent}
-                        onChange={(e) => setEditingUser({ ...editingUser, isStudent: e.target.checked })}
-                      />
-                    }
-                    label="Is Student"
-                  />
-                  <Select
-                    value={editingUser.universityId}
-                    onChange={(e) => setEditingUser({ ...editingUser, universityId: e.target.value })}
-                  >
-                    <MenuItem value="">Select University</MenuItem>
-                    {universities.map((university) => (
-                      <MenuItem key={university.id} value={university.id}>
-                        {university.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <Box className="university-actions">
-                    <IconButton onClick={() => handleSave(editingUser)}>
-                      <Save />
-                    </IconButton>
-                  </Box>
-                </>
-              ) : (
-                <>
-                  <h3>{user.name}</h3>
-                  <p>Login: {user.login}</p>
-                  <p>Password: {user.password}</p>
-                  <p>Student: {user.isStudent ? 'Yes' : 'No'}</p>
-                  <p>University: {universities.find((u) => u.id === user.universityId)?.name}</p>
-                  <Box className="university-actions">
-                    <IconButton onClick={() => handleEdit(user)}>
-                      <Edit />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(user.id)}>
-                      <Delete />
-                    </IconButton>
-                  </Box>
-                </>
-              )}
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
-      <Box className="university-form">
-        <TextField
-          label="Name"
-          value={newUser.name}
-          onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-        />
-        <TextField
-          label="Login"
-          value={newUser.login}
-          onChange={(e) => setNewUser({ ...newUser, login: e.target.value })}
-        />
-        <TextField
-          label="Password"
-          value={newUser.password}
-          onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={newUser.isStudent}
-              onChange={(e) => setNewUser({ ...newUser, isStudent: e.target.checked })}
+      
+      {/* Add new user form */}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Grid container spacing={2} alignItems="flex-end">
+          <Grid item xs={12} sm={6} md={3}>
+            <TextField
+              label="ФИО"
+              value={newUser.name}
+              onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+              fullWidth
+              size="small"
             />
-          }
-          label="Is Student"
-        />
-        <Select
-          value={newUser.universityId}
-          onChange={(e) => setNewUser({ ...newUser, universityId: e.target.value })}
-        >
-          <MenuItem value="">Select University</MenuItem>
-          {universities.map((university) => (
-            <MenuItem key={university.id} value={university.id}>
-              {university.name}
-            </MenuItem>
-          ))}
-        </Select>
-        <Button onClick={handleCreate}>Create</Button>
-      </Box>
-      <Button variant="contained" color="primary" onClick={generateReport}>
-        Download Report
-      </Button>
+          </Grid>
+          <Grid item xs={12} sm={6} md={2}>
+            <TextField
+              label="Логин"
+              value={newUser.login}
+              onChange={(e) => setNewUser({ ...newUser, login: e.target.value })}
+              fullWidth
+              size="small"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={2}>
+            <TextField
+              label="Пароль"
+              type="password"
+              value={newUser.password}
+              onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+              fullWidth
+              size="small"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={2}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={newUser.isStudent}
+                  onChange={(e) => setNewUser({ ...newUser, isStudent: e.target.checked })}
+                />
+              }
+              label="Студент"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={2}>
+            <Select
+              value={newUser.universityId}
+              onChange={(e) => setNewUser({ ...newUser, universityId: e.target.value })}
+              fullWidth
+              size="small"
+              displayEmpty
+            >
+              <MenuItem value="">Университет</MenuItem>
+              {universities.map((university) => (
+                <MenuItem key={university.id} value={university.id}>
+                  {university.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid item xs={12} sm={6} md={1}>
+            <Button 
+              variant="contained" 
+              onClick={handleCreate}
+              fullWidth
+              sx={{ height: '40px' }}
+            >
+              Добавить
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Users table */}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ФИО</TableCell>
+              <TableCell>Логин</TableCell>
+              <TableCell>Пароль</TableCell>
+              <TableCell>Студент</TableCell>
+              <TableCell>Университет</TableCell>
+              <TableCell align="right">Действия</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map((user) => (
+              <TableRow key={user.id}>
+                {editingId === user.id ? (
+                  <>
+                    <TableCell>
+                      <TextField
+                        value={editData.name}
+                        onChange={(e) => setEditData({...editData, name: e.target.value})}
+                        fullWidth
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editData.login}
+                        onChange={(e) => setEditData({...editData, login: e.target.value})}
+                        fullWidth
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editData.password}
+                        onChange={(e) => setEditData({...editData, password: e.target.value})}
+                        fullWidth
+                        size="small"
+                        type="password"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Checkbox
+                        checked={editData.isStudent}
+                        onChange={(e) => setEditData({...editData, isStudent: e.target.checked})}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={editData.universityId}
+                        onChange={(e) => setEditData({...editData, universityId: e.target.value})}
+                        fullWidth
+                        size="small"
+                      >
+                        <MenuItem value="">Не выбрано</MenuItem>
+                        {universities.map((university) => (
+                          <MenuItem key={university.id} value={university.id}>
+                            {university.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton onClick={() => handleSave(user.id)}>
+                        <Save color="primary" />
+                      </IconButton>
+                      <IconButton onClick={cancelEditing}>
+                        <Cancel color="error" />
+                      </IconButton>
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.login}</TableCell>
+                    <TableCell>••••••••</TableCell>
+                    <TableCell>{user.isStudent ? 'Да' : 'Нет'}</TableCell>
+                    <TableCell>
+                      {universities.find(u => u.id === user.universityId)?.name || '-'}
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton onClick={() => startEditing(user)}>
+                        <Edit color="primary" />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(user.id)}>
+                        <Delete color="error" />
+                      </IconButton>
+                    </TableCell>
+                  </>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };
