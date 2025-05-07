@@ -7,7 +7,11 @@ import {
   CardContent,
   Divider,
   CircularProgress,
-  Chip
+  Chip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,7 +23,8 @@ import '../App.css';
 const HeadFirstTourComponent = ({ contestId }) => {
     const [contestInfo, setContestInfo] = useState(null);
     const [reports, setReports] = useState([]);
-    const [reviews, setReviews] = useState({});
+    const [selectedReportId, setSelectedReportId] = useState('');
+    const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -34,18 +39,10 @@ const HeadFirstTourComponent = ({ contestId }) => {
                 setContestInfo(contest);
                 setReports(allReports);
                 
-                const reviewsData = {};
-                const reviewPromises = allReports.map(async report => {
-                    try {
-                        reviewsData[report.id] = await ReviewActions.getReviewsOfReport(report.id);
-                    } catch (error) {
-                        console.error(`Error loading reviews for report ${report.id}:`, error);
-                        reviewsData[report.id] = [];
-                    }
-                });
-                
-                await Promise.all(reviewPromises);
-                setReviews(reviewsData);
+                if (allReports.length > 0) {
+                    setSelectedReportId(allReports[0].id);
+                    await loadReviews(allReports[0].id);
+                }
             } catch (error) {
                 toast.error(`Ошибка при загрузке данных: ${error.message}`);
             } finally {
@@ -55,6 +52,22 @@ const HeadFirstTourComponent = ({ contestId }) => {
 
         fetchData();
     }, [contestId]);
+
+    const loadReviews = async (reportId) => {
+        try {
+            const reportReviews = await ReviewActions.getReviewsOfReport(reportId);
+            setReviews(reportReviews);
+        } catch (error) {
+            toast.error(`Ошибка при загрузке отзывов: ${error.message}`);
+            setReviews([]);
+        }
+    };
+
+    const handleReportChange = async (event) => {
+        const reportId = event.target.value;
+        setSelectedReportId(reportId);
+        await loadReviews(reportId);
+    };
 
     const handleAcceptReport = async (report) => {
         try {
@@ -79,6 +92,8 @@ const HeadFirstTourComponent = ({ contestId }) => {
         );
     }
 
+    const selectedReport = reports.find(report => report.id === selectedReportId);
+
     return (
         <Box className="head-first-tour-container">
             <ToastContainer limit={3} />
@@ -93,15 +108,31 @@ const HeadFirstTourComponent = ({ contestId }) => {
                             Работы пока не загружены
                         </Typography>
                     ) : (
-                        <Box className="reports-list">
-                            {reports.map((report) => (
-                                <Card key={report.id} className="report-card">
+                        <>
+                            <FormControl fullWidth className="report-selector" sx={{ paddingBottom: '16px', paddingTop: '20px' }}>
+                                <InputLabel id="report-select-label" sx={{ paddingTop: '30px' }}>Выберите работу</InputLabel>
+                                <Select
+                                    labelId="report-select-label"
+                                    value={selectedReportId}
+                                    onChange={handleReportChange}
+                                    label="Выберите работу"
+                                >
+                                    {reports.map((report) => (
+                                        <MenuItem key={report.id} value={report.id}>
+                                            {report.name} ({report.team?.student?.user.name || 'Неизвестно'})
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            {selectedReport && (
+                                <Card className="report-card">
                                     <CardContent>
                                         <Box className="report-header">
                                             <Typography variant="h6" className="report-title">
-                                                {report.name}
+                                                {selectedReport.name}
                                             </Typography>
-                                            {report.isAccepted && (
+                                            {selectedReport.isAccepted && (
                                                 <Chip 
                                                     label="Принято" 
                                                     color="success" 
@@ -112,17 +143,17 @@ const HeadFirstTourComponent = ({ contestId }) => {
                                         </Box>
                                         
                                         <Typography variant="body2" className="report-meta">
-                                            Автор: {report.team?.student?.user.name || 'Неизвестно'}
+                                            Автор: {selectedReport.team?.student?.user.name || 'Неизвестно'}
                                         </Typography>
                                         <Typography variant="body2" className="report-meta">
-                                            Дата обновления: {new Date(report.dateUpdated).toLocaleDateString('ru-RU')}
+                                            Дата обновления: {new Date(selectedReport.dateUpdated).toLocaleDateString('ru-RU')}
                                         </Typography>
                                         
                                         <Divider className="report-divider" />
                                         
                                         <Box className="reviews-container">
-                                            {reviews[report.id]?.length > 0 ? (
-                                                reviews[report.id].map((review) => (
+                                            {reviews.length > 0 ? (
+                                                reviews.map((review) => (
                                                     <Card key={review.id} className="review-card">
                                                         <CardContent>
                                                             <Typography variant="body1" className="review-text">
@@ -150,14 +181,14 @@ const HeadFirstTourComponent = ({ contestId }) => {
                                             )}
                                         </Box>
 
-                                        {report.invitedTeacherReview && (
+                                        {selectedReport.invitedTeacherReview && (
                                             <Card className="invited-review-card">
                                                 <CardContent>
                                                     <Typography variant="subtitle2" className="invited-review-label">
                                                         Отзыв приглашенного преподавателя:
                                                     </Typography>
                                                     <Typography variant="body1" className="invited-review-text">
-                                                        {report.invitedTeacherReview}
+                                                        {selectedReport.invitedTeacherReview}
                                                     </Typography>
                                                 </CardContent>
                                             </Card>
@@ -165,11 +196,11 @@ const HeadFirstTourComponent = ({ contestId }) => {
 
                                         {contestInfo?.dateStart <= new Date().toISOString() &&
                                             contestInfo?.dateStartSecondTour > new Date().toISOString() &&
-                                            !report.isAccepted && (
+                                            !selectedReport.isAccepted && (
                                                 <Box className="accept-report-container">
                                                     <Button
                                                         variant="contained"
-                                                        onClick={() => handleAcceptReport(report)}
+                                                        onClick={() => handleAcceptReport(selectedReport)}
                                                         className="accept-report-btn"
                                                     >
                                                         Принять работу
@@ -178,8 +209,8 @@ const HeadFirstTourComponent = ({ contestId }) => {
                                             )}
                                     </CardContent>
                                 </Card>
-                            ))}
-                        </Box>
+                            )}
+                        </>
                     )}
                 </CardContent>
             </Card>

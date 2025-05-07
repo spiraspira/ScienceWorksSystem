@@ -1845,3 +1845,37 @@
         align-self: flex-end;
     }
 }
+
+/* Report Selector Styles */
+.report-selector {
+    margin-bottom: 24px;
+}
+
+.report-selector .MuiInputLabel-root {
+    font-size: 0.875rem;
+}
+
+.report-selector .MuiSelect-select {
+    font-size: 0.875rem;
+    padding: 12px 14px;
+}
+
+.report-selector .MuiMenuItem-root {
+    font-size: 0.875rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .report-selector {
+        margin-bottom: 16px;
+    }
+    
+    .report-selector .MuiSelect-select {
+        padding: 10px 12px;
+        font-size: 0.8125rem;
+    }
+    
+    .report-selector .MuiMenuItem-root {
+        font-size: 0.8125rem;
+    }
+}
