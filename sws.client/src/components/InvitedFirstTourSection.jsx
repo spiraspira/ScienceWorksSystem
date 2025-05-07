@@ -94,7 +94,7 @@ const InvitedFirstTourSection = ({ contestId }) => {
             <Card className="invited-first-tour-card">
                 <CardContent>
                     <Typography variant="h5" className="section-title">
-                        Первый тур (Приглашенный преподаватель)
+                        Первый тур
                     </Typography>
                     
                     {reports.length === 0 ? (
