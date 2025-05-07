@@ -184,8 +184,8 @@ const HeadSecondTourSection = ({ contestId }) => {
       <ToastContainer limit={3} />
       <Card className="head-second-tour-card">
         <CardContent>
-          <Typography variant="h5" className="section-title">
-            Второй тур (Председатель жюри)
+          <Typography variant="h5" className="section-title" sx={{paddingBottom:1}}>
+            Второй тур
             {contest && !isContestActive() && (
               <Typography variant="body2" color="error" sx={{ mt: 1 }}>
                 Конкурс завершен. Редактирование оценок недоступно.
