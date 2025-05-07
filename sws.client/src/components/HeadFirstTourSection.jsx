@@ -1,52 +1,59 @@
 import React, { useState, useEffect } from 'react';
+import { 
+  Box, 
+  Typography, 
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  CircularProgress,
+  Chip
+} from '@mui/material';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ContestActions from '../actions/ContestActions';
 import ReportActions from '../actions/ReportActions';
 import ReviewActions from '../actions/ReviewActions';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { Box, Typography, Button } from '@mui/material';
 import '../App.css';
 
 const HeadFirstTourComponent = ({ contestId }) => {
     const [contestInfo, setContestInfo] = useState(null);
     const [reports, setReports] = useState([]);
     const [reviews, setReviews] = useState({});
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchContestInfo = async () => {
+        const fetchData = async () => {
             try {
-                const contest = await ContestActions.getContestInfo(contestId);
+                setLoading(true);
+                const [contest, allReports] = await Promise.all([
+                    ContestActions.getContestInfo(contestId),
+                    ReportActions.getAllReportsOfContest(contestId)
+                ]);
+                
                 setContestInfo(contest);
-            } catch (error) {
-                toast.error('Ошибка при получении информации о конкурсе: ' + error.message);
-            }
-        };
-
-        const fetchReports = async () => {
-            try {
-                const allReports = await ReportActions.getAllReportsOfContest(contestId);
                 setReports(allReports);
-                await fetchReviewsForReports(allReports);
+                
+                const reviewsData = {};
+                const reviewPromises = allReports.map(async report => {
+                    try {
+                        reviewsData[report.id] = await ReviewActions.getReviewsOfReport(report.id);
+                    } catch (error) {
+                        console.error(`Error loading reviews for report ${report.id}:`, error);
+                        reviewsData[report.id] = [];
+                    }
+                });
+                
+                await Promise.all(reviewPromises);
+                setReviews(reviewsData);
             } catch (error) {
-                toast.error('Ошибка при получении отчетов: ' + error.message);
+                toast.error(`Ошибка при загрузке данных: ${error.message}`);
+            } finally {
+                setLoading(false);
             }
         };
 
-        const fetchReviewsForReports = async (reportsData) => {
-            const reviewsData = {};
-            for (const report of reportsData) {
-                try {
-                    const reportReviews = await ReviewActions.getReviewsOfReport(report.id);
-                    reviewsData[report.id] = reportReviews;
-                } catch (error) {
-                    toast.error(`Ошибка при получении отзывов для отчета ${report.name}: ${error.message}`);
-                }
-            }
-            setReviews(reviewsData);
-        };
-
-        fetchContestInfo();
-        fetchReports();
+        fetchData();
     }, [contestId]);
 
     const handleAcceptReport = async (report) => {
@@ -55,58 +62,127 @@ const HeadFirstTourComponent = ({ contestId }) => {
                 ...report,
                 isAccepted: true,
             });
-            toast.success('Отчет принят');
+            setReports(prev => prev.map(r => 
+                r.id === report.id ? {...r, isAccepted: true} : r
+            ));
+            toast.success('Отчет успешно принят');
         } catch (error) {
-            toast.error('Ошибка при принятии отчета: ' + error.message);
+            toast.error(`Ошибка при принятии отчета: ${error.message}`);
         }
     };
 
+    if (loading) {
+        return (
+            <Box className="head-first-tour-container">
+                <CircularProgress className="loading-spinner" />
+            </Box>
+        );
+    }
+
     return (
-        <Box>
-            <ToastContainer />
-            <Typography variant="h3" className="page-title">
-                Первый тур
-            </Typography>
-            {reports.map((report) => (
-                <Box key={report.id} className="report-container">
-                    <Typography variant="h5">{report.name}</Typography>
-                    <Typography>Автор: {report.team?.student?.user.name}</Typography>
-                    <Typography>Дата последнего обновления: {report.dateUpdated}</Typography>
+        <Box className="head-first-tour-container">
+            <ToastContainer limit={3} />
+            <Card className="head-first-tour-card">
+                <CardContent>
+                    <Typography variant="h5" className="section-title">
+                        Первый тур (Режим председателя)
+                    </Typography>
+                    
+                    {reports.length === 0 ? (
+                        <Typography variant="body2" className="no-reports-message">
+                            Работы пока не загружены
+                        </Typography>
+                    ) : (
+                        <Box className="reports-list">
+                            {reports.map((report) => (
+                                <Card key={report.id} className="report-card">
+                                    <CardContent>
+                                        <Box className="report-header">
+                                            <Typography variant="h6" className="report-title">
+                                                {report.name}
+                                            </Typography>
+                                            {report.isAccepted && (
+                                                <Chip 
+                                                    label="Принято" 
+                                                    color="success" 
+                                                    size="small"
+                                                    className="status-chip"
+                                                />
+                                            )}
+                                        </Box>
+                                        
+                                        <Typography variant="body2" className="report-meta">
+                                            Автор: {report.team?.student?.user.name || 'Неизвестно'}
+                                        </Typography>
+                                        <Typography variant="body2" className="report-meta">
+                                            Дата обновления: {new Date(report.dateUpdated).toLocaleDateString('ru-RU')}
+                                        </Typography>
+                                        
+                                        <Divider className="report-divider" />
+                                        
+                                        <Box className="reviews-container">
+                                            {reviews[report.id]?.length > 0 ? (
+                                                reviews[report.id].map((review) => (
+                                                    <Card key={review.id} className="review-card">
+                                                        <CardContent>
+                                                            <Typography variant="body1" className="review-text">
+                                                                {review.text}
+                                                            </Typography>
+                                                            <Box className="review-footer">
+                                                                <Typography variant="body2" className="review-meta">
+                                                                    {review.organizationCommitteeMember?.teacher?.user?.name || 'Неизвестно'}
+                                                                </Typography>
+                                                                <Typography variant="body2" className="review-meta">
+                                                                    {new Date(review.date).toLocaleDateString('ru-RU', {
+                                                                        day: '2-digit',
+                                                                        month: '2-digit',
+                                                                        year: 'numeric'
+                                                                    })}
+                                                                </Typography>
+                                                            </Box>
+                                                        </CardContent>
+                                                    </Card>
+                                                ))
+                                            ) : (
+                                                <Typography variant="body2" className="no-reviews-message">
+                                                    Отзывов пока нет
+                                                </Typography>
+                                            )}
+                                        </Box>
 
-                    {reviews[report.id]?.map((review) => (
-                        <Box key={review.id} className="review-container">
-                            <Typography>{review.text}</Typography>
-                            <Typography>Автор: {review.organizationCommitteeMember?.teacher?.user?.name}</Typography>
-                            <Typography>Дата: {review.date}</Typography>
-                            {review.isAccepted && (
-                                <Typography>Отчет принят</Typography>
-                            )}
-                        </Box>
-                    ))}
+                                        {report.invitedTeacherReview && (
+                                            <Card className="invited-review-card">
+                                                <CardContent>
+                                                    <Typography variant="subtitle2" className="invited-review-label">
+                                                        Отзыв приглашенного преподавателя:
+                                                    </Typography>
+                                                    <Typography variant="body1" className="invited-review-text">
+                                                        {report.invitedTeacherReview}
+                                                    </Typography>
+                                                </CardContent>
+                                            </Card>
+                                        )}
 
-                    {report.invitedTeacherReview && (
-                        <Box className="review-container">
-                            <Typography>Отзыв приглашенного преподавателя: {report.invitedTeacherReview}</Typography>
+                                        {contestInfo?.dateStart <= new Date().toISOString() &&
+                                            contestInfo?.dateStartSecondTour > new Date().toISOString() &&
+                                            !report.isAccepted && (
+                                                <Box className="accept-report-container">
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={() => handleAcceptReport(report)}
+                                                        className="accept-report-btn"
+                                                    >
+                                                        Принять работу
+                                                    </Button>
+                                                </Box>
+                                            )}
+                                    </CardContent>
+                                </Card>
+                            ))}
                         </Box>
                     )}
-
-                    {contestInfo?.dateStart <= new Date().toISOString() &&
-                        contestInfo?.dateStartSecondTour > new Date().toISOString() &&
-                        !report.isAccepted && (
-                            <Box className="new-review-container">
-                                <Button
-                                    variant="contained"
-                                    onClick={() => handleAcceptReport(report)}
-                                >
-                                    Принять
-                                </Button>
-                            </Box>
-                        )}
-                    {report.isAccepted && (
-                        <Typography>Доклад принят.</Typography>
-                    )}
-                </Box>
-            ))}
+                </CardContent>
+            </Card>
         </Box>
     );
 };
