@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Box, Card, CardContent, Typography, Accordion, AccordionSummary, AccordionDetails, Button } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import DownloadIcon from '@mui/icons-material/Download';
+import { Box, Card, CardContent } from '@mui/material';
 import ContestActions from '../actions/ContestActions';
 import CommitteeActions from '../actions/CommitteeActions';
 import ReportActions from '../actions/ReportActions';
 import { Document, Packer, Paragraph, AlignmentType, HeadingLevel } from "docx";
 import * as FileSaver from 'file-saver';
+import ContestInfoHeader from './ContestInfoHeader';
+import ContestInfoTabs from './ContestInfoTabs';
+import CommitteeTab from './CommitteeTab';
+import NominationsTab from './NominationsTab';
+import ReportsTab from './ReportsTab';
 
 const ContestInfoSection = ({ contestData }) => {
     const { contestId } = useParams();
@@ -20,6 +23,11 @@ const ContestInfoSection = ({ contestData }) => {
     const [nominations, setNominations] = useState([]);
     const [allReports, setAllReports] = useState([]);
     const [winner, setWinner] = useState(null);
+    const [activeTab, setActiveTab] = useState(0);
+
+    const handleTabChange = (event, newValue) => {
+        setActiveTab(newValue);
+    };
 
     const downloadReport = (file) => {
         if (file) {
@@ -79,7 +87,7 @@ const ContestInfoSection = ({ contestData }) => {
                     new Paragraph({
                         text: "Members:",
                     }),
-                    ...organizationCommitteeMembers.map(member => 
+                    ...organizationCommitteeMembers.map(member =>
                         new Paragraph({ text: member.teacher?.user?.name || 'Loading...' })
                     ),
                     new Paragraph({ text: "\n" }),
@@ -94,7 +102,7 @@ const ContestInfoSection = ({ contestData }) => {
                     new Paragraph({
                         text: "Members:",
                     }),
-                    ...programCommitteeMembers.map(member => 
+                    ...programCommitteeMembers.map(member =>
                         new Paragraph({ text: member.teacher?.user?.name || 'Loading...' })
                     ),
                     new Paragraph({ text: "\n" }),
@@ -103,7 +111,7 @@ const ContestInfoSection = ({ contestData }) => {
                         text: "Nominations",
                         heading: HeadingLevel.HEADING_2,
                     }),
-                    ...nominations.map(nomination => 
+                    ...nominations.map(nomination =>
                         new Paragraph({ text: `${nomination.name} (Winner: ${nomination.winner?.team?.student?.user?.name || 'N/A'})` })
                     ),
                     new Paragraph({ text: "\n" }),
@@ -112,7 +120,7 @@ const ContestInfoSection = ({ contestData }) => {
                         text: "Reports",
                         heading: HeadingLevel.HEADING_2,
                     }),
-                    ...allReports.map(report => 
+                    ...allReports.map(report =>
                         new Paragraph({ text: `"${report.name || 'Loading...'}" (Author: ${report.team?.student?.user?.name || 'N/A'}, Assigned Teacher: ${report.team?.teacher?.user?.name || 'N/A'})` })
                     ),
                 ],
@@ -176,132 +184,49 @@ const ContestInfoSection = ({ contestData }) => {
         fetchData();
     }, [contestId, contestData]);
 
+    const tabs = [
+        {
+            label: "Организационный комитет",
+            content: <CommitteeTab
+                chair={organizationCommitteeData.teacher?.user?.name}
+                members={organizationCommitteeMembers}
+            />
+        },
+        {
+            label: "Программный комитет",
+            content: <CommitteeTab
+                chair={programCommitteeData.teacher?.user?.name}
+                members={programCommitteeMembers}
+            />
+        },
+        {
+            label: "Номинации",
+            content: <NominationsTab nominations={nominations} />
+        },
+        {
+            label: "Работы",
+            content: <ReportsTab
+                reports={allReports}
+                onDownload={downloadReport}
+            />
+        }
+    ];
+
     return (
-        <Box>
+        <Box className="contest-info-container">
             <ToastContainer />
-            <Card>
-                <CardContent>
-                    <Typography variant="h4">
-                        {contestData.name || 'Loading...'}
-                    </Typography>
-                    <Typography variant="body1">
-                        {contestData.description || 'Loading...'}
-                    </Typography>
-                    <Typography variant="body2">
-                        Первый тур: с {contestData.dateStart?.substring(0, 10) || 'Loading...'} по {contestData.dateStartSecondTour?.substring(0, 10) || 'Loading...'}
-                    </Typography>
-                    <Typography variant="body2">
-                        Второй тур: с {contestData.dateStartSecondTour?.substring(0, 10) || 'Loading...'} по {contestData.dateEnd?.substring(0, 10) || 'Loading...'}
-                    </Typography>
-                    <Typography variant="body2">
-                        Приглашенный преподаватель: {contestData.invitedTeacher?.user?.name || 'Loading...'}
-                    </Typography>
-                    {winner && (
-                        <Typography variant="body2">
-                            Победитель: {winner.name || 'Loading...'} (Автор: {winner.team?.student?.user?.name || 'Loading...'})
-                        </Typography>
-                    )}
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={generateContestReport}
-                        startIcon={<DownloadIcon />}
-                    >
-                        Download Contest Info
-                    </Button>
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="organization-committee-content"
-                            id="organization-committee-header"
-                        >
-                            <Typography variant="h5">Организационный комитет</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                Глава: {organizationCommitteeData.teacher?.user?.name || 'Loading...'}
-                            </Typography>
-                            <Typography>
-                                Члены:
-                                {organizationCommitteeMembers.map((member, index) => (
-                                    <Typography key={index}>
-                                        {member.teacher?.user?.name || 'Loading...'}
-                                    </Typography>
-                                ))}
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
-
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="program-committee-content"
-                            id="program-committee-header"
-                        >
-                            <Typography variant="h5">Программный комитет</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                Глава: {programCommitteeData.teacher?.user?.name || 'Loading...'}
-                            </Typography>
-                            <Typography>
-                                Члены:
-                                {programCommitteeMembers.map((member, index) => (
-                                    <Typography key={index}>
-                                        {member.teacher?.user?.name || 'Loading...'}
-                                    </Typography>
-                                ))}
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
-
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="nominations-content"
-                            id="nominations-header"
-                        >
-                            <Typography variant="h5">Номинации</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                {nominations.map((nomination, index) => (
-                                    <Typography key={index}>
-                                        {nomination.name || 'Loading...'} {'Победитель: ' + (nomination.winner?.team?.student?.user?.name || 'Loading...')}
-                                    </Typography>
-                                ))}
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
-
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="reports-content"
-                            id="reports-header"
-                        >
-                            <Typography variant="h5">Работы</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                {allReports.map((model, index) => (
-                                    <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <Typography>
-                                            "{model.name || 'Loading...'}" (автор: {model.team?.student?.user?.name || 'Loading...'}, закрепленный преподаватель: {model.team?.teacher?.user?.name || 'Loading...'})
-                                        </Typography>
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={() => downloadReport(model.file)}
-                                            startIcon={<DownloadIcon />}
-                                        >
-                                            Download
-                                        </Button>
-                                    </div>
-                                ))}
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
+            <Card className="contest-info-card">
+                <CardContent className="contest-info-content">
+                    <ContestInfoHeader
+                        contestData={contestData}
+                        winner={winner}
+                        onExport={generateContestReport}
+                    />
+                    <ContestInfoTabs
+                        activeTab={activeTab}
+                        handleTabChange={handleTabChange}
+                        tabs={tabs}
+                    />
                 </CardContent>
             </Card>
         </Box>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Button, TextField, Typography, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Box, Button, TextField, Typography, Select, MenuItem, InputLabel, FormControl, Card, CardContent } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../App.css';
-
 import ReportActions from '../actions/ReportActions';
 import TeamActions from '../actions/TeamActions';
 
@@ -114,97 +113,133 @@ const UploadReportSection = ({isContestFinished}) => {
     };
 
     return (
-        <Box className="contest-page-container">
+        <Box className="contest-info-container">
             <ToastContainer />
-            <Typography variant="h3" className="page-title">
-                Ваш доклад
-            </Typography>
-            {userReport ? (
-                <Box className="user-report-container">
-                    <Typography variant="h4" className="report-name">
-                        {userReport.name}
+            <Card className="contest-info-card">
+                <CardContent className="contest-info-content">
+                    <Typography variant="h5" className="contest-title">
+                        Ваш доклад
                     </Typography>
-                    <Typography variant="body1" className="report-details">
-                        Загружен: {userReport.dateUploaded?.substring(0, 10)}
-                    </Typography>
-                    <Typography variant="body1" className="report-details">
-                        Обновлен: {userReport.dateUpdated?.substring(0, 10)}
-                    </Typography>
-                    <Box className="report-actions">
-                        <Button variant="contained" onClick={() => downloadReport(userReport.file)}>
-                            Скачать
-                        </Button>
-                        {isContestFinished !== true && (
-                            <div>
-                                <Button variant="contained" component="label" className="update-button">
-                                    Обновить
-                                    <input type="file" hidden onChange={handleFileUpload} />
-                                </Button>
-                                <Typography variant="body1" className="file-name">
-                                    {uploadedFile?.name || ''}
-                                </Typography>
-                                <Button variant="contained" onClick={handleUpdate} className="save-button">
-                                    Сохранить
-                                </Button>
-                            </div>
-                        )}
-                    </Box>
-                </Box>
-            ) : (
-                <Box>
-                    {isContestFinished !== true && (
-                        <Box className="new-report-container">
-                            <TextField
-                                label="Заголовок"
-                                value={newReport.name}
-                                onChange={(e) => setNewReport({ ...newReport, name: e.target.value })}
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                className="report-name-input"
-                            />
-                            <FormControl fullWidth margin="normal" className="team-select">
-                                <InputLabel>Команда</InputLabel>
-                                <Select
-                                    value={teams.find((team) => team.id === newReport.teamId)?.id || ''}
-                                    onChange={(event) => {
-                                        const selectedTeam = teams.find((team) => team.id === event.target.value);
-                                        setNewReport({ ...newReport, teamId: selectedTeam?.id });
-                                    }}
+
+                    {userReport ? (
+                        <Box className="report-container">
+                            <Typography variant="body1" className="report-name">
+                                <strong>Название:</strong> {userReport.name}
+                            </Typography>
+                            <Typography variant="body2" className="report-meta">
+                                <strong>Загружен:</strong> {userReport.dateUploaded?.substring(0, 10) || 'N/A'}
+                            </Typography>
+                            <Typography variant="body2" className="report-meta">
+                                <strong>Обновлен:</strong> {userReport.dateUpdated?.substring(0, 10) || 'N/A'}
+                            </Typography>
+                            
+                            <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    onClick={() => downloadReport(userReport.file)}
+                                    className="download-btn"
                                 >
-                                    <MenuItem value="">
-                                        <em>Не выбрано</em>
-                                    </MenuItem>
-                                    {teams.map((team) => (
-                                        <MenuItem key={team.id} value={team.id}>
-                                            {`${team.student?.user?.name || ''} | ${team.teacher?.user?.name || ''}`}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                            <div>
-                                <Button variant="contained" component="label" className="file-upload-button">
-                                    Загрузить файл
-                                    <input type="file" hidden onChange={handleNewFileUpload} />
+                                    Скачать
                                 </Button>
-                                <Typography variant="body1" className="file-name">
-                                    {uploadedFile?.name || ''}
-                                </Typography>
-                            </div>
-                            <Box className="report-actions">
-                                <Button variant="contained" onClick={handleCreate} className="add-report-button">
-                                    Добавить доклад
-                                </Button>
+                                
+                                {!isContestFinished && (
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            component="label"
+                                            className="upload-btn"
+                                        >
+                                            Обновить файл
+                                            <input type="file" hidden onChange={handleFileUpload} />
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={handleUpdate}
+                                            className="save-btn"
+                                        >
+                                            Сохранить
+                                        </Button>
+                                    </>
+                                )}
                             </Box>
+                            {uploadedFile && (
+                                <Typography variant="caption" className="file-name">
+                                    Выбран файл: {uploadedFile.name}
+                                </Typography>
+                            )}
+                        </Box>
+                    ) : (
+                        <Box>
+                            {!isContestFinished ? (
+                                <Box className="new-report-form">
+                                    <TextField
+                                        label="Название доклада"
+                                        value={newReport.name}
+                                        onChange={(e) => setNewReport({ ...newReport, name: e.target.value })}
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        size="small"
+                                        className="report-name-input"
+                                    />
+                                    
+                                    <FormControl fullWidth margin="normal" size="small">
+                                        <InputLabel>Команда</InputLabel>
+                                        <Select
+                                            value={newReport.teamId || ''}
+                                            onChange={(e) => setNewReport({ ...newReport, teamId: e.target.value })}
+                                            label="Команда"
+                                        >
+                                            <MenuItem value="">
+                                                <em>Не выбрано</em>
+                                            </MenuItem>
+                                            {teams.map((team) => (
+                                                <MenuItem key={team.id} value={team.id}>
+                                                    {`${team.student?.user?.name || ''} | ${team.teacher?.user?.name || ''}`}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+
+                                    <Box sx={{ mt: 2, mb: 2 }}>
+                                        <Button
+                                            variant="outlined"
+                                            component="label"
+                                            size="small"
+                                            className="file-upload-btn"
+                                        >
+                                            Выбрать файл
+                                            <input type="file" hidden onChange={handleNewFileUpload} />
+                                        </Button>
+                                        {uploadedFile && (
+                                            <Typography variant="caption" className="file-name">
+                                                {uploadedFile.name}
+                                            </Typography>
+                                        )}
+                                    </Box>
+
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleCreate}
+                                        size="small"
+                                        className="submit-btn"
+                                        disabled={!newReport.name || !newReport.teamId || !newReport.file}
+                                    >
+                                        Отправить доклад
+                                    </Button>
+                                </Box>
+                            ) : (
+                                <Typography variant="body2" className="contest-closed-message">
+                                    Этап приема работ завершен
+                                </Typography>
+                            )}
                         </Box>
                     )}
-                    {isContestFinished && (
-                        <Typography variant="body1">
-                            Этап принятия работа завершен.
-                        </Typography>
-                    )}
-                </Box>
-            )}
+                </CardContent>
+            </Card>
         </Box>
     );
 };

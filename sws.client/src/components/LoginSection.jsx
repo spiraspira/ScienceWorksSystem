@@ -21,28 +21,47 @@ const LoginPage = () => {
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    };
+
     return (
         <Box className="login-container">
-            <Typography variant="h4" className="login-title">Авторизация</Typography>
-            <TextField
-                label="Логин"
-                value={login}
-                onChange={(e) => setLogin(e.target.value)}
-                className="login-input"
-                required
-            />
-            <TextField
-                label="Пароль"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="login-input"
-                required
-            />
-            <Button variant="contained" onClick={handleLogin} className="login-button">
-                Войти
-            </Button>
-            <ToastContainer />
+            <Box className="login-form-container">
+                <Typography variant="h4" className="login-title">Авторизация</Typography>
+                <TextField
+                    label="Логин"
+                    value={login}
+                    onChange={(e) => setLogin(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="login-input"
+                    variant="outlined"
+                    required
+                    fullWidth
+                />
+                <TextField
+                    label="Пароль"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="login-input"
+                    variant="outlined"
+                    required
+                    fullWidth
+                />
+                <Button 
+                    variant="contained" 
+                    onClick={handleLogin} 
+                    className="login-button"
+                    size="large"
+                >
+                    Войти
+                </Button>
+            </Box>
+            <ToastContainer position="top-center" autoClose={5000} />
         </Box>
     );
 };

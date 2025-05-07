@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Button, IconButton, Select, MenuItem } from '@mui/material';
-import { Edit, Delete, Save } from '@mui/icons-material';
+import { 
+  Box, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Button, 
+  IconButton,
+  Paper,
+  CircularProgress,
+  Grid,
+  Select,
+  MenuItem
+} from '@mui/material';
+import { Edit, Delete, Save, Cancel } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TeamActions from '../actions/TeamActions';
 import TeacherActions from '../actions/TeacherActions';
 import StudentActions from '../actions/StudentActions';
-import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import { Document, Packer, Paragraph, Table as DocxTable, TableRow as DocxRow, TableCell as DocxCell, TextRun, AlignmentType, HeadingLevel } from "docx";
 import * as FileSaver from 'file-saver';
 
 const AdminTeamSection = () => {
@@ -14,21 +29,28 @@ const AdminTeamSection = () => {
   const [teachers, setTeachers] = useState([]);
   const [students, setStudents] = useState([]);
   const [newTeam, setNewTeam] = useState({ studentId: '', teacherId: '' });
-  const [editingTeam, setEditingTeam] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editData, setEditData] = useState({
+    studentId: '',
+    teacherId: ''
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const teamData = await TeamActions.getAll();
+        const [teamData, teacherData, studentData] = await Promise.all([
+          TeamActions.getAll(),
+          TeacherActions.getAll(),
+          StudentActions.getAll()
+        ]);
         setTeams(teamData);
-
-        const teacherData = await TeacherActions.getAll();
         setTeachers(teacherData);
-
-        const studentData = await StudentActions.getAll();
         setStudents(studentData);
       } catch (error) {
-        toast.error('Error fetching data: ' + error.message);
+        toast.error('Ошибка загрузки данных: ' + error.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -38,36 +60,53 @@ const AdminTeamSection = () => {
     try {
       await TeamActions.delete(teamId);
       setTeams(teams.filter((t) => t.id !== teamId));
-      toast.success('Team deleted successfully');
+      toast.success('Команда успешно удалена');
     } catch (error) {
-      toast.error('Error deleting team: ' + error.message);
+      toast.error('Ошибка удаления команды: ' + error.message);
     }
   };
 
   const handleCreate = async () => {
+    if (!newTeam.studentId || !newTeam.teacherId) {
+      toast.error('Пожалуйста, выберите студента и преподавателя');
+      return;
+    }
+
     try {
-      const newTeamData = { studentId: newTeam.studentId, teacherId: newTeam.teacherId };
-      const createdTeam = await TeamActions.create(newTeamData);
+      const createdTeam = await TeamActions.create(newTeam);
       setTeams([...teams, createdTeam]);
       setNewTeam({ studentId: '', teacherId: '' });
-      toast.success('Team created successfully');
+      toast.success('Команда успешно создана');
     } catch (error) {
-      toast.error('Error creating team: ' + error.message);
+      toast.error('Ошибка создания команды: ' + error.message);
     }
   };
 
-  const handleEdit = (team) => {
-    setEditingTeam(team);
+  const startEditing = (team) => {
+    setEditingId(team.id);
+    setEditData({
+      studentId: team.studentId,
+      teacherId: team.teacherId
+    });
   };
 
-  const handleSave = async (team) => {
+  const cancelEditing = () => {
+    setEditingId(null);
+  };
+
+  const handleSave = async (id) => {
+    if (!editData.studentId || !editData.teacherId) {
+      toast.error('Пожалуйста, выберите студента и преподавателя');
+      return;
+    }
+
     try {
-      const updatedTeam = await TeamActions.update(team);
-      setTeams(teams.map((t) => (t.id === team.id ? updatedTeam : t)));
-      setEditingTeam(null);
-      toast.success('Team updated successfully');
+      const updatedTeam = await TeamActions.update({ id, ...editData });
+      setTeams(teams.map((t) => (t.id === id ? updatedTeam : t)));
+      setEditingId(null);
+      toast.success('Команда успешно обновлена');
     } catch (error) {
-      toast.error('Error updating team: ' + error.message);
+      toast.error('Ошибка обновления команды: ' + error.message);
     }
   };
 
@@ -75,31 +114,39 @@ const AdminTeamSection = () => {
     const currentDate = new Date().toLocaleDateString();
 
     const rows = [
-      new TableRow({
+      new DocxRow({
         children: [
-          new TableCell({
+          new DocxCell({
             children: [new Paragraph({
-              children: [new TextRun({ text: "Student", bold: true, size: 28, font: "Times New Roman" })]
+              children: [new TextRun({ text: "Студент", bold: true, size: 28, font: "Times New Roman" })]
             })]
           }),
-          new TableCell({
+          new DocxCell({
             children: [new Paragraph({
-              children: [new TextRun({ text: "Teacher", bold: true, size: 28, font: "Times New Roman" })]
+              children: [new TextRun({ text: "Преподаватель", bold: true, size: 28, font: "Times New Roman" })]
             })]
           }),
         ],
       }),
       ...teams.map(team => (
-        new TableRow({
+        new DocxRow({
           children: [
-            new TableCell({
+            new DocxCell({
               children: [new Paragraph({
-                children: [new TextRun({ text: students.find((s) => s.id === team.studentId)?.user?.name || '', size: 28, font: "Times New Roman" })]
+                children: [new TextRun({ 
+                  text: students.find((s) => s.id === team.studentId)?.user?.name || 'Не указан', 
+                  size: 28, 
+                  font: "Times New Roman" 
+                })]
               })]
             }),
-            new TableCell({
+            new DocxCell({
               children: [new Paragraph({
-                children: [new TextRun({ text: teachers.find((t) => t.id === team.teacherId)?.user?.name || '', size: 28, font: "Times New Roman" })]
+                children: [new TextRun({ 
+                  text: teachers.find((t) => t.id === team.teacherId)?.user?.name || 'Не указан', 
+                  size: 28, 
+                  font: "Times New Roman" 
+                })]
               })]
             }),
           ],
@@ -107,7 +154,7 @@ const AdminTeamSection = () => {
       )),
     ];
 
-    const table = new Table({
+    const table = new DocxTable({
       rows: rows,
       width: { size: 10000, type: 'dxa' },
     });
@@ -120,7 +167,7 @@ const AdminTeamSection = () => {
             alignment: AlignmentType.CENTER,
             children: [
               new TextRun({
-                text: "Team Report",
+                text: "Отчет по командам",
                 bold: true,
                 size: 28,
                 font: "Times New Roman"
@@ -131,101 +178,164 @@ const AdminTeamSection = () => {
             alignment: AlignmentType.CENTER,
             children: [new TextRun({ text: currentDate, size: 28, font: "Times New Roman" })]
           }),
-          new Paragraph({ text: "\n" }), // Add some spacing
-          table, // Add the table to the document
+          new Paragraph({ text: "\n" }),
+          table,
         ],
       }],
     });
 
     Packer.toBlob(doc).then(blob => {
-      FileSaver.saveAs(blob, "Team_Report.docx");
+      FileSaver.saveAs(blob, "Отчет_по_командам.docx");
     }).catch(err => {
-      console.error("Error generating report:", err);
+      console.error("Ошибка генерации отчета:", err);
+      toast.error('Ошибка генерации отчета');
     });
   };
 
-  return (
-    <Box className="admin-section">
-      <ToastContainer />
-      <Grid container spacing={2}>
-        {teams.map((team) => (
-          <Grid item xs={12} sm={6} md={4} key={team.id}>
-            <Box className="university-card">
-              {editingTeam?.id === team.id ? (
-                <>
-                  <Select
-                    label="Student"
-                    value={editingTeam.studentId}
-                    onChange={(e) => setEditingTeam({ ...editingTeam, studentId: e.target.value })}
-                  >
-                    {students.map((student) => (
-                      <MenuItem key={student.id} value={student.id}>
-                        {student.user?.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <Select
-                    label="Teacher"
-                    value={editingTeam.teacherId}
-                    onChange={(e) => setEditingTeam({ ...editingTeam, teacherId: e.target.value })}
-                  >
-                    {teachers.map((teacher) => (
-                      <MenuItem key={teacher.id} value={teacher.id}>
-                        {teacher.user?.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <Box className="university-actions">
-                    <IconButton onClick={() => handleSave(editingTeam)}>
-                      <Save />
-                    </IconButton>
-                  </Box>
-                </>
-              ) : (
-                <>
-                  <p>Student: {students.find((s) => s.id === team.studentId)?.user?.name}</p>
-                  <p>Teacher: {teachers.find((t) => t.id === team.teacherId)?.user?.name}</p>
-                  <Box className="university-actions">
-                    <IconButton onClick={() => handleEdit(team)}>
-                      <Edit />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(team.id)}>
-                      <Delete />
-                    </IconButton>
-                  </Box>
-                </>
-              )}
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
-      <Box className="university-form">
-        <Select
-          label="Student"
-          value={newTeam.studentId}
-          onChange={(e) => setNewTeam({ ...newTeam, studentId: e.target.value })}
-        >
-          {students.map((student) => (
-            <MenuItem key={student.id} value={student.id}>
-              {student.user?.name}
-            </MenuItem>
-          ))}
-        </Select>
-        <Select
-          label="Teacher"
-          value={newTeam.teacherId}
-          onChange={(e) => setNewTeam({ ...newTeam, teacherId: e.target.value })}
-        >
-          {teachers.map((teacher) => (
-            <MenuItem key={teacher.id} value={teacher.id}>
-              {teacher.user?.name}
-            </MenuItem>
-          ))}
-        </Select>
-        <Button onClick={handleCreate}>Create</Button>
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
       </Box>
-      <Button variant="contained" color="primary" onClick={generateReport}>
-        Download Report
+    );
+  }
+
+  return (
+    <Box sx={{ p: 3 }}>
+      <ToastContainer />
+      
+      {/* Add new team form */}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Grid container spacing={2} alignItems="flex-end">
+          <Grid item xs={12} sm={6}>
+            <Select
+              value={newTeam.studentId}
+              onChange={(e) => setNewTeam({ ...newTeam, studentId: e.target.value })}
+              fullWidth
+              size="small"
+              displayEmpty
+            >
+              <MenuItem value="">Выберите студента</MenuItem>
+              {students.map((student) => (
+                <MenuItem key={student.id} value={student.id}>
+                  {student.user?.name || 'Без имени'}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Select
+              value={newTeam.teacherId}
+              onChange={(e) => setNewTeam({ ...newTeam, teacherId: e.target.value })}
+              fullWidth
+              size="small"
+              displayEmpty
+            >
+              <MenuItem value="">Выберите преподавателя</MenuItem>
+              {teachers.map((teacher) => (
+                <MenuItem key={teacher.id} value={teacher.id}>
+                  {teacher.user?.name || 'Без имени'}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid item xs={12}>
+            <Button 
+              variant="contained" 
+              onClick={handleCreate}
+              fullWidth
+              sx={{ height: '40px' }}
+            >
+              Добавить команду
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Teams table */}
+      <TableContainer component={Paper} sx={{ mb: 3 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Студент</TableCell>
+              <TableCell>Преподаватель</TableCell>
+              <TableCell align="right">Действия</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {teams.map((team) => (
+              <TableRow key={team.id}>
+                {editingId === team.id ? (
+                  <>
+                    <TableCell>
+                      <Select
+                        value={editData.studentId}
+                        onChange={(e) => setEditData({...editData, studentId: e.target.value})}
+                        fullWidth
+                        size="small"
+                      >
+                        {students.map((student) => (
+                          <MenuItem key={student.id} value={student.id}>
+                            {student.user?.name || 'Без имени'}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={editData.teacherId}
+                        onChange={(e) => setEditData({...editData, teacherId: e.target.value})}
+                        fullWidth
+                        size="small"
+                      >
+                        {teachers.map((teacher) => (
+                          <MenuItem key={teacher.id} value={teacher.id}>
+                            {teacher.user?.name || 'Без имени'}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton onClick={() => handleSave(team.id)}>
+                        <Save color="primary" />
+                      </IconButton>
+                      <IconButton onClick={cancelEditing}>
+                        <Cancel color="error" />
+                      </IconButton>
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell>
+                      {students.find((s) => s.id === team.studentId)?.user?.name || 'Не указан'}
+                    </TableCell>
+                    <TableCell>
+                      {teachers.find((t) => t.id === team.teacherId)?.user?.name || 'Не указан'}
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton onClick={() => startEditing(team)}>
+                        <Edit color="primary" />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(team.id)}>
+                        <Delete color="error" />
+                      </IconButton>
+                    </TableCell>
+                  </>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Button 
+        variant="contained" 
+        color="primary" 
+        onClick={generateReport}
+        fullWidth
+        sx={{ mb: 2 }}
+      >
+        Скачать отчет
       </Button>
     </Box>
   );
