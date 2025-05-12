@@ -9,6 +9,7 @@ public class ReviewRepository(ApplicationDbContext context) : GenericRepository<
 			.ThenInclude(committeeMember => committeeMember!.Teacher)
 			.ThenInclude(teacher => teacher!.User)
 			.Where(review => review.ReportId == reportId)
+			.OrderBy(review => review.Date)
 			.ToListAsync();
 	}
 
@@ -18,6 +19,7 @@ public class ReviewRepository(ApplicationDbContext context) : GenericRepository<
 			.Include(review => review.OrganizationCommitteeMember)
 			.ThenInclude(committeeMember => committeeMember!.Teacher)
 			.Where(review => review.ReportId == reportId && review.OrganizationCommitteeMember!.Teacher!.Id == teacherId)
+			.OrderBy(review => review.Date)
 			.ToListAsync();
 	}
 }
