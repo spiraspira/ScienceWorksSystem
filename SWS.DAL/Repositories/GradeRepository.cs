@@ -10,6 +10,7 @@ public class GradeRepository(ApplicationDbContext context) : GenericRepository<G
 			.ThenInclude(teacher => teacher!.User)
 			.Include(grade => grade.Nomination)
 			.Where(grade => grade.ReportId == reportId)
+			.OrderBy(grade => grade.Date)
 			.ToListAsync();
 	}
 
@@ -20,6 +21,7 @@ public class GradeRepository(ApplicationDbContext context) : GenericRepository<G
 			.ThenInclude(member => member!.Teacher)
 			.ThenInclude(teacher => teacher!.User)
 			.Where(grade => grade.NominationId == nominationId && grade.ReportId == reportId)
+			.OrderBy(grade => grade.Date)
 			.ToListAsync();
 	}
 
@@ -31,6 +33,7 @@ public class GradeRepository(ApplicationDbContext context) : GenericRepository<G
 			.ThenInclude(teacher => teacher!.User)
 			.Include(report => report.Nomination)
 			.Where(grade => grade.ReportId == reportId && grade.ProgramCommitteeMemberId == programCommitteeMemberId)
+			.OrderBy(grade => grade.Date)
 			.ToListAsync();
 	}
 
@@ -41,6 +44,7 @@ public class GradeRepository(ApplicationDbContext context) : GenericRepository<G
 			.ThenInclude(member => member!.Teacher)
 			.ThenInclude(teacher => teacher!.User)
 			.Where(grade => grade.NominationId == nominationId)
+			.OrderBy(grade => grade.Date)
 			.ToListAsync();
 	}
 }

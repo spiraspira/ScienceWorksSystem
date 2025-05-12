@@ -1,12 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, TextField, Button, IconButton, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-import { Edit, Delete, Save } from '@mui/icons-material';
+import { 
+  Box, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Button, 
+  IconButton,
+  Paper,
+  CircularProgress,
+  Grid,
+  Select,
+  MenuItem,
+  TextField,
+  FormControl,
+  InputLabel,
+  Typography
+} from '@mui/material';
+import { Edit, Delete, Save, Cancel } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ContestActions from '../actions/ContestActions';
 import CommitteeActions from '../actions/CommitteeActions';
 import TeacherActions from '../actions/TeacherActions';
-import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import { Document, Packer, Paragraph, Table as DocxTable, TableRow as DocxRow, TableCell as DocxCell, TextRun, AlignmentType, HeadingLevel } from "docx";
 import * as FileSaver from 'file-saver';
 
 const AdminContestSection = () => {
@@ -16,28 +35,41 @@ const AdminContestSection = () => {
     const [newContest, setNewContest] = useState({
         name: '',
         description: '',
-        dateStart: null,
-        dateStartSecondTour: null,
-        dateEnd: null,
+        dateStart: '',
+        dateStartSecondTour: '',
+        dateEnd: '',
         organizationCommitteeId: '',
         programCommitteeId: '',
         invitedTeacherId: '',
     });
-    const [editingContest, setEditingContest] = useState(null);
+    const [editingId, setEditingId] = useState(null);
+    const [editData, setEditData] = useState({
+        name: '',
+        description: '',
+        dateStart: '',
+        dateStartSecondTour: '',
+        dateEnd: '',
+        organizationCommitteeId: '',
+        programCommitteeId: '',
+        invitedTeacherId: '',
+    });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const contestsData = await ContestActions.getAll();
+                const [contestsData, committeesData, teachersData] = await Promise.all([
+                    ContestActions.getAll(),
+                    CommitteeActions.getAll(),
+                    TeacherActions.getAll()
+                ]);
                 setContests(contestsData);
-
-                const committeesData = await CommitteeActions.getAll();
                 setCommittees(committeesData);
-
-                const teachersData = await TeacherActions.getAll();
                 setTeachers(teachersData);
             } catch (error) {
-                toast.error('Error fetching data: ' + error.message);
+                toast.error('Ошибка загрузки данных: ' + error.message);
+            } finally {
+                setLoading(false);
             }
         };
         fetchData();
@@ -47,102 +79,140 @@ const AdminContestSection = () => {
         try {
             await ContestActions.delete(contestId);
             setContests(contests.filter((c) => c.id !== contestId));
-            toast.success('Contest deleted successfully');
+            toast.success('Конкурс успешно удален');
         } catch (error) {
-            toast.error('Error deleting contest: ' + error.message);
+            toast.error('Ошибка удаления конкурса: ' + error.message);
         }
     };
 
     const handleCreate = async () => {
+        if (!newContest.name || !newContest.dateStart || !newContest.dateEnd) {
+            toast.error('Пожалуйста, заполните обязательные поля');
+            return;
+        }
+
         try {
-            const newContestData = {
-                name: newContest.name,
-                description: newContest.description,
+            const createdContest = await ContestActions.create({
+                ...newContest,
                 dateStart: new Date(newContest.dateStart).toISOString(),
                 dateStartSecondTour: new Date(newContest.dateStartSecondTour).toISOString(),
-                dateEnd: new Date(newContest.dateEnd).toISOString(),
-                organizationCommitteeId: newContest.organizationCommitteeId,
-                programCommitteeId: newContest.programCommitteeId,
-                invitedTeacherId: newContest.invitedTeacherId,
-            };
-            const createdContest = await ContestActions.create(newContestData);
+                dateEnd: new Date(newContest.dateEnd).toISOString()
+            });
             setContests([...contests, createdContest]);
             setNewContest({
                 name: '',
                 description: '',
-                dateStart: null,
-                dateStartSecondTour: null,
-                dateEnd: null,
+                dateStart: '',
+                dateStartSecondTour: '',
+                dateEnd: '',
                 organizationCommitteeId: '',
                 programCommitteeId: '',
                 invitedTeacherId: '',
             });
-            toast.success('Contest created successfully');
+            toast.success('Конкурс успешно создан');
         } catch (error) {
-            toast.error('Error creating contest: ' + error.message);
+            toast.error('Ошибка создания конкурса: ' + error.message);
         }
     };
 
-    const handleEdit = (contest) => {
-        setEditingContest(contest);
+    const startEditing = (contest) => {
+        setEditingId(contest.id);
+        setEditData({
+            name: contest.name,
+            description: contest.description,
+            dateStart: contest.dateStart.slice(0, 16),
+            dateStartSecondTour: contest.dateStartSecondTour?.slice(0, 16) || '',
+            dateEnd: contest.dateEnd.slice(0, 16),
+            organizationCommitteeId: contest.organizationCommitteeId,
+            programCommitteeId: contest.programCommitteeId,
+            invitedTeacherId: contest.invitedTeacherId,
+        });
     };
 
-    const handleSave = async (contest) => {
+    const cancelEditing = () => {
+        setEditingId(null);
+    };
+
+    const handleSave = async (id) => {
+        if (!editData.name || !editData.dateStart || !editData.dateEnd) {
+            toast.error('Пожалуйста, заполните обязательные поля');
+            return;
+        }
+
         try {
-            contest.dateStart = new Date(contest.dateStart).toISOString();
-            contest.dateStartSecondTour = new Date(contest.dateStartSecondTour).toISOString();
-            contest.dateEnd = new Date(contest.dateEnd).toISOString();
-            const updatedContest = await ContestActions.update(contest);
-            setContests(contests.map((c) => (c.id === contest.id ? updatedContest : c)));
-            setEditingContest(null);
-            toast.success('Contest updated successfully');
+            const updatedContest = await ContestActions.update({
+                id,
+                ...editData,
+                dateStart: new Date(editData.dateStart).toISOString(),
+                dateStartSecondTour: new Date(editData.dateStartSecondTour).toISOString(),
+                dateEnd: new Date(editData.dateEnd).toISOString()
+            });
+            setContests(contests.map((c) => (c.id === id ? updatedContest : c)));
+            setEditingId(null);
+            toast.success('Конкурс успешно обновлен');
         } catch (error) {
-            toast.error('Error updating contest: ' + error.message);
+            toast.error('Ошибка обновления конкурса: ' + error.message);
         }
     };
 
     const generateReport = async () => {
         const currentDate = new Date().toLocaleDateString();
     
-        const rows = contests.map(contest => (
-            new TableRow({
+        const rows = [
+            new DocxRow({
                 children: [
-                    new TableCell({
-                        children: [new Paragraph({ text: contest.name, size: 28 })]
+                    new DocxCell({
+                        children: [new Paragraph({
+                            children: [new TextRun({ text: "Название", bold: true, size: 28, font: "Times New Roman" })]
+                        })]
                     }),
-                    new TableCell({
-                        children: [new Paragraph({ text: contest.description, size: 28 })]
+                    new DocxCell({
+                        children: [new Paragraph({
+                            children: [new TextRun({ text: "Описание", bold: true, size: 28, font: "Times New Roman" })]
+                        })]
                     }),
-                    new TableCell({
-                        children: [new Paragraph({ text: new Date(contest.dateStart).toLocaleString(), size: 28 })]
+                    new DocxCell({
+                        children: [new Paragraph({
+                            children: [new TextRun({ text: "Дата начала", bold: true, size: 28, font: "Times New Roman" })]
+                        })]
                     }),
-                    new TableCell({
-                        children: [new Paragraph({ text: new Date(contest.dateEnd).toLocaleString(), size: 28 })]
+                    new DocxCell({
+                        children: [new Paragraph({
+                            children: [new TextRun({ text: "Дата окончания", bold: true, size: 28, font: "Times New Roman" })]
+                        })]
                     }),
                 ],
-            })
-        ));
-    
-        const table = new Table({
-            rows: [
-                new TableRow({
+            }),
+            ...contests.map(contest => (
+                new DocxRow({
                     children: [
-                        new TableCell({
-                            children: [new Paragraph({ children: [new TextRun({ text: "Contest Name", bold: true })] })]
+                        new DocxCell({
+                            children: [new Paragraph({
+                                children: [new TextRun({ text: contest.name, size: 28, font: "Times New Roman" })]
+                            })]
                         }),
-                        new TableCell({
-                            children: [new Paragraph({ children: [new TextRun({ text: "Description", bold: true })] })]
+                        new DocxCell({
+                            children: [new Paragraph({
+                                children: [new TextRun({ text: contest.description || '—', size: 28, font: "Times New Roman" })]
+                            })]
                         }),
-                        new TableCell({
-                            children: [new Paragraph({ children: [new TextRun({ text: "Date Start", bold: true })] })]
+                        new DocxCell({
+                            children: [new Paragraph({
+                                children: [new TextRun({ text: new Date(contest.dateStart).toLocaleString(), size: 28, font: "Times New Roman" })]
+                            })]
                         }),
-                        new TableCell({
-                            children: [new Paragraph({ children: [new TextRun({ text: "Date End", bold: true })] })]
+                        new DocxCell({
+                            children: [new Paragraph({
+                                children: [new TextRun({ text: new Date(contest.dateEnd).toLocaleString(), size: 28, font: "Times New Roman" })]
+                            })]
                         }),
                     ],
-                }),
-                ...rows,
-            ],
+                })
+            )),
+        ];
+    
+        const table = new DocxTable({
+            rows: rows,
             width: { size: 10000, type: 'dxa' },
         });
     
@@ -154,15 +224,16 @@ const AdminContestSection = () => {
                         alignment: AlignmentType.CENTER,
                         children: [
                             new TextRun({
-                                text: "Contests Report",
+                                text: "Отчет по конкурсам",
                                 bold: true,
                                 size: 28,
+                                font: "Times New Roman"
                             }),
                         ]
                     }),
                     new Paragraph({
                         alignment: AlignmentType.CENTER,
-                        children: [new TextRun({ text: currentDate, size: 28 })]
+                        children: [new TextRun({ text: currentDate, size: 28, font: "Times New Roman" })]
                     }),
                     new Paragraph({ text: "\n" }),
                     table,
@@ -171,157 +242,85 @@ const AdminContestSection = () => {
         });
     
         Packer.toBlob(doc).then(blob => {
-            FileSaver.saveAs(blob, "Contests_Report.docx");
+            FileSaver.saveAs(blob, "Отчет_по_конкурсам.docx");
         }).catch(err => {
-            console.error("Error generating report:", err);
+            console.error("Ошибка генерации отчета:", err);
+            toast.error('Ошибка генерации отчета');
         });
     };
 
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" mt={4}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
     return (
-        <Box className="admin-section">
+        <Box sx={{ p: 3 }}>
             <ToastContainer />
-            <Grid container spacing={2}>
-                {contests.map((contest) => (
-                    <Grid item xs={12} sm={6} md={4} key={contest.id}>
-                        <Box className="university-card">
-                            {editingContest?.id === contest.id ? (
-                                <>
-                                    <TextField
-                                        label="Name"
-                                        value={editingContest.name}
-                                        onChange={(e) => setEditingContest({ ...editingContest, name: e.target.value })}
-                                    />
-                                    <TextField
-                                        label="Description"
-                                        value={editingContest.description}
-                                        onChange={(e) => setEditingContest({ ...editingContest, description: e.target.value })}
-                                    />
-                                    <TextField
-                                        label="Date Start"
-                                        type="datetime-local"
-                                        value={editingContest.dateStart}
-                                        onChange={(e) => setEditingContest({ ...editingContest, dateStart: e.target.value })}
-                                    />
-                                    <TextField
-                                        label="Date Start Second Tour"
-                                        type="datetime-local"
-                                        value={editingContest.dateStartSecondTour}
-                                        onChange={(e) => setEditingContest({ ...editingContest, dateStartSecondTour: e.target.value })}
-                                    />
-                                    <TextField
-                                        label="Date End"
-                                        type="datetime-local"
-                                        value={editingContest.dateEnd}
-                                        onChange={(e) => setEditingContest({ ...editingContest, dateEnd: e.target.value })}
-                                    />
-                                    <FormControl>
-                                        <InputLabel id="organization-committee-label">Organization Committee</InputLabel>
-                                        <Select
-                                            labelId="organization-committee-label"
-                                            value={editingContest.organizationCommitteeId}
-                                            onChange={(e) => setEditingContest({ ...editingContest, organizationCommitteeId: e.target.value })}
-                                        >
-                                            {committees.map((committee) => (
-                                                <MenuItem key={committee.id} value={committee.id}>
-                                                    {committee.name}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                    <FormControl>
-                                        <InputLabel id="program-committee-label">Program Committee</InputLabel>
-                                        <Select
-                                            labelId="program-committee-label"
-                                            value={editingContest.programCommitteeId}
-                                            onChange={(e) => setEditingContest({ ...editingContest, programCommitteeId: e.target.value })}
-                                        >
-                                            {committees.map((committee) => (
-                                                <MenuItem key={committee.id} value={committee.id}>
-                                                    {committee.name}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                    <FormControl>
-                                        <InputLabel id="invited-teacher-label">Invited Teacher</InputLabel>
-                                        <Select
-                                            labelId="invited-teacher-label"
-                                            value={editingContest.invitedTeacherId}
-                                            onChange={(e) => setEditingContest({ ...editingContest, invitedTeacherId: e.target.value })}
-                                        >
-                                            {teachers.map((teacher) => (
-                                                <MenuItem key={teacher.id} value={teacher.id}>
-                                                    {teacher.user?.name}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                    <Box className="university-actions">
-                                        <IconButton onClick={() => handleSave(editingContest)}>
-                                            <Save />
-                                        </IconButton>
-                                    </Box>
-                                </>
-                            ) : (
-                                <>
-                                    <h3>{contest.name}</h3>
-                                    <p>{contest.description}</p>
-                                    <p>Date Start: {new Date(contest.dateStart).toLocaleString()}</p>
-                                    <p>Date Start Second Tour: {new Date(contest.dateStartSecondTour).toLocaleString()}</p>
-                                    <p>Date End: {new Date(contest.dateEnd).toLocaleString()}</p>
-                                    <p>Organization Committee: {committees.find((c) => c.id === contest.organizationCommitteeId)?.name}</p>
-                                    <p>Program Committee: {committees.find((c) => c.id === contest.programCommitteeId)?.name}</p>
-                                    <p>Invited Teacher: {teachers.find((t) => t.id === contest.invitedTeacherId)?.user?.name}</p>
-                                    <Box className="university-actions">
-                                        <IconButton onClick={() => handleEdit(contest)}>
-                                            <Edit />
-                                        </IconButton>
-                                        <IconButton onClick={() => handleDelete(contest.id)}>
-                                            <Delete />
-                                        </IconButton>
-                                    </Box>
-                                </>
-                            )}
-                        </Box>
-                    </Grid>
-                ))}
-                <Grid item xs={12}>
-                    <Box className="university-form">
-                        <h3>Add New Contest</h3>
+            
+            {/* Add new contest form */}
+            <Paper sx={{ p: 3, mb: 3 }}>
+                <Typography variant="h6" gutterBottom>Добавить новый конкурс</Typography>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
                         <TextField
-                            label="Name"
+                            label="Название"
                             value={newContest.name}
                             onChange={(e) => setNewContest({ ...newContest, name: e.target.value })}
+                            fullWidth
+                            required
                         />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
                         <TextField
-                            label="Description"
+                            label="Описание"
                             value={newContest.description}
                             onChange={(e) => setNewContest({ ...newContest, description: e.target.value })}
+                            fullWidth
                         />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
                         <TextField
-                            label="Date Start"
+                            label="Дата начала"
                             type="datetime-local"
                             value={newContest.dateStart}
                             onChange={(e) => setNewContest({ ...newContest, dateStart: e.target.value })}
+                            fullWidth
+                            InputLabelProps={{ shrink: true }}
+                            required
                         />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
                         <TextField
-                            label="Date Start Second Tour"
+                            label="Дата начала второго тура"
                             type="datetime-local"
                             value={newContest.dateStartSecondTour}
                             onChange={(e) => setNewContest({ ...newContest, dateStartSecondTour: e.target.value })}
+                            fullWidth
+                            InputLabelProps={{ shrink: true }}
                         />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
                         <TextField
-                            label="Date End"
+                            label="Дата окончания"
                             type="datetime-local"
                             value={newContest.dateEnd}
                             onChange={(e) => setNewContest({ ...newContest, dateEnd: e.target.value })}
+                            fullWidth
+                            InputLabelProps={{ shrink: true }}
+                            required
                         />
-                        <FormControl>
-                            <InputLabel id="organization-committee-label">Organization Committee</InputLabel>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <FormControl fullWidth>
+                            <InputLabel>Орг. комитет</InputLabel>
                             <Select
-                                labelId="organization-committee-label"
                                 value={newContest.organizationCommitteeId}
                                 onChange={(e) => setNewContest({ ...newContest, organizationCommitteeId: e.target.value })}
+                                label="Орг. комитет"
                             >
                                 {committees.map((committee) => (
                                     <MenuItem key={committee.id} value={committee.id}>
@@ -330,12 +329,14 @@ const AdminContestSection = () => {
                                 ))}
                             </Select>
                         </FormControl>
-                        <FormControl>
-                            <InputLabel id="program-committee-label">Program Committee</InputLabel>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <FormControl fullWidth>
+                            <InputLabel>Програм. комитет</InputLabel>
                             <Select
-                                labelId="program-committee-label"
                                 value={newContest.programCommitteeId}
                                 onChange={(e) => setNewContest({ ...newContest, programCommitteeId: e.target.value })}
+                                label="Програм. комитет"
                             >
                                 {committees.map((committee) => (
                                     <MenuItem key={committee.id} value={committee.id}>
@@ -344,29 +345,141 @@ const AdminContestSection = () => {
                                 ))}
                             </Select>
                         </FormControl>
-                        <FormControl>
-                            <InputLabel id="invited-teacher-label">Invited Teacher</InputLabel>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <FormControl fullWidth>
+                            <InputLabel>Приглашенный преподаватель</InputLabel>
                             <Select
-                                labelId="invited-teacher-label"
                                 value={newContest.invitedTeacherId}
                                 onChange={(e) => setNewContest({ ...newContest, invitedTeacherId: e.target.value })}
+                                label="Приглашенный преподаватель"
                             >
                                 {teachers.map((teacher) => (
                                     <MenuItem key={teacher.id} value={teacher.id}>
-                                        {teacher.user?.name}
+                                        {teacher.user?.name || 'Без имени'}
                                     </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
-                        <Button onClick={handleCreate}>Create</Button>
-                    </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Button 
+                            variant="contained" 
+                            onClick={handleCreate}
+                            fullWidth
+                            size="large"
+                        >
+                            Создать конкурс
+                        </Button>
+                    </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                    <Button variant="contained" color="primary" onClick={generateReport}>
-                        Download Report
-                    </Button>
-                </Grid>
-            </Grid>
+            </Paper>
+
+            {/* Contests table */}
+            <TableContainer component={Paper} sx={{ mb: 3 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Название</TableCell>
+                            <TableCell>Дата начала</TableCell>
+                            <TableCell>Дата окончания</TableCell>
+                            <TableCell>Орг. комитет</TableCell>
+                            <TableCell align="right">Действия</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {contests.map((contest) => (
+                            <TableRow key={contest.id}>
+                                {editingId === contest.id ? (
+                                    <>
+                                        <TableCell>
+                                            <TextField
+                                                value={editData.name}
+                                                onChange={(e) => setEditData({...editData, name: e.target.value})}
+                                                fullWidth
+                                                size="small"
+                                                required
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <TextField
+                                                type="datetime-local"
+                                                value={editData.dateStart}
+                                                onChange={(e) => setEditData({...editData, dateStart: e.target.value})}
+                                                fullWidth
+                                                size="small"
+                                                InputLabelProps={{ shrink: true }}
+                                                required
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <TextField
+                                                type="datetime-local"
+                                                value={editData.dateEnd}
+                                                onChange={(e) => setEditData({...editData, dateEnd: e.target.value})}
+                                                fullWidth
+                                                size="small"
+                                                InputLabelProps={{ shrink: true }}
+                                                required
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Select
+                                                value={editData.organizationCommitteeId}
+                                                onChange={(e) => setEditData({...editData, organizationCommitteeId: e.target.value})}
+                                                fullWidth
+                                                size="small"
+                                            >
+                                                {committees.map((committee) => (
+                                                    <MenuItem key={committee.id} value={committee.id}>
+                                                        {committee.name}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <IconButton onClick={() => handleSave(contest.id)}>
+                                                <Save color="primary" />
+                                            </IconButton>
+                                            <IconButton onClick={cancelEditing}>
+                                                <Cancel color="error" />
+                                            </IconButton>
+                                        </TableCell>
+                                    </>
+                                ) : (
+                                    <>
+                                        <TableCell>{contest.name}</TableCell>
+                                        <TableCell>{new Date(contest.dateStart).toLocaleString()}</TableCell>
+                                        <TableCell>{new Date(contest.dateEnd).toLocaleString()}</TableCell>
+                                        <TableCell>
+                                            {committees.find(c => c.id === contest.organizationCommitteeId)?.name || '—'}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <IconButton onClick={() => startEditing(contest)}>
+                                                <Edit color="primary" />
+                                            </IconButton>
+                                            <IconButton onClick={() => handleDelete(contest.id)}>
+                                                <Delete color="error" />
+                                            </IconButton>
+                                        </TableCell>
+                                    </>
+                                )}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            {/* Download report button */}
+            <Button 
+                variant="contained" 
+                color="primary" 
+                onClick={generateReport}
+                fullWidth
+                sx={{ mb: 2 }}
+            >
+                Скачать отчет
+            </Button>
         </Box>
     );
 };

@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent, Divider, Button } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  Card, 
+  CardContent, 
+  Button, 
+  Tabs, 
+  Tab, 
+  CircularProgress
+} from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ContestActions from '../actions/ContestActions';
@@ -7,11 +16,15 @@ import GradeActions from '../actions/GradeActions';
 import ReportActions from '../actions/ReportActions';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
 import * as FileSaver from 'file-saver';
+import '../App.css';
 
 const StudentSecondTourSection = ({ contestId }) => {
   const [nominations, setNominations] = useState([]);
   const [report, setReport] = useState(null);
+  const [activeTab, setActiveTab] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(400);
   const userId = localStorage.getItem('userId');
+  const [overallAverage, setOverallAverage] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,123 +42,365 @@ const StudentSecondTourSection = ({ contestId }) => {
     fetchData();
   }, [contestId, userId]);
 
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
+
+  const updateContainerHeight = (height) => {
+    if (height > containerHeight) {
+      setContainerHeight(height);
+    }
+  };
+
   const downloadGrades = async () => {
-    const doc = new Document({
-      sections: [{
-        children: [
-          // Add title without creating a new section
-          new Paragraph({
-            text: "Grades Report",
-            heading: HeadingLevel.HEADING_1,
-          }),
-          // Add a blank paragraph after the title for spacing
-          new Paragraph({ text: "" }),
-        ],
-      }],
-    });
-
-    // Keep everything in a single section
-    const sectionChildren = [];
-
-    for (const nomination of nominations) {
-      // Fetch grades for the current nomination
-      const nominationGrades = await GradeActions.getGradesOfNomination(nomination.id, report?.id);
-
-      // Add nomination title
-      sectionChildren.push(
-        new Paragraph({
-          text: `Номинация: ${nomination.name}`,
-          heading: HeadingLevel.HEADING_2,
-        })
-      );
-
-      // Add each grade to the section
-      nominationGrades.forEach(grade => {
-        sectionChildren.push(
-          new Paragraph({
-            children: [
-              new TextRun(`Оценка: ${grade.reportGrade}`),
-              new TextRun(` | Отзыв: ${grade.text}`),
-              new TextRun(` | Дата: ${grade.date}`),
-              new TextRun(` | Автор: ${grade.programCommitteeMember?.teacher?.user?.name || 'Неизвестно'}`),
-            ],
-            spacing: { after: 200 }, // Add spacing after each grade entry for readability
-          })
-        );
+    try {
+      const doc = new Document({
+        sections: [{
+          children: [
+            new Paragraph({
+              text: "Grades Report",
+              heading: HeadingLevel.HEADING_1,
+            }),
+            new Paragraph({ text: "" }),
+          ],
+        }],
       });
 
-      // Add a blank paragraph for spacing between nominations
-      sectionChildren.push(new Paragraph({ text: "" }));
+      const sectionChildren = [];
+
+      for (const nomination of nominations) {
+        try {
+          const nominationGrades = await GradeActions.getGradesOfNomination(nomination.id, report?.id);
+          
+          sectionChildren.push(
+            new Paragraph({
+              text: `Номинация: ${nomination.name}`,
+              heading: HeadingLevel.HEADING_2,
+            })
+          );
+
+          nominationGrades.forEach(grade => {
+            sectionChildren.push(
+              new Paragraph({
+                children: [
+                  new TextRun(`Оценка: ${grade.reportGrade}`),
+                  new TextRun(` | Отзыв: ${grade.text}`),
+                  new TextRun(` | Дата: ${grade.date}`),
+                  new TextRun(` | Автор: ${grade.programCommitteeMember?.teacher?.user?.name || 'Неизвестно'}`),
+                ],
+                spacing: { after: 200 },
+              })
+            );
+          });
+
+          sectionChildren.push(new Paragraph({ text: "" }));
+        } catch (error) {
+          console.error(`Error loading grades for nomination ${nomination.id}:`, error);
+          continue;
+        }
+      }
+
+      doc.addSection({
+        children: sectionChildren,
+      });
+
+      Packer.toBlob(doc).then(blob => {
+        FileSaver.saveAs(blob, "Grades_Report.docx");
+      });
+    } catch (error) {
+      toast.error(`Ошибка при создании документа: ${error.message}`);
     }
+  };
 
-    // Append all children to the document section
-    doc.addSection({
-      children: sectionChildren,
-    });
+  const calculateAverageGrade = (grades) => {
+    if (!grades || grades.length === 0) return null;
+    const sum = grades.reduce((acc, grade) => acc + grade.reportGrade, 0);
+    return (sum / grades.length).toFixed(2);
+  };
 
-    Packer.toBlob(doc).then(blob => {
-      FileSaver.saveAs(blob, "Grades_Report.docx");
-    }).catch(err => {
-      console.error("Error generating report:", err);
-    });
+  useEffect(() => {
+    const calculateOverallAverage = async () => {
+      if (nominations.length > 0 && report?.id) {
+        let totalSum = 0;
+        let totalCount = 0;
+        
+        try {
+          // Fetch grades for all nominations
+          const gradesPromises = nominations.map(nomination => 
+            GradeActions.getGradesOfNomination(nomination.id, report.id)
+          );
+          
+          const allGrades = await Promise.all(gradesPromises);
+          
+          allGrades.forEach(grades => {
+            if (grades && grades.length > 0) {
+              const avg = calculateAverageGrade(grades);
+              if (avg) {
+                totalSum += parseFloat(avg);
+                totalCount++;
+              }
+            }
+          });
+          
+          setOverallAverage(totalCount > 0 ? (totalSum / totalCount).toFixed(2) : null);
+        } catch (error) {
+          console.error('Error calculating overall average:', error);
+          setOverallAverage(null);
+        }
+      }
+    };
+  
+    calculateOverallAverage();
+  }, [nominations, report]);
+
+  const TabPanel = ({ value, index, nomination, report }) => {
+    const [grades, setGrades] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [contentHeight, setContentHeight] = useState(0);
+    const [averageGrade, setAverageGrade] = useState(null);
+
+    useEffect(() => {
+      let isMounted = true;
+      
+      const fetchGrades = async () => {
+        if (value !== index) return;
+        
+        setLoading(true);
+        setError(null);
+        try {
+          const nominationGrades = await GradeActions.getGradesOfNomination(
+            nomination.id, 
+            report?.id
+          );
+          if (isMounted) {
+            setGrades(nominationGrades);
+          }
+        } catch (err) {
+          if (isMounted) {
+            setError(err.message);
+            console.error('Error loading grades:', err);
+          }
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
+        }
+      };
+
+      if (report?.id) {
+        fetchGrades();
+      } else {
+        setLoading(false);
+        setGrades([]);
+      }
+
+      return () => {
+        isMounted = false;
+      };
+    }, [value, index, nomination.id, report?.id]);
+
+    useEffect(() => {
+      if (grades.length > 0) {
+        setAverageGrade(calculateAverageGrade(grades));
+        // Calculate approximate content height
+        const newHeight = 100 + (grades.length * 125) + 50; // Base height + 120px per grade card
+        setContentHeight(newHeight);
+        updateContainerHeight(newHeight);
+      }
+      else {
+        setAverageGrade(null);
+      }
+    }, [grades]);
+
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`nomination-tabpanel-${index}`}
+        aria-labelledby={`nomination-tab-${index}`}
+        className="student-second-tour-panel"
+      >
+        {loading ? (
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            height: '100%'
+          }}>
+            <CircularProgress size={24} />
+          </Box>
+        ) : error ? (
+          <Typography variant="body2" sx={{ color: 'error.main', textAlign: 'center' }}>
+            Ошибка загрузки оценок
+          </Typography>
+        ) : grades.length === 0 ? (
+          <Typography variant="body2" sx={{ color: '#616161', fontStyle: 'italic', textAlign: 'center' }}>
+            Оценки пока не выставлены
+          </Typography>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {grades.map((grade) => (
+              <Card 
+                key={grade.id} 
+                sx={{ 
+                  borderRadius: 1,
+                  border: '1px solid #e0e0e0',
+                  boxShadow: 'none'
+                }}
+              >
+                <CardContent>
+                  <Typography variant="body1" sx={{ fontSize: '0.875rem', mb: 1 }}>
+                    <strong>Оценка:</strong> {grade.reportGrade}
+                  </Typography>
+                  {grade.text && (
+                    <Typography variant="body1" sx={{ fontSize: '0.875rem', mb: 1, whiteSpace: 'pre-line' }}>
+                      <strong>Отзыв:</strong> {grade.text}
+                    </Typography>
+                  )}
+                  <Typography variant="body2" sx={{ fontSize: '0.8125rem', color: '#616161' }}>
+                    <strong>Дата:</strong> {new Date(grade.date).toLocaleDateString('ru-RU', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontSize: '0.8125rem', color: '#616161' }}>
+                    <strong>Автор:</strong> {grade.programCommitteeMember?.teacher?.user?.name || 'Неизвестно'}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
+        )}
+        {grades.length > 0 && (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* ... existing grade cards ... */}
+          <Typography variant="body1" sx={{ 
+            mt: 2,
+            textAlign: 'right',
+            fontWeight: 500,
+            color: '#1976d2'
+          }}>
+            Средний балл: {averageGrade}
+          </Typography>
+        </Box>
+      )}
+      </div>
+    );
   };
 
   return (
-    <Box className="student-second-tour-section">
-      <ToastContainer />
-      <Typography variant="h3" className="page-title">
-        Второй тур
-      </Typography>
-      {nominations.map((nomination) => (
-        <Box key={nomination.id} className="nomination-container">
-          <Card className="nomination-card">
-            <CardContent>
-              <Typography variant="h5">{nomination.name}</Typography>
-              <Divider className="divider" />
-              {report && (<NominationGrades nominationId={nomination.id} reportId={report?.id} />)}
-            </CardContent>
-          </Card>
-        </Box>
-      ))}
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={downloadGrades} 
-        style={{ marginTop: '20px' }}
-      >
-        Download Grades
-      </Button>
+    <Box className="student-second-tour-container">
+      <ToastContainer limit={3} />
+      <Card className="student-second-tour-card">
+        <CardContent sx={{ p: { xs: 1.5, sm: 3 } }}>
+          <Typography variant="h5" sx={{ 
+            fontWeight: 600,
+            fontSize: { xs: '1.1rem', sm: '1.25rem' },
+            mb: 2,
+            color: '#212121'
+          }}>
+            Второй тур
+          </Typography>
+          
+          {nominations.length === 0 ? (
+            <Typography variant="body2" sx={{ color: '#616161', fontStyle: 'italic' }}>
+              Номинации пока не определены
+            </Typography>
+          ) : (
+            <Box>
+              <Tabs
+                value={activeTab}
+                onChange={handleTabChange}
+                variant="scrollable"
+                scrollButtons="auto"
+                allowScrollButtonsMobile
+                className="student-second-tour-tabs"
+              >
+                {nominations.map((nomination, index) => (
+                  <Tab
+                    key={nomination.id}
+                    label={nomination.name}
+                    className="student-second-tour-tab"
+                  />
+                ))}
+              </Tabs>
+              
+              <Box 
+                className="student-second-tour-content"
+                style={{ height: containerHeight }}
+              >
+                {report ? (
+                  nominations.map((nomination, index) => (
+                    <TabPanel 
+                      key={nomination.id}
+                      value={activeTab} 
+                      index={index}
+                      nomination={nomination}
+                      report={report}
+                    />
+                  ))
+                ) : (
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center',
+                    height: '100%'
+                  }}>
+                    <Typography variant="body2" sx={{ color: '#616161', fontStyle: 'italic' }}>
+                      Отчет не загружен
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+
+              <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        mt: 2,
+        px: { xs: 1, sm: 0 }
+      }}>
+        {overallAverage && (
+          <Typography variant="body1" sx={{ 
+            fontWeight: 500,
+            color: '#1976d2'
+          }}>
+            Общий средний балл: {overallAverage}
+          </Typography>
+        )}
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={downloadGrades}
+                  disabled={!report}
+                  sx={{
+                    fontSize: '0.8125rem',
+                    px: 2,
+                    py: 1,
+                    textTransform: 'none',
+                    borderColor: '#e0e0e0',
+                    color: '#616161',
+                    '&:hover': {
+                      borderColor: '#bdbdbd',
+                      backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                    },
+                    '&:disabled': {
+                      opacity: 0.5
+                    }
+                  }}
+                >
+                  Скачать все оценки
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
     </Box>
-  );
-};
-
-const NominationGrades = ({ nominationId, reportId }) => {
-  const [grades, setGrades] = useState([]);
-
-  useEffect(() => {
-    const fetchGrades = async () => {
-      try {
-        const nominationGrades = await GradeActions.getGradesOfNomination(nominationId, reportId);
-        setGrades(nominationGrades);
-      } catch (error) {
-        toast.error(`Ошибка получения оценок: ${error.message}`);
-      }
-    };
-
-    fetchGrades();
-  }, [nominationId, reportId]);
-
-  return (
-    <>
-      {grades.map((grade) => (
-        <Box key={grade.id} className="grade-container">
-          <Typography>Оценка: {grade.reportGrade}</Typography>
-          <Typography>Отзыв: {grade.text}</Typography>
-          <Typography>Дата: {grade.date}</Typography>
-          <Typography>Автор: {grade.programCommitteeMember?.teacher?.user?.name}</Typography>
-        </Box>
-      ))}
-    </>
   );
 };
 

@@ -2,7 +2,7 @@
 
 public interface IReportService : IGenericService<ReportModel>
 {
-	Task<ReportModel> GetWinnerOfNomination(Guid nominationId);
+	Task<ReportModel?> GetWinnerOfNomination(Guid nominationId);
 
 	Task<ReportModel> GetWinnerOfContest(Guid contestId);
 

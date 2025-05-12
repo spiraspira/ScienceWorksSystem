@@ -1,76 +1,107 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, TextField, Button, IconButton, Select, MenuItem } from '@mui/material';
-import { Edit, Delete, Save } from '@mui/icons-material';
+import { 
+  Box, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Button, 
+  IconButton,
+  Paper,
+  CircularProgress,
+  Grid,
+  Select,
+  MenuItem,
+  TextField
+} from '@mui/material';
+import { Edit, Delete, Save, Cancel } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CommitteeActions from '../actions/CommitteeActions';
 import TeacherActions from '../actions/TeacherActions';
-import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, HeadingLevel } from "docx";
+import { Document, Packer, Paragraph, Table as DocxTable, TableRow as DocxRow, TableCell as DocxCell, TextRun, AlignmentType, HeadingLevel } from "docx";
 import * as FileSaver from 'file-saver';
 
 const AdminCommitteeSection = () => {
   const [committees, setCommittees] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [newCommittee, setNewCommittee] = useState({ teacherId: '' });
-  const [editingCommittee, setEditingCommittee] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editData, setEditData] = useState({
+    teacherId: ''
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCommittees = async () => {
+    const fetchData = async () => {
       try {
-        const data = await CommitteeActions.getAll();
-        setCommittees(data);
+        const [committeeData, teacherData] = await Promise.all([
+          CommitteeActions.getAll(),
+          TeacherActions.getAll()
+        ]);
+        setCommittees(committeeData);
+        setTeachers(teacherData);
       } catch (error) {
-        toast.error('Error fetching committees: ' + error.message);
+        toast.error('Ошибка загрузки данных: ' + error.message);
+      } finally {
+        setLoading(false);
       }
     };
-
-    const fetchTeachers = async () => {
-      try {
-        const data = await TeacherActions.getAll();
-        setTeachers(data);
-      } catch (error) {
-        toast.error('Error fetching teachers: ' + error.message);
-      }
-    };
-
-    fetchCommittees();
-    fetchTeachers();
+    fetchData();
   }, []);
 
   const handleDelete = async (committeeId) => {
     try {
       await CommitteeActions.delete(committeeId);
       setCommittees(committees.filter((c) => c.id !== committeeId));
-      toast.success('Committee deleted successfully');
+      toast.success('Комиссия успешно удалена');
     } catch (error) {
-      toast.error('Error deleting committee: ' + error.message);
+      toast.error('Ошибка удаления комиссии: ' + error.message);
     }
   };
 
   const handleCreate = async () => {
+    if (!newCommittee.teacherId) {
+      toast.error('Пожалуйста, выберите преподавателя');
+      return;
+    }
+
     try {
-      const newCommitteeData = { teacherId: newCommittee.teacherId };
-      const createdCommittee = await CommitteeActions.create(newCommitteeData);
+      const createdCommittee = await CommitteeActions.create(newCommittee);
       setCommittees([...committees, createdCommittee]);
       setNewCommittee({ teacherId: '' });
-      toast.success('Committee created successfully');
+      toast.success('Комиссия успешно создана');
     } catch (error) {
-      toast.error('Error creating committee: ' + error.message);
+      toast.error('Ошибка создания комиссии: ' + error.message);
     }
   };
 
-  const handleEdit = (committee) => {
-    setEditingCommittee(committee);
+  const startEditing = (committee) => {
+    setEditingId(committee.id);
+    setEditData({
+      teacherId: committee.teacherId
+    });
   };
 
-  const handleSave = async (committee) => {
+  const cancelEditing = () => {
+    setEditingId(null);
+  };
+
+  const handleSave = async (id) => {
+    if (!editData.teacherId) {
+      toast.error('Пожалуйста, выберите преподавателя');
+      return;
+    }
+
     try {
-      const updatedCommittee = await CommitteeActions.update(committee);
-      setCommittees(committees.map((c) => (c.id === committee.id ? updatedCommittee : c)));
-      setEditingCommittee(null);
-      toast.success('Committee updated successfully');
+      const updatedCommittee = await CommitteeActions.update({ id, ...editData });
+      setCommittees(committees.map((c) => (c.id === id ? updatedCommittee : c)));
+      setEditingId(null);
+      toast.success('Комиссия успешно обновлена');
     } catch (error) {
-      toast.error('Error updating committee: ' + error.message);
+      toast.error('Ошибка обновления комиссии: ' + error.message);
     }
   };
 
@@ -78,41 +109,39 @@ const AdminCommitteeSection = () => {
     const currentDate = new Date().toLocaleDateString();
 
     const rows = [
-      new TableRow({
+      new DocxRow({
         children: [
-          new TableCell({
-            children: [new Paragraph({
-              children: [new TextRun({ text: "Committee Name", bold: true, size: 28, font: "Times New Roman" })]
-            })]
-          }),
-          new TableCell({
+          new DocxCell({
             children: [new Paragraph({
               children: [new TextRun({ text: "ID", bold: true, size: 28, font: "Times New Roman" })]
             })]
           }),
-          new TableCell({
+          new DocxCell({
             children: [new Paragraph({
-              children: [new TextRun({ text: "Teacher", bold: true, size: 28, font: "Times New Roman" })]
+              children: [new TextRun({ text: "Преподаватель", bold: true, size: 28, font: "Times New Roman" })]
             })]
           }),
         ],
       }),
       ...committees.map(committee => (
-        new TableRow({
+        new DocxRow({
           children: [
-            new TableCell({
+            new DocxCell({
               children: [new Paragraph({
-                children: [new TextRun({ text: committee.name, size: 28, font: "Times New Roman" })]
+                children: [new TextRun({ 
+                  text: committee.id.toString(), 
+                  size: 28, 
+                  font: "Times New Roman" 
+                })]
               })]
             }),
-            new TableCell({
+            new DocxCell({
               children: [new Paragraph({
-                children: [new TextRun({ text: committee.id.toString(), size: 28, font: "Times New Roman" })]
-              })]
-            }),
-            new TableCell({
-              children: [new Paragraph({
-                children: [new TextRun({ text: committee.teacher?.user?.name || '', size: 28, font: "Times New Roman" })]
+                children: [new TextRun({ 
+                  text: committee.teacher?.user?.name || 'Не указан', 
+                  size: 28, 
+                  font: "Times New Roman" 
+                })]
               })]
             }),
           ],
@@ -120,7 +149,7 @@ const AdminCommitteeSection = () => {
       )),
     ];
 
-    const table = new Table({
+    const table = new DocxTable({
       rows: rows,
       width: { size: 10000, type: 'dxa' },
     });
@@ -133,7 +162,7 @@ const AdminCommitteeSection = () => {
             alignment: AlignmentType.CENTER,
             children: [
               new TextRun({
-                text: "Committee Report",
+                text: "Отчет по комиссиям",
                 bold: true,
                 size: 28,
                 font: "Times New Roman"
@@ -144,81 +173,140 @@ const AdminCommitteeSection = () => {
             alignment: AlignmentType.CENTER,
             children: [new TextRun({ text: currentDate, size: 28, font: "Times New Roman" })]
           }),
-          new Paragraph({ text: "\n" }), // Add some spacing
-          table, // Add the table to the document
+          new Paragraph({ text: "\n" }),
+          table,
         ],
       }],
     });
 
     Packer.toBlob(doc).then(blob => {
-      FileSaver.saveAs(blob, "Committee_Report.docx");
+      FileSaver.saveAs(blob, "Отчет_по_комиссиям.docx");
     }).catch(err => {
-      console.error("Error generating report:", err);
+      console.error("Ошибка генерации отчета:", err);
+      toast.error('Ошибка генерации отчета');
     });
   };
 
-  return (
-    <Box className="admin-section">
-      <ToastContainer />
-      <Grid container spacing={2}>
-        {committees.map((committee) => (
-          <Grid item xs={12} sm={6} md={4} key={committee.id}>
-            <Box className="university-card">
-              {editingCommittee?.id === committee.id ? (
-                <>
-                  <TextField label="ID" value={committee.id} disabled />
-                  <Select
-                    label="Teacher"
-                    value={editingCommittee.teacherId}
-                    onChange={(e) => setEditingCommittee({ ...editingCommittee, teacherId: e.target.value })}
-                  >
-                    {teachers.map((teacher) => (
-                      <MenuItem key={teacher.id} value={teacher.id}>
-                        {teacher.user?.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <Box className="university-actions">
-                    <IconButton onClick={() => handleSave(editingCommittee)}>
-                      <Save />
-                    </IconButton>
-                  </Box>
-                </>
-              ) : (
-                <>
-                  <p>{committee.name}</p>
-                  <p>Id: {committee.id}</p>
-                  <p>Teacher: {committee.teacher?.user?.name}</p>
-                  <Box className="university-actions">
-                    <IconButton onClick={() => handleEdit(committee)}>
-                      <Edit />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(committee.id)}>
-                      <Delete />
-                    </IconButton>
-                  </Box>
-                </>
-              )}
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
-      <Box className="university-form">
-        <Select
-          label="Teacher"
-          value={newCommittee.teacherId}
-          onChange={(e) => setNewCommittee({ teacherId: e.target.value })}
-        >
-          {teachers.map((teacher) => (
-            <MenuItem key={teacher.id} value={teacher.id}>
-              {teacher.user?.name}
-            </MenuItem>
-          ))}
-        </Select>
-        <Button onClick={handleCreate}>Create</Button>
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
       </Box>
-      <Button variant="contained" color="primary" onClick={generateReport}>
-        Download Report
+    );
+  }
+
+  return (
+    <Box sx={{ p: 3 }}>
+      <ToastContainer />
+      
+      {/* Add new committee form */}
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Grid container spacing={2} alignItems="flex-end">
+          <Grid item xs={12} sm={8}>
+            <Select
+              value={newCommittee.teacherId}
+              onChange={(e) => setNewCommittee({ teacherId: e.target.value })}
+              fullWidth
+              size="small"
+              displayEmpty
+            >
+              <MenuItem value="">Выберите преподавателя</MenuItem>
+              {teachers.map((teacher) => (
+                <MenuItem key={teacher.id} value={teacher.id}>
+                  {teacher.user?.name || 'Без имени'}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Button 
+              variant="contained" 
+              onClick={handleCreate}
+              fullWidth
+              sx={{ height: '40px' }}
+            >
+              Добавить комиссию
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Committees table */}
+      <TableContainer component={Paper} sx={{ mb: 2 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Преподаватель</TableCell>
+              <TableCell align="right">Действия</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {committees.map((committee) => (
+              <TableRow key={committee.id}>
+                {editingId === committee.id ? (
+                  <>
+                    <TableCell>
+                      <TextField
+                        value={committee.id}
+                        disabled
+                        fullWidth
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={editData.teacherId}
+                        onChange={(e) => setEditData({...editData, teacherId: e.target.value})}
+                        fullWidth
+                        size="small"
+                      >
+                        {teachers.map((teacher) => (
+                          <MenuItem key={teacher.id} value={teacher.id}>
+                            {teacher.user?.name || 'Без имени'}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton onClick={() => handleSave(committee.id)}>
+                        <Save color="primary" />
+                      </IconButton>
+                      <IconButton onClick={cancelEditing}>
+                        <Cancel color="error" />
+                      </IconButton>
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell>{committee.id}</TableCell>
+                    <TableCell>
+                      {committee.teacher?.user?.name || 'Не указан'}
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton onClick={() => startEditing(committee)}>
+                        <Edit color="primary" />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(committee.id)}>
+                        <Delete color="error" />
+                      </IconButton>
+                    </TableCell>
+                  </>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Download report button */}
+      <Button 
+        variant="contained" 
+        color="primary" 
+        onClick={generateReport}
+        sx={{ mb: 2 }}
+      >
+        Скачать отчет
       </Button>
     </Box>
   );

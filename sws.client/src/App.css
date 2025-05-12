@@ -39,26 +39,76 @@
     }
 }
 
+/* Updated Login Page Styles */
 .login-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    background-color: #f0f0f0;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 2rem;
+    box-sizing: border-box;
 }
 
 .login-title {
-    margin-bottom: 24px;
+    margin-bottom: 2rem !important;
+    color: #1976d2;
+    font-weight: 600 !important;
+    text-align: center;
 }
 
 .login-input {
-    margin-bottom: 16px;
-    width: 300px;
+    margin-bottom: 1.5rem !important;
+    width: 100%;
+    max-width: 400px;
+    background-color: #ffffff;
+    border-radius: 4px;
+}
+
+.login-input .MuiOutlinedInput-root {
+    border-radius: 4px;
 }
 
 .login-button {
-    margin-top: 16px;
+    margin-top: 1rem !important;
+    padding: 10px 24px !important;
+    font-weight: 600 !important;
+    width: 100%;
+    max-width: 400px;
+    height: 48px;
+    text-transform: none !important;
+    font-size: 1rem !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease !important;
+}
+
+.login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.login-form-container {
+    width: 100%;
+    max-width: 450px;
+    padding: 2.5rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    .login-form-container {
+        padding: 1.5rem;
+        width: 90%;
+    }
+    
+    .login-input, .login-button {
+        max-width: 100%;
+    }
 }
 
 .toolbar-content {
@@ -352,4 +402,2045 @@
 
 .admin-menu-section .MuiButton-root {
     width: 200px;
+}
+
+/* Header Styles */
+.app-header {
+    background-color: #1976d2;
+    background-image: linear-gradient(to right, #1976d2, #2196f3);
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 24px;
+    min-height: 64px;
+}
+
+.welcome-message {
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50%;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.header-button {
+    text-transform: none;
+    font-size: 1rem;
+    font-weight: 500;
+    min-width: auto;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .header-toolbar {
+        padding: 0 16px;
+    }
+    
+    .welcome-message {
+        font-size: 1rem;
+        max-width: 40%;
+    }
+    
+    .header-buttons {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .header-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 16px;
+        min-height: auto;
+    }
+    
+    .welcome-message {
+        max-width: 100%;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+    }
+    
+    .header-buttons {
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    
+    .header-button {
+        font-size: 0.9rem;
+        padding: 6px 8px;
+    }
+}
+
+@media (max-width: 400px) {
+    .welcome-message {
+        font-size: 0.9rem;
+    }
+    
+    .header-button {
+        font-size: 0.85rem;
+    }
+}   
+
+/* Footer Styles */
+.app-footer {
+    background-image: linear-gradient(to right, #1976d2, #2196f3);
+    top: auto;
+    bottom: 0;
+    margin-top: 40px;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-toolbar {
+    min-height: 48px;
+    justify-content: center;
+    padding: 0 24px;
+}
+
+.footer-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .footer-toolbar {
+        min-height: 44px;
+        padding: 0 20px;
+    }
+    
+    .footer-text {
+        font-size: 0.8125rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .app-footer {
+        margin-top: 30px;
+    }
+    
+    .footer-toolbar {
+        min-height: 40px;
+        padding: 0 16px;
+    }
+    
+    .footer-text {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .app-footer {
+        margin-top: 24px;
+    }
+    
+    .footer-text {
+        font-size: 0.6875rem;
+    }
+}
+
+/* Contests Section */
+.contests-section {
+    padding: 2rem;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Loading and Empty States */
+.loading-state, .empty-state {
+    padding: 2rem;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
+.empty-state {
+    color: #6c757d;
+}
+
+/* Contest Grid */
+.contests-grid {
+    margin: 0 -12px !important;
+    width: calc(100% + 24px);
+}
+
+.contest-grid-item {
+    padding: 12px !important;
+}
+
+/* Contest Card */
+.contest-card {
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.contest-content {
+    padding: 16px !important;
+    width: 100%;
+    box-sizing: border-box;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contest Name - always fully visible */
+.contest-name {
+    font-weight: 600 !important;
+    color: #212529;
+    margin-bottom: 12px !important;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.3;
+    text-align: justify;
+    flex-shrink: 0; /* Prevents title from shrinking */
+}
+
+/* Contest Description - justified text */
+.contest-description {
+    color: #495057;
+    margin-bottom: 16px !important;
+    line-height: 1.5 !important;
+    text-align: justify;
+    text-justify: inter-word;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    flex-grow: 1; /* Takes available space */
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* Increased line limit */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Dates */
+.date-text {
+    color: #6c757d !important;
+    font-size: 0.8rem !important;
+    margin-top: auto; /* Pushes dates to bottom */
+    padding-top: 8px;
+    border-top: 1px dashed #e0e0e0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 900px) {
+    .contest-description {
+        -webkit-line-clamp: 3;
+    }
+}
+
+@media (max-width: 600px) {
+    .contest-content {
+        padding: 12px !important;
+    }
+    
+    .contest-name {
+        font-size: 1.1rem !important;
+    }
+    
+    .contest-description {
+        -webkit-line-clamp: 2;
+        font-size: 0.9rem !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .contest-content {
+        padding: 10px !important;
+    }
+    
+    .contest-name {
+        font-size: 1rem !important;
+    }
+    
+    .contest-description {
+        -webkit-line-clamp: 2;
+        font-size: 0.85rem !important;
+    }
+}
+
+.MuiBox-root.css-seqwlu {
+    padding: 0 !important; /* Use !important if necessary */
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensures the container takes at least the full viewport height */
+}
+
+.footer-toolbar {
+    justify-content: center; /* Center the footer content */
+}
+
+.app-footer {
+    margin-top: auto + 20px; /* Pushes the footer to the bottom */
+}
+
+/* Contest Info Section Styles */
+.contest-info-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .contest-info-card {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  
+  .contest-header {
+    padding: 2rem;
+    background: linear-gradient(135deg, #1976d2 0%, #2196f3 100%);
+    color: white !important;
+  }
+  
+  .contest-title {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-weight: 700 !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .contest-subtitle {
+    font-weight: 500 !important;
+    opacity: 0.9;
+  }
+  
+  .contest-download-btn {
+    margin-top: 1.5rem !important;
+    background-color: white !important;
+    color: #1976d2 !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .contest-download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  .contest-accordion {
+    margin: 0.5rem 0 !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+    box-shadow: none !important;
+    border: 1px solid #e0e0e0 !important;
+  }
+  
+  .contest-accordion-summary {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .accordion-title {
+    font-weight: 600 !important;
+    color: #212529 !important;
+  }
+  
+  .accordion-details {
+    padding: 1.5rem !important;
+    background-color: white;
+  }
+  
+  .committee-member {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .report-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .report-download-btn {
+    text-transform: none !important;
+    font-weight: 500 !important;
+    padding: 6px 12px !important;
+  }
+  
+  /* Typography Enhancements */
+  .contest-body-text {
+    font-family: 'Roboto', sans-serif !important;
+    line-height: 1.6 !important;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 900px) {
+    .contest-info-container {
+      padding: 1.5rem;
+    }
+    
+    .contest-header {
+      padding: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .contest-info-container {
+      padding: 1rem;
+    }
+    
+    .contest-title {
+      font-size: 1.5rem !important;
+    }
+    
+    .report-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    
+    .report-download-btn {
+      align-self: flex-end;
+    }
+  }
+  
+  @media (max-width: 400px) {
+    .contest-header {
+      padding: 1rem;
+    }
+    
+    .contest-download-btn {
+      width: 100%;
+    }
+  }
+
+  /* Contest Info Section Styles */
+.contest-info-container {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+.contest-info-card {
+    border-radius: 4px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08) !important;
+    border: 1px solid #e0e0e0 !important;
+}
+
+.contest-info-content {
+    padding: 16px !important;
+}
+
+/* Header Section */
+.contest-header-section {
+    margin-bottom: 24px;
+}
+
+.contest-title {
+    font-weight: 600 !important;
+    font-size: 1.25rem !important;
+    margin-bottom: 12px !important;
+    color: #212121 !important;
+}
+
+.contest-description {
+    font-size: 0.875rem !important;
+    color: #424242 !important;
+    margin-bottom: 16px !important;
+}
+
+.contest-dates-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.contest-date {
+    font-size: 0.8125rem !important;
+    color: #616161 !important;
+}
+
+.export-report-btn {
+    font-size: 0.8125rem !important;
+    padding: 6px 12px !important;
+    background-color: #1976d2 !important;
+}
+
+.export-report-btn:hover {
+    background-color: #1565c0 !important;
+}
+
+/* Accordion Styles */
+.section-container {
+    margin-bottom: 16px;
+}
+
+.contest-accordion {
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: none !important;
+}
+
+.contest-accordion::before {
+    display: none !important;
+}
+
+.accordion-summary {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.accordion-title {
+    font-size: 0.9375rem !important;
+    font-weight: 500 !important;
+    color: #212529 !important;
+}
+
+.accordion-details {
+    padding: 8px 16px 16px !important;
+    background-color: white !important;
+}
+
+/* Committee Styles */
+.committee-chair {
+    font-size: 0.8125rem !important;
+    margin-bottom: 12px !important;
+}
+
+.committee-members-title {
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+    margin-bottom: 8px !important;
+}
+
+.committee-member {
+    font-size: 0.8125rem !important;
+    padding-left: 16px !important;
+    margin-bottom: 4px !important;
+}
+
+/* Nominations Styles */
+.nomination-item {
+    margin-bottom: 12px !important;
+}
+
+.nomination-name {
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+}
+
+.nomination-winner {
+    font-size: 0.8125rem !important;
+    color: #616161 !important;
+    margin-left: 8px !important;
+}
+
+/* Reports Styles */
+.reports-accordion-details {
+    padding: 8px 0 16px !important;
+}
+
+.report-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 12px 16px !important;
+    border-bottom: 1px solid #f5f5f5 !important;
+}
+
+.report-item:last-child {
+    border-bottom: none !important;
+}
+
+.report-name {
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+}
+
+.report-meta {
+    font-size: 0.75rem !important;
+    color: #616161 !important;
+}
+
+.download-report-btn {
+    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
+    min-width: auto !important;
+}
+
+/* Responsive Styles */
+@media (min-width: 600px) {  
+    .contest-info-content {
+        padding: 24px !important;
+    }
+    
+    .contest-dates-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Tabbed Section Styles */
+.tabbed-section {
+    margin-top: 24px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.contest-tabs {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.contest-tab {
+    text-transform: none !important;
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+    min-width: 120px !important;
+    padding: 8px 16px !important;
+}
+
+.contest-tab.Mui-selected {
+    color: #1976d2 !important;
+}
+
+.tab-panel-container {
+    background-color: white;
+}
+
+.tab-content {
+    padding: 16px;
+}
+
+/* Keep all your existing styles from previous implementation */
+
+/* Contest Header Section */
+.contest-header-section {
+    position: relative;
+}
+
+/* If you want to keep using CSS classes instead of sx prop */
+.export-report-btn {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
+    min-width: auto !important;
+    text-transform: none !important;
+    color: #616161 !important;
+    border-color: #e0e0e0 !important;
+}
+
+.export-report-btn:hover {
+    border-color: #bdbdbd !important;
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Report Section Styles */
+.report-container {
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-top: 16px;
+}
+
+.report-name {
+    font-size: 0.875rem !important;
+    margin-bottom: 8px !important;
+    color: #212121 !important;
+}
+
+.report-meta {
+    font-size: 0.8125rem !important;
+    color: #616161 !important;
+    margin-bottom: 4px !important;
+}
+
+.file-name {
+    display: block;
+    font-size: 0.75rem !important;
+    color: #757575 !important;
+    margin-top: 8px !important;
+    margin-left: 8px;
+}
+
+.new-report-form {
+    margin-top: 16px;
+}
+
+.download-btn,
+.upload-btn,
+.save-btn,
+.file-upload-btn,
+.submit-btn {
+    font-size: 0.8125rem !important;
+    padding: 6px 12px !important;
+    text-transform: none !important;
+}
+
+.download-btn,
+.upload-btn,
+.file-upload-btn {
+    border-color: #e0e0e0 !important;
+    color: #616161 !important;
+}
+
+.save-btn,
+.submit-btn {
+    background-color: #1976d2 !important;
+    color: white !important;
+}
+
+.contest-closed-message {
+    color: #616161 !important;
+    font-style: italic !important;
+    margin-top: 16px !important;
+}
+
+/* Form Elements */
+.report-name-input .MuiInputBase-root {
+    font-size: 0.875rem !important;
+}
+
+.MuiInputLabel-root {
+    font-size: 0.875rem !important;
+}
+
+.MuiMenuItem-root {
+    font-size: 0.8125rem !important;
+}
+
+/* Reviews Section Styles */
+.reviews-container {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.review-card {
+    border-radius: 4px !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: none !important;
+}
+
+.review-text {
+    font-size: 0.875rem !important;
+    color: #212121 !important;
+    margin-bottom: 8px !important;
+    white-space: pre-line;
+}
+
+.review-meta {
+    font-size: 0.8125rem !important;
+    color: #616161 !important;
+}
+
+.no-reviews-message {
+    color: #616161 !important;
+    font-style: italic !important;
+    margin-top: 16px !important;
+}
+
+.acceptance-message {
+    color: #2e7d32 !important;
+    font-weight: 500 !important;
+    margin-top: 16px !important;
+}
+
+.download-reviews-btn {
+    font-size: 0.8125rem !important;
+    padding: 6px 12px !important;
+    text-transform: none !important;
+    border-color: #e0e0e0 !important;
+    color: #616161 !important;
+}
+
+.download-reviews-btn:hover {
+    border-color: #bdbdbd !important;
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Second Tour Section Styles */
+.nominations-container {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .nomination-item {
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+  }
+  
+  .nomination-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #212121 !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .nomination-divider {
+    margin: 8px 0 !important;
+    border-color: #e0e0e0 !important;
+  }
+  
+  .no-nominations-message,
+  .no-grades-message {
+    color: #616161 !important;
+    font-style: italic !important;
+    margin-top: 16px !important;
+  }
+  
+  .grades-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  
+  .grade-card {
+    border-radius: 4px !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: none !important;
+  }
+  
+  .grade-value {
+    font-size: 0.875rem !important;
+    color: #212121 !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .grade-text {
+    font-size: 0.875rem !important;
+    color: #212121 !important;
+    margin-bottom: 8px !important;
+    white-space: pre-line;
+  }
+  
+  .grade-meta {
+    font-size: 0.8125rem !important;
+    color: #616161 !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .download-grades-btn {
+    font-size: 0.8125rem !important;
+    padding: 6px 12px !important;
+    text-transform: none !important;
+    border-color: #e0e0e0 !important;
+    color: #616161 !important;
+  }
+  
+  .download-grades-btn:hover {
+    border-color: #bdbdbd !important;
+    background-color: rgba(0, 0, 0, 0.04) !important;
+  }
+
+  /* Tabbed Nominations Styles */
+.tabbed-nominations {
+    margin-top: 16px;
+  }
+  
+  .nomination-tabs {
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .nomination-tab {
+    text-transform: none !important;
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+    min-width: 120px !important;
+    padding: 8px 16px !important;
+  }
+  
+  .nomination-tab.Mui-selected {
+    color: #1976d2 !important;
+  }
+  
+  .tab-content-container {
+    margin-top: 16px;
+  }
+  
+  /* Keep all existing styles from previous implementation */
+
+  /* ============================================= */
+/* Student Second Tour Section Styles */
+/* ============================================= */
+
+.student-second-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  
+  .student-second-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+  }
+  
+  .student-second-tour-tabs {
+    min-height: 48px;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+  }
+  
+  .student-second-tour-tabs .MuiTabs-scroller {
+    overflow: visible !important;
+    scroll-behavior: smooth;
+  }
+  
+  .student-second-tour-tabs .MuiTabs-indicator {
+    height: 2px;
+    background-color: #1976d2;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  }
+  
+  .student-second-tour-tab {
+    min-height: 48px;
+    padding: 0 16px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    min-width: unset;
+    text-transform: none;
+    color: #616161;
+    transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  }
+  
+  .student-second-tour-tab.Mui-selected {
+    color: #1976d2;
+  }
+  
+  .student-second-tour-content {
+    position: relative;
+    min-height: 400px;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    background-color: white;
+    transition: height 300ms ease;
+  }
+  
+  .student-second-tour-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    padding: 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .student-second-tour-grade-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: none;
+    margin-bottom: 12px;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+  
+  .student-second-tour-grade-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  }
+  
+  .student-second-tour-download-btn {
+    font-size: 0.8125rem !important;
+    padding: 6px 12px !important;
+    text-transform: none !important;
+    border-color: #e0e0e0 !important;
+    color: #616161 !important;
+    transition: all 250ms ease !important;
+  }
+  
+  .student-second-tour-download-btn:hover {
+    border-color: #bdbdbd !important;
+    background-color: rgba(0, 0, 0, 0.04) !important;
+  }
+  
+  .student-second-tour-download-btn:disabled {
+    opacity: 0.5 !important;
+  }
+  
+  /* Loading and Empty States */
+  .student-second-tour-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .student-second-tour-empty {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+  }
+  
+  .student-second-tour-error {
+    color: #d32f2f;
+    text-align: center;
+    padding: 24px;
+  }
+  
+  /* Mobile Styles */
+  @media (max-width: 600px) {
+    .student-second-tour-container {
+      padding: 0 8px;
+    }
+    
+    .student-second-tour-tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    
+    .student-second-tour-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .student-second-tour-tab {
+      padding: 0 12px;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+    
+    .student-second-tour-content {
+      min-height: 300px;
+    }
+    
+    .student-second-tour-panel {
+      padding: 12px;
+    }
+  }
+  
+  /* Tablet Styles */
+  @media (min-width: 601px) and (max-width: 960px) {
+    .student-second-tour-tab {
+      padding: 0 14px;
+    }
+    
+    .student-second-tour-content {
+      min-height: 350px;
+    }
+  }
+  
+  /* Scrollbar Styles (for desktop) */
+  @media (min-width: 961px) {
+    .student-second-tour-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .student-second-tour-panel::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    
+    .student-second-tour-panel::-webkit-scrollbar-thumb {
+      background: #bdbdbd;
+      border-radius: 3px;
+    }
+    
+    .student-second-tour-panel::-webkit-scrollbar-thumb:hover {
+      background: #9e9e9e;
+    }
+  }
+
+  /* Teacher First Tour Section Styles */
+.teacher-first-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.teacher-first-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.report-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: none;
+    transition: box-shadow 0.3s ease;
+}
+
+.report-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.report-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #212121;
+}
+
+.report-meta {
+    font-size: 0.8125rem;
+    color: #616161;
+    margin-bottom: 4px;
+}
+
+.report-divider {
+    margin: 12px 0;
+    border-color: #f0f0f0;
+}
+
+.reviews-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.review-card {
+    border-radius: 4px;
+    border: 1px solid #f0f0f0;
+    background-color: #fafafa;
+    box-shadow: none;
+}
+
+.review-text {
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+    white-space: pre-line;
+}
+
+.review-meta {
+    font-size: 0.75rem;
+    color: #757575;
+    text-align: right;
+}
+
+.no-reviews-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 16px 0;
+}
+
+.new-review-form {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.review-textfield .MuiOutlinedInput-root {
+    font-size: 0.875rem;
+}
+
+.submit-review-btn {
+    align-self: flex-end;
+    font-size: 0.8125rem;
+    padding: 8px 16px;
+    text-transform: none;
+    background-color: #1976d2;
+}
+
+.submit-review-btn:disabled {
+    opacity: 0.7;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .teacher-first-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .report-title {
+        font-size: 0.9375rem;
+    }
+    
+    .review-text {
+        font-size: 0.8125rem;
+    }
+    
+    .submit-review-btn {
+        width: 100%;
+    }
+}
+
+/* Teacher First Tour Section - Updated Styles */
+.report-selector {
+    margin-bottom: 24px;
+}
+
+.report-selector .MuiInputLabel-root {
+    font-size: 0.875rem;
+}
+
+.report-selector .MuiSelect-select {
+    font-size: 0.875rem;
+    padding: 12px 14px;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.download-report-btn {
+    font-size: 0.75rem !important;
+    padding: 6px 12px !important;
+    text-transform: none !important;
+    border-color: #e0e0e0 !important;
+    color: #616161 !important;
+    min-width: 120px;
+}
+
+.download-report-btn:hover {
+    border-color: #bdbdbd !important;
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .report-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .download-report-btn {
+        align-self: flex-end;
+    }
+}
+
+/* Head First Tour Component Styles */
+.head-first-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.head-first-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.report-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: none;
+    transition: box-shadow 0.3s ease;
+}
+
+.report-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.report-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #212121;
+}
+
+.status-chip {
+    font-size: 0.75rem;
+}
+
+.report-meta {
+    font-size: 0.8125rem;
+    color: #616161;
+    margin-bottom: 4px;
+}
+
+.report-divider {
+    margin: 12px 0;
+    border-color: #f0f0f0;
+}
+
+.reviews-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.review-card {
+    border-radius: 4px;
+    border: 1px solid #f0f0f0;
+    background-color: #fafafa;
+    box-shadow: none;
+}
+
+.review-text {
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+    white-space: pre-line;
+}
+
+.review-footer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.review-meta {
+    font-size: 0.75rem;
+    color: #757575;
+}
+
+.no-reviews-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 16px 0;
+}
+
+.invited-review-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    background-color: #f5f5f5;
+    margin-top: 16px;
+}
+
+.invited-review-label {
+    font-weight: 500;
+    color: #1976d2;
+    margin-bottom: 4px;
+}
+
+.invited-review-text {
+    font-size: 0.875rem;
+    white-space: pre-line;
+}
+
+.accept-report-container {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.accept-report-btn {
+    font-size: 0.8125rem;
+    padding: 8px 16px;
+    text-transform: none;
+    background-color: #2e7d32;
+}
+
+.accept-report-btn:hover {
+    background-color: #1b5e20;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .head-first-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .report-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .status-chip {
+        align-self: flex-end;
+    }
+}
+
+/* Report Selector Styles */
+.report-selector {
+    margin-bottom: 24px;
+}
+
+.report-selector .MuiInputLabel-root {
+    font-size: 0.875rem;
+}
+
+.report-selector .MuiSelect-select {
+    font-size: 0.875rem;
+    padding: 12px 14px;
+}
+
+.report-selector .MuiMenuItem-root {
+    font-size: 0.875rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .report-selector {
+        margin-bottom: 16px;
+    }
+    
+    .report-selector .MuiSelect-select {
+        padding: 10px 12px;
+        font-size: 0.8125rem;
+    }
+    
+    .report-selector .MuiMenuItem-root {
+        font-size: 0.8125rem;
+    }
+}
+
+/* Invited First Tour Section Styles */
+.invited-first-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.invited-first-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.report-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: none;
+    margin-top: 16px;
+}
+
+.report-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #212121;
+}
+
+.report-meta {
+    font-size: 0.8125rem;
+    color: #616161;
+    margin-bottom: 4px;
+}
+
+.report-divider {
+    margin: 12px 0;
+    border-color: #f0f0f0;
+}
+
+.review-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    margin-bottom: 16px;
+}
+
+.review-label {
+    font-weight: 500;
+    color: #1976d2;
+    margin-bottom: 4px;
+}
+
+.review-text {
+    font-size: 0.875rem;
+    white-space: pre-line;
+}
+
+.no-review-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 16px 0;
+}
+
+.new-review-form {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.review-textfield .MuiOutlinedInput-root {
+    font-size: 0.875rem;
+}
+
+.submit-review-btn {
+    align-self: flex-end;
+    font-size: 0.8125rem;
+    padding: 8px 16px;
+    text-transform: none;
+    background-color: #1976d2;
+}
+
+.submit-review-btn:disabled {
+    opacity: 0.7;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Report Selector Styles */
+.report-selector {
+    margin-bottom: 16px;
+}
+
+.report-selector .MuiInputLabel-root {
+    font-size: 0.875rem;
+}
+
+.report-selector .MuiSelect-select {
+    font-size: 0.875rem;
+    padding: 12px 14px;
+}
+
+.report-selector .MuiMenuItem-root {
+    font-size: 0.875rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .invited-first-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .report-selector .MuiSelect-select {
+        padding: 10px 12px;
+        font-size: 0.8125rem;
+    }
+    
+    .submit-review-btn {
+        width: 100%;
+    }
+}
+
+/* Invited Second Tour Section Styles */
+.invited-second-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.invited-second-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.grading-table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-header {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #212121;
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.table-row {
+    transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+    background-color: #fafafa;
+}
+
+.table-cell {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.875rem;
+}
+
+.report-name {
+    font-weight: 500;
+    color: #1976d2;
+}
+
+.existing-grade {
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+.no-grade {
+    color: #616161;
+    font-style: italic;
+}
+
+.grade-input {
+    width: 80px;
+}
+
+.grade-input .MuiOutlinedInput-input {
+    padding: 8px 12px;
+    text-align: center;
+}
+
+.submit-grade-btn {
+    font-size: 0.8125rem;
+    padding: 6px 12px;
+    text-transform: none;
+    background-color: #1976d2;
+}
+
+.submit-grade-btn:disabled {
+    opacity: 0.7;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .invited-second-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .table-cell {
+        padding: 8px;
+        font-size: 0.8125rem;
+    }
+    
+    .grade-input {
+        width: 60px;
+    }
+    
+    .submit-grade-btn {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+}
+
+/* Teacher Second Tour Section Styles */
+.teacher-second-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.teacher-second-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message,
+.no-grades-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.report-selector .MuiSelect-select {
+    font-size: 0.875rem;
+}
+
+.grades-table {
+    margin: 16px 0;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+}
+
+.table-header {
+    font-weight: 600;
+    background-color: #f5f5f5;
+}
+
+.grades-table .MuiTableCell-root {
+    padding: 8px 16px;
+}
+
+.new-grade-form {
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #fafafa;
+}
+
+.nomination-select .MuiSelect-select {
+    font-size: 0.875rem;
+}
+
+.grade-input .MuiInputBase-input {
+    text-align: center;
+}
+
+.submit-grade-btn {
+    font-size: 0.8125rem;
+    padding: 8px 16px;
+    text-transform: none;
+    background-color: #1976d2;
+}
+
+.submit-grade-btn:disabled {
+    opacity: 0.7;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .teacher-second-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .grades-table .MuiTableCell-root {
+        padding: 6px 12px;
+        font-size: 0.8125rem;
+    }
+    
+    .submit-grade-btn {
+        width: 100%;
+    }
+}
+
+/* Teacher Second Tour Section Styles */
+.teacher-second-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.teacher-second-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.report-selector .MuiSelect-select {
+    font-size: 0.875rem;
+}
+
+.grades-table {
+    margin: 16px 0;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+}
+
+.table-header {
+    font-weight: 600;
+    background-color: #f5f5f5;
+}
+
+.grades-table .MuiTableCell-root {
+    padding: 12px 16px;
+}
+
+.grade-input .MuiInputBase-input {
+    text-align: center;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .teacher-second-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .grades-table .MuiTableCell-root {
+        padding: 8px 12px;
+        font-size: 0.8125rem;
+    }
+}
+
+/* Head Second Tour Section Styles */
+.head-second-tour-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.head-second-tour-card {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: visible;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+    color: #212121;
+}
+
+.no-reports-message {
+    color: #616161;
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+}
+
+.reports-table {
+    margin: 16px 0;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+}
+
+.table-header {
+    font-weight: 600;
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.report-row {
+    transition: background-color 0.2s ease;
+}
+
+.report-row:hover {
+    background-color: #fafafa;
+}
+
+.report-name {
+    font-weight: 500;
+    color: #1976d2;
+}
+
+.grades-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.grade-item {
+    font-size: 0.8125rem;
+    color: #424242;
+}
+
+.no-grades {
+    color: #616161;
+    font-style: italic;
+    font-size: 0.8125rem;
+}
+
+.final-grade {
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+.no-final-grade {
+    color: #616161;
+    font-style: italic;
+}
+
+.grade-form {
+    display: flex;
+    align-items: center;
+}
+
+.loading-spinner {
+    color: #1976d2;
+    margin: 40px auto;
+    display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .head-second-tour-container {
+        padding: 0 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+    
+    .reports-table .MuiTableCell-root {
+        padding: 8px;
+        font-size: 0.8125rem;
+    }
+    
+    .grade-form {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .grade-form .MuiButton-root {
+        width: 100%;
+    }
 }

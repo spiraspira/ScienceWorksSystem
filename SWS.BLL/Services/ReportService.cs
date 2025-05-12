@@ -26,7 +26,7 @@ public class ReportService(
 		return mapper.Map<ReportModel>(entity);
 	}
 
-	public async Task<ReportModel> GetWinnerOfNomination(Guid nominationId)
+	public async Task<ReportModel?> GetWinnerOfNomination(Guid nominationId)
 	{
 		var grades = await gradeRepository.GetGradesOfNomination(nominationId);
 
@@ -38,6 +38,11 @@ public class ReportService(
 				AverageGrade = g.Average(x => x.ReportGrade)
 			})
 			.MaxBy(g => g.AverageGrade);
+
+		if (winningReport is null)
+		{
+			return null;
+		}
 
 		var report = await repository.Get((Guid)winningReport!.ReportId!);
 

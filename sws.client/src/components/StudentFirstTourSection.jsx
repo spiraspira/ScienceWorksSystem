@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Container, Button } from '@mui/material';
+import { Box, Card, CardContent, Typography, Button } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReviewActions from '../actions/ReviewActions';
@@ -39,7 +39,7 @@ const StudentFirstTourSection = ({ contestId }) => {
                         text: "Reviews",
                         heading: HeadingLevel.HEADING_1,
                     }),
-                    ...reviews.map(review => 
+                    ...reviews.map(review =>
                         new Paragraph({
                             text: `${review.text} - ${review.date} (Reviewer: ${review.organizationCommitteeMember?.teacher?.user?.name || 'Unknown'})`,
                         })
@@ -56,40 +56,61 @@ const StudentFirstTourSection = ({ contestId }) => {
     };
 
     return (
-        <Box>
+        <Box className="contest-info-container">
             <ToastContainer />
-            <Typography variant="h3" className="page-title">
-                Первый тур
-            </Typography>
-            <Container maxWidth="md" className="review-section">
-                {reviews.length === 0 ? (
-                    <div>Отзывов нет.</div>
-                ) : (
-                    reviews.map((review, index) => (
-                        <Card key={index} className="review-card">
-                            <CardContent>
-                                <Typography variant="body1" gutterBottom>
-                                    {review.text}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {review.date} - {review.organizationCommitteeMember?.teacher?.user?.name}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    ))
-                )}
-                {isAccepted && (
-                    <Typography>Доклад принят.</Typography>
-                )}
-                <Button 
-                    variant="contained" 
-                    color="primary" 
-                    onClick={downloadReviews} 
-                    style={{ marginTop: '20px' }}
-                >
-                    Download Reviews
-                </Button>
-            </Container>
+            <Card className="contest-info-card">
+                <CardContent className="contest-info-content">
+                    <Typography variant="h5" className="contest-title">
+                        Первый тур
+                    </Typography>
+
+                    {reviews.length === 0 ? (
+                        <Typography variant="body2" className="no-reviews-message">
+                            Отзывов пока нет
+                        </Typography>
+                    ) : (
+                        <Box className="reviews-container">
+                            {reviews.map((review, index) => (
+                                <Card key={index} className="review-card">
+                                    <CardContent>
+                                        <Typography variant="body1" className="review-text">
+                                            {review.text}
+                                        </Typography>
+                                        <Typography variant="body2" className="review-meta">
+                                            {new Date(review.date).toLocaleDateString('ru-RU', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })} - {review.organizationCommitteeMember?.teacher?.user?.name || 'Анонимный рецензент'}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </Box>
+                    )}
+
+                    {isAccepted && (
+                        <Typography variant="body1" className="acceptance-message">
+                            Ваш доклад был принят
+                        </Typography>
+                    )}
+
+                    {reviews.length > 0 && (
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={downloadReviews}
+                                className="download-reviews-btn"
+                            >
+                                Скачать отзывы
+                            </Button>
+                        </Box>
+                    )}
+                </CardContent>
+            </Card>
         </Box>
     );
 };
